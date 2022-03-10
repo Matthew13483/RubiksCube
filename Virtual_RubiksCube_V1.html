@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Virtual Cube by Matthew V1</title>
+		<style type="text/css">
+			body {
+				margin:0;
+				user-select:none;
+			}
+			canvas {
+				background-color:#303030;
+			}
+			div.row {
+				display:flex;
+				flex-direction:row;
+				align-items:center;
+			}
+			div.column {
+				display:flex;
+				flex-direction:column;
+				align-items:center;
+			}
+			.Tb {
+				width:60px;
+				height:60px;
+				font-size:30px;
+				background-color:#9090ff;
+				border:none;
+				border-radius:10px;
+				margin:5px;
+			}
+			.Tb:active {
+				background-color:#5050c0;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas"></canvas>
+		<div class="column" style="width:100%;">
+			<div class="row">
+				<button class="Tb" ontouchstart="Turn(`U`)">U</button>
+				<button class="Tb" ontouchstart="Turn(`U'`)">U'</button>
+				<button class="Tb" ontouchstart="Turn(`D`)">D</button>
+				<button class="Tb" ontouchstart="Turn(`D'`)">D'</button>
+			</div>
+			<div class="row">
+				<button class="Tb" ontouchstart="Turn(`F`)">F</button>
+				<button class="Tb" ontouchstart="Turn(`F'`)">F'</button>
+				<button class="Tb" ontouchstart="Turn(`B`)">B</button>
+				<button class="Tb" ontouchstart="Turn(`B'`)">B'</button>
+			</div>
+			<div class="row">
+				<button class="Tb" ontouchstart="Turn(`L`)">L</button>
+				<button class="Tb" ontouchstart="Turn(`L'`)">L'</button>
+				<button class="Tb" ontouchstart="Turn(`R`)">R</button>
+				<button class="Tb" ontouchstart="Turn(`R'`)">R'</button>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var ctx = canvas.getContext("2d");
+			canvas.width = 360;
+			canvas.height = 300;
+			// 3/7/22
+			function map(x, x1, x2, y1, y2) {
+				return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+			}
+			function clockwise(A, B, C) {
+				if (A.x - C.x == 0) {
+					return B.x > A.x;
+				}
+				else {
+					let m = (C.y - A.y) / (C.x - A.x);
+					let b = A.y - m * A.x;
+					return (m * B.x + b - B.y) * (A.x - C.x) > 0;
+				}
+			}
+			function basicLighting(A, B, C, D) {
+				return (Math.hypot(A.x - B.x, A.y - B.y) + Math.hypot(B.x - C.x, B.y - C.y) + Math.hypot(C.x - D.x, C.y - D.y) + Math.hypot(D.x - A.x, D.y - A.y));
+			}
+			function c32(x, y, z) {
+				let fl = 400;
+				return {
+					x: x * fl / z,
+					y: y * fl / z
+				}
+			}
+			function rotateX(p, rp, a) {
+				let x = p.x - rp.x;
+				let y = p.y - rp.y;
+				let z = p.z - rp.z;
+				let d = Math.hypot(y, z);
+				let a2 = Math.atan2(y, z) + a;
+				return {
+					x: p.x,
+					y: rp.y + d * Math.sin(a2),
+					z: rp.z + d * Math.cos(a2)
+				};
+			}
+			function rotateY(p, rp, a) {
+				let x = p.x - rp.x;
+				let y = p.y - rp.y;
+				let z = p.z - rp.z;
+				let d = Math.hypot(x, z);
+				let a2 = Math.atan2(x, z) + a;
+				return {
+					x: rp.x + d * Math.sin(a2),
+					y: p.y,
+					z: rp.z + d * Math.cos(a2)
+				};
+			}
+			function rotateZ(p, rp, a) {
+				let x = p.x - rp.x;
+				let y = p.y - rp.y;
+				let z = p.z - rp.z;
+				let d = Math.hypot(y, x);
+				let a2 = Math.atan2(y, x) + a;
+				return {
+					x: rp.x + d * Math.cos(a2),
+					y: rp.y + d * Math.sin(a2),
+					z: p.z
+				};
+			}
+			class Point {
+				constructor(x, y, z) {
+					this.x = x;
+					this.y = y;
+					this.z = z;
+				}
+			};
+			class Square {
+				constructor(p1, p2, p3, p4) {
+					this.p1 = p1;
+					this.p2 = p2;
+					this.p3 = p3;
+					this.p4 = p4;
+				}
+			};
+			var cubes = [];
+			class Cube {
+				constructor(x, y, z, turnId, af, ta) {
+					let os = 2.1;
+					this.x = x * os;
+					this.y = y * os;
+					this.z = z * os;
+					this.s = 1;
+					this.turnId = this.turnIdn = turnId;
+					this.af = af;
+					this.id = turnId.split("").map(e => ({ F: "G", B: "B", U: "W", D: "Y", L: "O", R: "R"}[e]));
+					this.faces = [
+						[[-1,1,-1],[1,1,-1],[1,-1,-1],[-1,-1,-1]],
+						[[1,1,1],[-1,1,1],[-1,-1,1],[1,-1,1]],
+						[[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]],
+						[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]],
+						[[-1,1,1],[-1,1,-1],[-1,-1,-1],[-1,-1,1]],
+						[[1,1,-1],[1,1,1],[1,-1,1],[1,-1,-1]]
+					].map((e, i) => {
+						return new Square(
+							new Point(e[0][0]*this.s+this.x, e[0][1]*this.s+this.y, e[0][2]*this.s+this.z),
+							new Point(e[1][0]*this.s+this.x, e[1][1]*this.s+this.y, e[1][2]*this.s+this.z),
+							new Point(e[2][0]*this.s+this.x, e[2][1]*this.s+this.y, e[2][2]*this.s+this.z),
+							new Point(e[3][0]*this.s+this.x, e[3][1]*this.s+this.y, e[3][2]*this.s+this.z)
+						);
+					});
+					cubes.push(this);
+				}
+			}
+			var cycles = {
+				U: ["UFR,UFL,UBL,UBR", "UF,UL,UB,UR"],
+				D: ["DFL,DFR,DBR,DBL", "DF,DR,DB,DL"],
+				F: ["UFL,UFR,DFR,DFL", "UF,FR,DF,FL"],
+				B: ["UBR,UBL,DBL,DBR", "UB,BL,DB,BR"],
+				L: ["UBL,UFL,DFL,DBL", "UL,FL,DL,BL"],
+				R: ["UFR,UBR,DBR,DFR", "UR,BR,DR,FR"],
+			};
+			const origin = { x: 0, y: 0, z: 0 };
+			let cs = 0.5;
+			new Cube(-1, 1, -1, "UFL", [1,0,1,0,1,0], []);
+			new Cube(1, 1, -1, "UFR", [1,0,1,0,0,1]);
+			new Cube(-1, -1, -1, "DFL", [1,0,0,1,1,0]);
+			new Cube(1, -1, -1, "DFR", [1,0,0,1,0,1]);
+			new Cube(-1, 1, 1, "UBL", [0,1,1,0,1,0]);
+			new Cube(1, 1, 1, "UBR", [0,1,1,0,0,1]);
+			new Cube(-1, -1, 1, "DBL", [0,1,0,1,1,0]);
+			new Cube(1, -1, 1, "DBR", [0,1,0,1,0,1]);
+			
+			new Cube(0, 1, -1, "UF", [1,0,1,0,0,0]);
+			new Cube(0, 1, 1, "UB", [0,1,1,0,0,0]);
+			new Cube(0, -1, -1, "DF", [1,0,0,1,0,0]);
+			new Cube(0, -1, 1, "DB", [0,1,0,1,0,0]);
+			new Cube(-1, 1, 0, "UL", [0,0,1,0,1,0]);
+			new Cube(1, 1, 0, "UR", [0,0,1,0,0,1]);
+			new Cube(-1, -1, 0, "DL", [0,0,0,1,1,0]);
+			new Cube(1, -1, 0, "DR", [0,0,0,1,0,1]);
+			new Cube(-1, 0, -1, "FL", [1,0,0,0,1,0]);
+			new Cube(1, 0, -1, "FR", [1,0,0,0,0,1]);
+			new Cube(-1, 0, 1, "BL", [0,1,0,0,1,0]);
+			new Cube(1, 0, 1, "BR", [0,1,0,0,0,1]);
+			
+			new Cube(0, 0, 1, "B", [0,1,0,0,0,0]);
+			new Cube(1, 0, 0, "R", [0,0,0,0,0,1]);
+			new Cube(-1, 0, 0, "L", [0,0,0,0,1,0]);
+			new Cube(0, 0, -1, "F", [1,0,0,0,0,0]);
+			new Cube(0, 1, 0, "U", [0,0,1,0,0,0]);
+			new Cube(0, -1, 0, "D", [0,0,0,1,0,0]);
+			
+			var pos = { z: 17 };
+			var colors = [
+				"green",//green
+				"#0a0ab0",//blue
+				"#fcfcfc",//white
+				"yellow",//yellow
+				"#e07000",//orange
+				"#b00000"//red
+			];
+			function loop() {
+				requestAnimationFrame(loop);
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				if (turning) {
+					let speed = 20;
+					turnA += speed;
+					turnS(speed);
+					if (turnA > 90) {
+						turnS(90 - turnA);
+						turnA = 90;
+						turning = false;
+						cubes.forEach(e => e.turning = false);
+						turnA = 0;
+						let C = cycles[turnD];
+						let Cf = e => {
+							if (turnC) {
+								fc(e[0]).turnIdn = e[1];
+								fc(e[1]).turnIdn = e[2];
+								fc(e[2]).turnIdn = e[3];
+								fc(e[3]).turnIdn = e[0];
+							}
+							else {
+								fc(e[0]).turnIdn = e[3];
+								fc(e[1]).turnIdn = e[0];
+								fc(e[2]).turnIdn = e[1];
+								fc(e[3]).turnIdn = e[2];
+							}
+						};
+						Cf(C[0].split(","));
+						Cf(C[1].split(","));
+						cubes.forEach(e => e.turnId = e.turnIdn);
+					}
+				}
+				let drawFaces = [];
+				cubes.forEach((c) => {
+					c.faces.forEach((e, i) => {
+						let p1 = c32(e.p1.x * c.s, e.p1.y * c.s, e.p1.z + pos.z);
+						let p2 = c32(e.p2.x * c.s, e.p2.y * c.s, e.p2.z + pos.z);
+						let p3 = c32(e.p3.x * c.s, e.p3.y * c.s, e.p3.z + pos.z);
+						let p4 = c32(e.p4.x * c.s, e.p4.y * c.s, e.p4.z + pos.z);
+						if (clockwise(p1, p2, p3)) {
+							let cx = (e.p1.x + e.p2.x + e.p3.x + e.p4.x) / 4;
+							let cy = (e.p1.y + e.p2.y + e.p3.y + e.p4.y) / 4;
+							let cz = (e.p1.z + e.p2.z + e.p3.z + e.p4.z) / 4;
+							let dist = Math.hypot(cx, cy, cz - pos.z);
+							/*let dist = Math.min(
+								Math.hypot(e.p1.x, e.p1.y, e.p1.z - pos.z),
+								Math.hypot(e.p2.x, e.p2.y, e.p2.z - pos.z),
+								Math.hypot(e.p3.x, e.p3.y, e.p3.z - pos.z),
+								Math.hypot(e.p4.x, e.p4.y, e.p4.z - pos.z),
+							);*/
+							drawFaces.push([dist, p1, p2, p3, p4, i, c.af[i]]);
+						}
+					});
+				});
+				drawFaces.sort((a, b) => (a[0] + (a[6] ? 1 : 0)) - (b[0] + (b[6] ? 1 : 0)));
+				drawFaces.forEach(e => {
+					ctx.beginPath();
+					ctx.moveTo(e[1].x + canvas.width / 2, -e[1].y + canvas.height / 2);
+					ctx.lineTo(e[2].x + canvas.width / 2, -e[2].y + canvas.height / 2);
+					ctx.lineTo(e[3].x + canvas.width / 2, -e[3].y + canvas.height / 2);
+					ctx.lineTo(e[4].x + canvas.width / 2, -e[4].y + canvas.height / 2);
+					ctx.closePath();
+					ctx.globalAlpha = e[6] ? 1 : 1;
+					ctx.fillStyle = e[6] ? colors[e[5]] : "#101010";
+					ctx.fill();
+					ctx.globalAlpha = 1;
+					
+					//ctx.fillStyle = "black";
+					//ctx.globalAlpha = Math.max((((pos.z / 7)) / basicLighting(p1, p2, p3, p4)) - 0.6, 0);
+					//ctx.globalAlpha = 1 - (1 /e[0]) - 0.5;
+					//ctx.fill();
+					//ctx.globalAlpha = 1;
+				});
+				/*cubes.forEach((c) => {
+					let p = c32(c.x * c.s, c.y * c.s, c.z + pos.z);
+					let dist = Math.hypot(c.x, c.y, c.z - pos.z);
+					ctx.beginPath();
+					ctx.arc(p.x + canvas.width / 2, -p.y + canvas.height / 2, 3, 0, 2 * Math.PI);
+					ctx.fillStyle = "black";
+					ctx.globalAlpha = Math.min(Math.max(map(dist, 15, 19, 0, 1), 0), 1);
+					ctx.fill();
+					ctx.font = "16px monospace";
+					ctx.fillText(c.turnId, p.x + canvas.width / 2, -p.y + canvas.height / 2);
+					ctx.globalAlpha = 1;
+				});*/
+			}
+			loop();
+			let st = {};
+			canvas.ontouchstart = e => {
+				let x = e.changedTouches[0].pageX - e.target.getBoundingClientRect().left;
+				let y = e.changedTouches[0].pageY - e.target.getBoundingClientRect().top;
+				st.x = x;
+				st.y = y;
+			};
+			canvas.ontouchmove = e => {
+				let x = e.changedTouches[0].pageX - e.target.getBoundingClientRect().left;
+				let y = e.changedTouches[0].pageY - e.target.getBoundingClientRect().top;
+				let ax = -(st.y - y);
+				let ay = (st.x - x);
+				cubes.forEach((c, ci) => {
+					c.faces.forEach((e, i) => {
+						[e.p1, e.p2, e.p3, e.p4] = [e.p1, e.p2, e.p3, e.p4].map(e1 => {
+							e1 = rotateY(e1, origin, ay * Math.PI / 180);
+							return rotateX(e1, origin, ax * Math.PI / 180);
+						});
+					});
+					let np = rotateY(c, origin, ay * Math.PI / 180);
+					Object.assign(c, rotateX(np, origin, ax * Math.PI / 180));
+				});
+				st.x = x;
+				st.y = y;
+			};
+			function fc(id) {
+				return cubes.find(e => e.turnId == id);
+			}
+			var turning = false;
+			var turnA = 0;
+			var turnD;
+			var turnC;
+			var tV;
+			var tA = { a1:0, a2:0 };
+			function Turn(side, c) {
+				if (turning) return;
+				cubes.filter(e => e.turnId.split("").find(e => e == side[0])).forEach(e => e.turning = true);
+				turning = true;
+				turnD = side[0];
+				turnC = side.length == 1;
+				tV = fc(side[0]);
+				tA.a1 = Math.atan2(tV.z, tV.y);
+				let tV2 = rotateX(tV, origin, tA.a1);
+				tA.a2 = Math.atan2(tV2.x, tV2.y);
+			}
+			function turnS(a) {
+				cubes.forEach(c => {
+					if (c.turning) {
+						let r = fc(turnD);
+						let a1 = tA.a1;
+						let a2 = tA.a2;
+						let rf = (p) => {
+							let e1 = {};
+							Object.assign(e1, p);
+							e1 = rotateX(e1, origin, a1);
+							e1 = rotateZ(e1, origin, a2);
+							e1 = rotateY(e1, origin, (turnC ? 1 : -1) * (a * Math.PI / 180));
+							e1 = rotateZ(e1, origin, -a2);
+							e1 = rotateX(e1, origin, -a1);
+							return e1;
+						};
+						Object.assign(c, rf(c));
+						c.faces.forEach(e => {
+							[e.p1, e.p2, e.p3, e.p4] = [e.p1, e.p2, e.p3, e.p4].map(e1 => rf(e1));
+						});
+					}
+				});
+			}
+		</script>
+	</body>
+</html>
