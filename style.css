@@ -1,0 +1,60 @@
+body {
+	margin: 0;
+	user-select: none;
+	overflow: hidden;
+}
+
+canvas {
+	background-color: #202030;
+	position: fixed;
+}
+
+div.row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+div.column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#FPS {
+	position: absolute;
+	top: 0px;
+	left: 10px;
+	color: white;
+}
+
+#buttons_container {
+	position: absolute;
+	top: 10px;
+	left: 0px;
+	width: 100%;
+}
+
+#scramble_button {
+	padding: 10px;
+	font-size: 20px;
+	background-color: #5050c0;
+	color: white;
+	border: none;
+	border-radius: 20px;
+	outline: none;
+	margin: 5px;
+	transition-property:background-color, color;
+	transition-duration:0.1s;
+}
+
+#scramble_button:active {
+	background-color: #202090;
+	color: grey;
+}
+
+#audioAllow {
+	outline:none;
+	width:30px;
+	height:30px;
+}

@@ -1,2 +1,2 @@
 # Virtual Rubik's Cube
-This is a working virtual rubik's cube
+This is a functional **Rubik's Cube**
