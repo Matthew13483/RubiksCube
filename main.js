@@ -46,19 +46,22 @@ let turning = false;
 const turn = {
 	angle: 0,
 	speed: 20,
-	soundAllowed: false,
-	sound: new Audio(),
 };
-turn.sound.src = `assets/turn.mp3`;
+const sound = new Audio();
+sound.src = `assets/turn.mp3`;
+let soundAllowed = false;
 
 let scrambling = false;
+let scramble;
+let scrambleIndex = 0;
+
 const st = {};
 const pos = { z: 22 };
 let scale = 1;
 
-function toggleAudio() {
-	turn.soundAllowed = !turn.soundAllowed;
-	audioAllow.innerHTML = turn.soundAllowed ? '<path d="M14.016 3.234C18.047 4.125 21 7.734 21 12s-2.953 7.875-6.984 8.766v-2.063c2.906-.844 4.969-3.516 4.969-6.703s-2.063-5.859-4.969-6.703V3.234zM16.5 12a4.451 4.451 0 0 1-2.484 4.031V7.968c1.5.75 2.484 2.25 2.484 4.031zM3 9h3.984L12 3.984v16.031l-5.016-5.016H3v-6z"/>' : '<path d="M12 3.984v4.219L9.891 6.094zM4.266 3L21 19.734 19.734 21l-2.063-2.063c-1.078.844-2.297 1.5-3.656 1.828v-2.063c.844-.234 1.594-.656 2.25-1.172l-4.266-4.266v6.75l-5.016-5.016H2.999v-6h4.734L2.999 4.264zm14.718 9c0-3.188-2.063-5.859-4.969-6.703V3.234c4.031.891 6.984 4.5 6.984 8.766a8.87 8.87 0 0 1-1.031 4.172l-1.5-1.547A6.901 6.901 0 0 0 18.984 12zM16.5 12c0 .234 0 .422-.047.609l-2.438-2.438V7.968c1.5.75 2.484 2.25 2.484 4.031z"/>';
+function toggleSound() {
+	soundAllowed = !soundAllowed;
+	audioAllow.innerHTML = soundAllowed ? '<path d="M14.016 3.234C18.047 4.125 21 7.734 21 12s-2.953 7.875-6.984 8.766v-2.063c2.906-.844 4.969-3.516 4.969-6.703s-2.063-5.859-4.969-6.703V3.234zM16.5 12a4.451 4.451 0 0 1-2.484 4.031V7.968c1.5.75 2.484 2.25 2.484 4.031zM3 9h3.984L12 3.984v16.031l-5.016-5.016H3v-6z"/>' : '<path d="M12 3.984v4.219L9.891 6.094zM4.266 3L21 19.734 19.734 21l-2.063-2.063c-1.078.844-2.297 1.5-3.656 1.828v-2.063c.844-.234 1.594-.656 2.25-1.172l-4.266-4.266v6.75l-5.016-5.016H2.999v-6h4.734L2.999 4.264zm14.718 9c0-3.188-2.063-5.859-4.969-6.703V3.234c4.031.891 6.984 4.5 6.984 8.766a8.87 8.87 0 0 1-1.031 4.172l-1.5-1.547A6.901 6.901 0 0 0 18.984 12zM16.5 12c0 .234 0 .422-.047.609l-2.438-2.438V7.968c1.5.75 2.484 2.25 2.484 4.031z"/>';
 }
 
 const fps = {
@@ -82,8 +85,8 @@ function loop() {
 	fps.inLoop();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	if (turning) {
-		turn.angle += turn.speed;
-		turnS(turn.speed);
+		speed = !scrambling ? turn.speed : 40;
+		turnS(speed);
 		if (turn.angle > 90) {
 			turnS(90 - turn.angle);
 			turn.angle = 0;
@@ -111,6 +114,14 @@ function loop() {
 					e.pieceId = e.pieceIdN;
 				});
 			}
+			if (scrambling) {
+				if (scrambleIndex < scramble.length - 1) {
+					scrambleIndex++;
+					Turn(scramble[scrambleIndex]);
+				}
+				else scrambling = false;
+			}
+			
 		}
 	}
 
@@ -139,9 +150,9 @@ function Turn(side) {
 		S: "FME"
 	} [side[0]]);
 	turn.times = Number(side[1]) || 1;
-	if (turn.soundAllowed) {
-		turn.sound.play();
-		turn.sound.currentTime = 0.14;
+	if (soundAllowed) {
+		sound.play();
+		sound.currentTime = 0.14;
 	}
 }
 
@@ -161,6 +172,7 @@ function Turn2(side) {
 }
 
 function turnS(a) {
+	turn.angle += a;
 	Rubik.pieces.forEach(c => {
 		if (c.turning) {
 			let a1 = Math.atan2(turn.piece.z, turn.piece.y);
@@ -180,7 +192,7 @@ function turnS(a) {
 	});
 }
 
-function generateScramble(length = 20) {
+function generateScramble(length = 21) {
 	let getRandomI = arr => Math.floor(Math.random() * arr.length);
 	let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
 	let p_symbol = ["", "'", "2"];
@@ -205,17 +217,7 @@ function generateScramble(length = 20) {
 function Scramble() {
 	if (scrambling) return;
 	scrambling = true;
-	let scramble = generateScramble().split(" ");
-	let t = turn.speed;
-	turn.speed = 40;
-	let i = 0;
-	let r = () => {
-		Turn(scramble[i]);
-		i++;
-		setTimeout((i < scramble.length) ? r : (() => {
-			turn.speed = t;
-			scrambling = false;
-		}), 100);
-	};
-	r();
+	scramble = generateScramble().split(" ");
+	scrambleIndex = 0;
+	Turn(scramble[0]);
 }
