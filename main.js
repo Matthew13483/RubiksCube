@@ -9,8 +9,12 @@ const cycles = {
 	R: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE"],
 	M: ["UFM,DFM,DBM,UBM", "UMS,FME,DMS,BME"],
 	E: ["FLE,FRE,BRE,BLE", "FME,RSE,BME,LSE"],
-	S: ["URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE"]
+	S: ["URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE"],
+	x: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE", "DBM,DFM,UFM,UBM", "DMS,FME,UMS,BME", "DFL,UFL,UBL,DBL", "DLS,FLE,ULS,BLE"],
+	y: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS", "BRE,FRE,FLE,BLE", "BME,RSE,FME,LSE", "DBR,DFR,DFL,DBL", "DBM,DRS,DFM,DLS"],
+	z: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE", "URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE", "DBL,UBL,UBR,DBR", "DBM,BLE,UBM,BRE"],
 };
+
 const turnAtlas = {
 	UFL: ["L',F,L,F'", "", "L',U',L,U", "", "F,U',F',U", ""],
 	UFR: ["R,F,R',F'", "", "R,U',R',U", "", "", "F',U',F,U"],
@@ -41,6 +45,8 @@ const turnAtlas = {
 };
 
 const origin = { x: 0, y: 0, z: 0 };
+
+var ctx = canvas.getContext("2d");
 
 let turning = false;
 const turn = {
@@ -107,8 +113,7 @@ function loop() {
 						fc(e[3]).pieceIdN = e[2];
 					}
 				};
-				Cf(C[0].split(","));
-				Cf(C[1].split(","));
+				C.forEach(e => Cf(e.split(",")));
 				Rubik.pieces.forEach(e => {
 					e.turning = false;
 					e.pieceId = e.pieceIdN;
@@ -121,10 +126,8 @@ function loop() {
 				}
 				else scrambling = false;
 			}
-			
 		}
 	}
-
 	Rubik.draw();
 }
 
@@ -134,7 +137,7 @@ function fc(id) {
 
 function Turn(side) {
 	if (turning || side.length == 0) return;
-	Rubik.pieces.forEach(e => e.turning = e.pieceId.split("").find(e => e == side[0]));
+	Rubik.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
 	turning = true;
 	turn.face = side[0];
 	turn.clockwise = side[side.length - 1] !== "'";
@@ -147,7 +150,10 @@ function Turn(side) {
 		R: "RSE",
 		M: "LSE",
 		E: "DMS",
-		S: "FME"
+		S: "FME",
+		x: "RSE",
+		y: "UMS",
+		z: "FME"
 	} [side[0]]);
 	turn.times = Number(side[1]) || 1;
 	if (soundAllowed) {
