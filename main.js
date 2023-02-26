@@ -53,6 +53,11 @@ const turn = {
 	angle: 0,
 	speed: 20,
 };
+
+let touching = false;
+
+const rotateI = { x: 0, y: 0 }
+
 const sound = new Audio();
 sound.src = `assets/turn.mp3`;
 let soundAllowed = false;
@@ -128,6 +133,9 @@ function loop() {
 			}
 		}
 	}
+	if (!touching) Rubik.rotateCube(rotateI.x, rotateI.y);
+	rotateI.x *= 0.8;
+	rotateI.y *= 0.8;
 	Rubik.draw();
 }
 

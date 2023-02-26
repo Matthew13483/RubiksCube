@@ -5,6 +5,7 @@ function TouchStart(x, y) {
 	let cube;
 	let face;
 	let faceI;
+	rotateI.x = rotateI.y = 0;
 	Rubik.Gpieces.forEach((c, i1) => {
 		c.faces.forEach((e, i) => {
 			let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z);
@@ -61,7 +62,12 @@ function TouchMove(x, y) {
 			});
 		}
 	}
-	if (!st.intng) Rubik.rotateCube(ax * (400 / Math.min(canvas.width, canvas.height)), ay * (400 / canvas.height));
+	if (!st.intng) {
+		Rubik.rotateCube(ax * (300 / Math.min(canvas.width, canvas.height)), ay * (300 / Math.min(canvas.width, canvas.height)));
+		rotateI.x = ax * (300 / Math.min(canvas.width, canvas.height));
+		rotateI.y = ay * (300 / Math.min(canvas.width, canvas.height));
+	}
+	
 	st.x = x;
 	st.y = y;
 };
@@ -76,6 +82,7 @@ canvas.ontouchstart = e => {
 			TouchStart(x, y);
 		}
 	}
+	touching = true;
 };
 
 canvas.ontouchmove = e => {
@@ -87,6 +94,7 @@ canvas.ontouchmove = e => {
 			TouchMove(x, y);
 		}
 	}
+	touching = true;
 };
 
 canvas.ontouchend = e => {
@@ -96,6 +104,7 @@ canvas.ontouchend = e => {
 			st.identifier = undefined;
 		}
 	}
+	touching = false;
 };
 
 /*

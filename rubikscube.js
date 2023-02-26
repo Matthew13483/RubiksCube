@@ -66,9 +66,9 @@ class RubiksCube {
 
 class Piece {
 	constructor(x, y, z, pieceId, geometry, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
-		this.x = x * 2;
-		this.y = y * 2;
-		this.z = z * 2;
+		this.x = x * 2.02;
+		this.y = y * 2.02;
+		this.z = z * 2.02;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.geometry = JSON.parse(JSON.stringify(m3ds[geometry])).map(e => {
 			return {
