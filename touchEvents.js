@@ -1,3 +1,62 @@
+let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
+
+let startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
+let moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
+let endEvent = isTouchDevice ? 'touchend' : 'mouseup';
+
+canvas.addEventListener(startEvent, handleStart);
+canvas.addEventListener(moveEvent, handleMove);
+canvas.addEventListener(endEvent, handleEnd);
+
+function handleStart(event) {
+	if (isTouchDevice) {
+		for (let i = 0; i < event.changedTouches.length; i++) {
+			let touch = event.changedTouches[i];
+			if (typeof st.identifier == "undefined") {
+				st.identifier = touch.identifier;
+				let x = touch.pageX - event.target.getBoundingClientRect().left;
+				let y = touch.pageY - event.target.getBoundingClientRect().top;
+				TouchStart(x, y);
+			}
+		}
+	} else {
+		let x = event.pageX - event.target.getBoundingClientRect().left;
+		let y = event.pageY - event.target.getBoundingClientRect().top;
+		TouchStart(x, y);
+	}
+	touching = true;
+}
+
+function handleMove(event) {
+	if (isTouchDevice) {
+		for (let i = 0; i < event.changedTouches.length; i++) {
+			let f = event.changedTouches.item(i);
+			if (st.identifier == f.identifier) {
+				let x = f.pageX - event.target.getBoundingClientRect().left;
+				let y = f.pageY - event.target.getBoundingClientRect().top;
+				TouchMove(x, y);
+			}
+		}
+	} else {
+		let x = event.pageX - event.target.getBoundingClientRect().left;
+		let y = event.pageY - event.target.getBoundingClientRect().top;
+		TouchMove(x, y);
+	}
+	touching = true;
+}
+
+function handleEnd(event) {
+	if (isTouchDevice) {
+		for (let i = 0; i < event.changedTouches.length; i++) {
+			let f = event.changedTouches.item(i);
+			if (st.identifier == f.identifier) {
+				st.identifier = undefined;
+			}
+		}
+	}
+	touching = false;
+}
+
 function TouchStart(x, y) {
 	st.x = x;
 	st.y = y;
@@ -67,11 +126,12 @@ function TouchMove(x, y) {
 		rotateI.x = ax * (300 / Math.min(canvas.width, canvas.height));
 		rotateI.y = ay * (300 / Math.min(canvas.width, canvas.height));
 	}
-	
+
 	st.x = x;
 	st.y = y;
 };
 
+/*
 canvas.ontouchstart = e => {
 	for (let i = 0; i < e.changedTouches.length; i++) {
 		let f = e.changedTouches.item(i);
@@ -105,14 +165,5 @@ canvas.ontouchend = e => {
 		}
 	}
 	touching = false;
-};
-
-/*
-canvas.onmousedown = e => {
-	TouchStart(e.offsetX, e.offsetY);
-};
-
-canvas.onmousemove = e => {
-	TouchMove(e.offsetX, e.offsetY);
 };
 */
