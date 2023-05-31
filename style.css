@@ -28,35 +28,25 @@ div.column {
 	color: white;
 }
 
-#inputs_container {
+#buttons_container {
 	position: absolute;
-	top: 10px;
-	left: 0px;
-	width: 100%;
+	margin: 10px;
 }
 
-#scramble_button {
-	padding: 10px;
-	font-size: 20px;
-	background-color: #5050c0;
-	color: white;
-	border: none;
-	border-radius: 20px;
+.button {
+	margin: 10px;
+	padding: 2px;
+	border-radius: 20%;
+	cursor: pointer;
+}
+
+#button_allowAudio {
 	outline: none;
-	margin: 5px;
-	transition-property: background-color, color;
-	transition-duration: 0.2s;
+	width: 30px;
+	height: 30px;
 }
 
-#scramble_button:active {
-	background-color: #202090;
-	color: grey;
-}
-
-#audioAllow {
-	position: absolute;
-	top: 10px;
-	right: 10px;
+#button_scramble {
 	outline: none;
 	width: 30px;
 	height: 30px;
