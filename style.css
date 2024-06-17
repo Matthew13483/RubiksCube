@@ -38,15 +38,6 @@ div.column {
 	padding: 2px;
 	border-radius: 20%;
 	cursor: pointer;
-}
-
-#button_allowAudio {
-	outline: none;
-	width: 30px;
-	height: 30px;
-}
-
-#button_scramble {
 	outline: none;
 	width: 30px;
 	height: 30px;

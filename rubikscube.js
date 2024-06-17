@@ -74,19 +74,15 @@ class Piece {
 			return {
 				color: e.color,
 				points: e.points.map(f => {
-					let rf = (p) => {
-						let n = {};
-						Object.assign(n, p);
-						n = rotateX(n, this, rot[0] * Math.PI / 180);
-						n = rotateY(n, this, rot[1] * Math.PI / 180);
-						n = rotateZ(n, this, rot[2] * Math.PI / 180);
-						return n;
-					};
-					return rf({
+					let p = {
 						x: f[0] + this.x,
 						y: f[1] + this.y,
-						z: f[2] + this.z,
-					});
+						z: f[2] + this.z
+					}
+					p = rotateX(p, this, rot[0] * Math.PI / 180);
+					p = rotateY(p, this, rot[1] * Math.PI / 180);
+					p = rotateZ(p, this, rot[2] * Math.PI / 180);
+					return p;
 				})
 			}
 		});

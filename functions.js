@@ -10,7 +10,7 @@ function getNormal(a, b, c) {
 		l1.z * l2.x - l1.x * l2.z,
 		l1.x * l2.y - l1.y * l2.x
 	);
-	let l = (normal.x ** 2 + normal.y ** 2 + normal.z ** 2) ** (1 / 2);
+	let l = Math.hypot(normal.x, normal.y, normal.z);
 	normal.x /= l;
 	normal.y /= l;
 	normal.z /= l;
@@ -24,14 +24,6 @@ function clockwise(a, b, c) {
 		normal.x * (b.x - p.x) +
 		normal.y * (b.y - p.y) +
 		normal.z * (b.z - p.z)) > 0;
-	/*if (A.x - C.x == 0) {
-		return B.x > A.x;
-	}
-	else {
-		let m = (C.y - A.y) / (C.x - A.x);
-		let b = A.y - m * A.x;
-		return (m * B.x + b - B.y) * (A.x - C.x) > 0;
-	}*/
 }
 
 function basicLighting(a, b, c, d) {
@@ -47,40 +39,25 @@ function c32(x, y, z) {
 }
 
 function rotateX(p, rp, a) {
-	let x = p.x - rp.x;
-	let y = p.y - rp.y;
-	let z = p.z - rp.z;
-	let d = Math.hypot(y, z);
-	let a2 = Math.atan2(y, z) + a;
 	return {
 		x: p.x,
-		y: rp.y + d * Math.sin(a2),
-		z: rp.z + d * Math.cos(a2)
+		y: (p.y - rp.y) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.y,
+		z: (p.z - rp.z) * Math.cos(a) - (p.y - rp.y) * Math.sin(a) + rp.z
 	};
 }
 
 function rotateY(p, rp, a) {
-	let x = p.x - rp.x;
-	let y = p.y - rp.y;
-	let z = p.z - rp.z;
-	let d = Math.hypot(x, z);
-	let a2 = Math.atan2(x, z) + a;
 	return {
-		x: rp.x + d * Math.sin(a2),
+		x: (p.x - rp.x) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.x,
 		y: p.y,
-		z: rp.z + d * Math.cos(a2)
+		z: (p.z - rp.z) * Math.cos(a) - (p.x - rp.x) * Math.sin(a) + rp.z
 	};
 }
 
 function rotateZ(p, rp, a) {
-	let x = p.x - rp.x;
-	let y = p.y - rp.y;
-	let z = p.z - rp.z;
-	let d = Math.hypot(y, x);
-	let a2 = Math.atan2(y, x) + a;
 	return {
-		x: rp.x + d * Math.cos(a2),
-		y: rp.y + d * Math.sin(a2),
+		x: (p.x - rp.x) * Math.cos(a) - (p.y - rp.y) * Math.sin(a) + rp.x,
+		y: (p.y - rp.y) * Math.cos(a) + (p.x - rp.x) * Math.sin(a) + rp.y,
 		z: p.z
 	};
 }

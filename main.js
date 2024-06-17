@@ -56,7 +56,7 @@ const turn = {
 
 let touching = false;
 
-const rotateI = { x: 0, y: 0 }
+const rotateI = { x: 0, y: 0 };
 
 const sound = new Audio();
 sound.src = `assets/turn.mp3`;
@@ -66,7 +66,7 @@ let scrambling = false;
 let scramble;
 let scrambleIndex = 0;
 
-const st = {};
+let sT = [];
 const pos = { z: 22 };
 let scale = 1;
 
@@ -76,7 +76,7 @@ function toggleSound() {
 }
 
 const fps = {
-	visible: false,
+	visible: true,
 	display: FPS,
 	startTime: Date.now(),
 	frameCount: 0,
