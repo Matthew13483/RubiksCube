@@ -76,7 +76,7 @@ function toggleSound() {
 }
 
 const fps = {
-	visible: true,
+	visible: false,
 	display: FPS,
 	startTime: Date.now(),
 	frameCount: 0,
