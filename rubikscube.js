@@ -80,7 +80,7 @@ class RubiksCube {
 	turnCube(side) {
 		if (this.turn.turning) return;
 		this.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
-		this.turning = true;
+		this.turn.turning = true;
 		this.turn.face = side[0];
 		this.turn.clockwise = side[side.length - 1] !== "'";
 		this.turn.piece = this.findPiece({
@@ -104,12 +104,12 @@ class RubiksCube {
 		}
 	}
 	loop() {
-		if (this.turning) {
+		if (this.turn.turning) {
 			turnS(!this.scrambling ? this.turn.speed : 40);
 			if (this.turn.angle > 90) {
 				turnS(90 - this.turn.angle);
 				this.turn.angle = 0;
-				this.turning = false;
+				this.turn.turning = false;
 				for (let i = 0; i < this.turn.times; i++) {
 					let C = cycles[this.turn.face];
 					let Cf = e => {
