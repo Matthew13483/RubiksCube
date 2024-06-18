@@ -48,12 +48,6 @@ const origin = { x: 0, y: 0, z: 0 };
 
 var ctx = canvas.getContext("2d");
 
-let turning = false;
-const turn = {
-	angle: 0,
-	speed: 15,
-};
-
 let touching = false;
 
 const rotateI = { x: 0, y: 0 };
@@ -61,10 +55,6 @@ const rotateI = { x: 0, y: 0 };
 const sound = new Audio();
 sound.src = `assets/turn.mp3`;
 let soundAllowed = false;
-
-let scrambling = false;
-let scramble;
-let scrambleIndex = 0;
 
 let sT = [];
 const pos = { z: 22 };
@@ -95,83 +85,11 @@ function loop() {
 	requestAnimationFrame(loop);
 	fps.inLoop();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	if (turning) {
-		speed = !scrambling ? turn.speed : 40;
-		turnS(speed);
-		if (turn.angle > 90) {
-			turnS(90 - turn.angle);
-			turn.angle = 0;
-			turning = false;
-			for (let i = 0; i < turn.times; i++) {
-				let C = cycles[turn.face];
-				let Cf = e => {
-					if (turn.clockwise) {
-						fc(e[0]).pieceIdN = e[1];
-						fc(e[1]).pieceIdN = e[2];
-						fc(e[2]).pieceIdN = e[3];
-						fc(e[3]).pieceIdN = e[0];
-					}
-					else {
-						fc(e[0]).pieceIdN = e[3];
-						fc(e[1]).pieceIdN = e[0];
-						fc(e[2]).pieceIdN = e[1];
-						fc(e[3]).pieceIdN = e[2];
-					}
-				};
-				C.forEach(e => Cf(e.split(",")));
-				Rubik.pieces.forEach(e => {
-					e.turning = false;
-					e.pieceId = e.pieceIdN;
-				});
-			}
-			if (scrambling) {
-				if (scrambleIndex < scramble.length - 1) {
-					scrambleIndex++;
-					Turn(scramble[scrambleIndex]);
-				}
-				else scrambling = false;
-			}
-		}
-	}
-	if (!touching) Rubik.rotateCube(rotateI.x, rotateI.y);
-	rotateI.x *= 0.8;
-	rotateI.y *= 0.8;
-	Rubik.draw();
-}
-
-function fc(id) {
-	return Rubik.pieces.find(e => e.pieceId == id);
+	Rubik.loop();
 }
 
 function Turn(side) {
-	if (turning || side.length == 0) return;
-	Rubik.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
-	turning = true;
-	turn.face = side[0];
-	turn.clockwise = side[side.length - 1] !== "'";
-	turn.piece = fc({
-		U: "UMS",
-		D: "DMS",
-		F: "FME",
-		B: "BME",
-		L: "LSE",
-		R: "RSE",
-		M: "LSE",
-		E: "DMS",
-		S: "FME",
-		x: "RSE",
-		y: "UMS",
-		z: "FME"
-	} [side[0]]);
-	turn.times = Number(side[1]) || 1;
-	if (soundAllowed) {
-		sound.play();
-		sound.currentTime = 0.14;
-	}
-}
-
-function Turn2(side) {
-	let e = Rubik.pieces.find(e => e.pieceIdO == {
+	Rubik.turnCube(Rubik.pieces.find(e => e.pieceIdO == {
 		U: "UMS",
 		D: "DMS",
 		F: "FME",
@@ -181,21 +99,20 @@ function Turn2(side) {
 		M: "LSE",
 		E: "DMS",
 		S: "FME"
-	} [side[0]]);
-	Turn(e.pieceId[0]);
+	}[side[0]]).pieceId[0]);
 }
 
 function turnS(a) {
-	turn.angle += a;
+	Rubik.turn.angle += a;
 	Rubik.pieces.forEach(c => {
 		if (c.turning) {
-			let a1 = Math.atan2(turn.piece.z, turn.piece.y);
-			let tP2 = rotateX(turn.piece, origin, a1);
+			let a1 = Math.atan2(Rubik.turn.piece.z, Rubik.turn.piece.y);
+			let tP2 = rotateX(Rubik.turn.piece, origin, a1);
 			let a2 = Math.atan2(tP2.x, tP2.y);
 			let rf = (p) => {
 				p = rotateX(p, origin, a1);
 				p = rotateZ(p, origin, a2);
-				p = rotateY(p, origin, turn.times * (turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
+				p = rotateY(p, origin, Rubik.turn.times * (Rubik.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
 				p = rotateZ(p, origin, -a2);
 				p = rotateX(p, origin, -a1);
 				return p;
@@ -204,34 +121,4 @@ function turnS(a) {
 			c.geometry.forEach(e => e.points.forEach(p => Object.assign(p, rf(p))));
 		}
 	});
-}
-
-function generateScramble(length = 21) {
-	let getRandomI = arr => Math.floor(Math.random() * arr.length);
-	let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
-	let p_symbol = ["", "'", "2"];
-	let scr = [];
-	for (let i = 0; i < length; i++) {
-		let avail_axis = [0, 1, 2];
-		let avail_dir = [0, 1];
-		if (scr.length > 1 && scr[scr.length - 1].axis == scr[scr.length - 2].axis) {
-			avail_axis.splice(scr[scr.length - 1].axis, 1);
-		}
-		let axis = avail_axis[getRandomI(avail_axis)];
-		if (scr.length > 0 && scr[scr.length - 1].axis == axis) {
-			avail_dir.splice(scr[scr.length - 1].dir, 1);
-		}
-		let dir = avail_dir[getRandomI(avail_dir)];
-		let symbol = getRandomI(p_symbol);
-		scr.push({ axis, dir, symbol });
-	}
-	return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]).join(" ");
-}
-
-function Scramble() {
-	if (scrambling) return;
-	scrambling = true;
-	scramble = generateScramble().split(" ");
-	scrambleIndex = 0;
-	Turn(scramble[0]);
 }

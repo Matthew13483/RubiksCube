@@ -129,7 +129,7 @@ function TouchMove(x, y, id) {
 				let d = canvas.width; //Math.hypot(st.y - y, st.x - x) * 1e6;
 				let p = new Point(sT[index].x + Math.cos(a) * d, sT[index].y + Math.sin(a) * d);
 				if (cllnLineLine(e, new Line(sT[index], p))) {
-					Turn(turnAtlas[c.pieceId][sT[index].faceI].split(",")[i2]);
+					Rubik.turnCube(turnAtlas[c.pieceId][sT[index].faceI].split(",")[i2]);
 					sT[index].gotLine = true;
 				}
 			});

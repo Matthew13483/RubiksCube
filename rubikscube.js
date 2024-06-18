@@ -2,6 +2,16 @@ class RubiksCube {
 	constructor(pieces, Gpieces) {
 		this.pieces = pieces;
 		this.Gpieces = Gpieces;
+		this.turn = {
+			turning: false,
+			angle: 0,
+			speed: 15
+		};
+		this.scrambling = false;
+		this.scramble;
+		this.scrambleIndex = 0;
+
+		this.map
 	}
 	draw() {
 		let drawFaces = [];
@@ -40,6 +50,11 @@ class RubiksCube {
 				ctx.globalAlpha = 1;
 			}
 		});
+		/*this.pieces.forEach(c => {
+			let p = c32(c.x * scale * 1.5, c.y * scale * 1.5, c.z + pos.z);
+			ctx.strokeStyle = "#00ffff";
+			ctx.strokeText(c.pieceIdO, p.x + canvas.width / 2, -p.y + canvas.height / 2);
+		});*/
 	}
 	rotateCube(ax, ay) {
 		let rf = p => {
@@ -61,6 +76,109 @@ class RubiksCube {
 				});
 			}
 		});
+	}
+	turnCube(side) {
+		if (this.turn.turning) return;
+		this.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
+		this.turning = true;
+		this.turn.face = side[0];
+		this.turn.clockwise = side[side.length - 1] !== "'";
+		this.turn.piece = this.findPiece({
+			U: "UMS",
+			D: "DMS",
+			F: "FME",
+			B: "BME",
+			L: "LSE",
+			R: "RSE",
+			M: "LSE",
+			E: "DMS",
+			S: "FME",
+			x: "RSE",
+			y: "UMS",
+			z: "FME"
+		}[side[0]]);
+		this.turn.times = Number(side[1]) || 1;
+		if (soundAllowed) {
+			sound.play();
+			sound.currentTime = 0.14;
+		}
+	}
+	loop() {
+		if (this.turning) {
+			turnS(!this.scrambling ? this.turn.speed : 40);
+			if (this.turn.angle > 90) {
+				turnS(90 - this.turn.angle);
+				this.turn.angle = 0;
+				this.turning = false;
+				for (let i = 0; i < this.turn.times; i++) {
+					let C = cycles[this.turn.face];
+					let Cf = e => {
+						if (this.turn.clockwise) {
+							this.findPiece(e[0]).pieceIdN = e[1];
+							this.findPiece(e[1]).pieceIdN = e[2];
+							this.findPiece(e[2]).pieceIdN = e[3];
+							this.findPiece(e[3]).pieceIdN = e[0];
+						}
+						else {
+							this.findPiece(e[0]).pieceIdN = e[3];
+							this.findPiece(e[1]).pieceIdN = e[0];
+							this.findPiece(e[2]).pieceIdN = e[1];
+							this.findPiece(e[3]).pieceIdN = e[2];
+						}
+					};
+					C.forEach(e => Cf(e.split(",")));
+					this.pieces.forEach(e => {
+						e.turning = false;
+						e.pieceId = e.pieceIdN;
+					});
+				}
+				if (this.scrambling) {
+					if (this.scrambleIndex < this.scramble.length - 1) {
+						this.scrambleIndex++;
+						this.turnCube(this.scramble[this.scrambleIndex]);
+					}
+					else this.scrambling = false;
+				}
+			}
+		}
+		if (!touching) this.rotateCube(rotateI.x, rotateI.y);
+		rotateI.x *= 0.95;
+		rotateI.y *= 0.95;
+		this.draw();
+	}
+	generateScramble(length = 21) {
+		let getRandomI = arr => Math.floor(Math.random() * arr.length);
+		let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
+		let p_symbol = ["", "'", "2"];
+		let scr = [];
+		for (let i = 0; i < length; i++) {
+			let avail_axis = [0, 1, 2];
+			let avail_dir = [0, 1];
+			if (scr.length > 1 && scr[scr.length - 1].axis == scr[scr.length - 2].axis) {
+				avail_axis.splice(scr[scr.length - 1].axis, 1);
+			}
+			let axis = avail_axis[getRandomI(avail_axis)];
+			if (scr.length > 0 && scr[scr.length - 1].axis == axis) {
+				avail_dir.splice(scr[scr.length - 1].dir, 1);
+			}
+			let dir = avail_dir[getRandomI(avail_dir)];
+			let symbol = getRandomI(p_symbol);
+			scr.push({ axis, dir, symbol });
+		}
+		return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]).join(" ");
+	}
+	scrambleCube() {
+		if (this.scrambling) return;
+		this.scrambling = true;
+		this.scramble = this.generateScramble().split(" ");
+		this.scrambleIndex = 0;
+		this.turnCube(this.scramble[0]);
+	}
+	findPiece(id) {
+		return Rubik.pieces.find(e => e.pieceId == id);
+	}
+	isSolved() {
+		
 	}
 }
 
