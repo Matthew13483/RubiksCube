@@ -12,14 +12,12 @@ function handleStart(event) {
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let touch = event.changedTouches[i];
-			//if (typeof st.identifier == "undefined") {
-				sT.push({
-					id: touch.identifier
-				});
-				let x = touch.pageX - event.target.getBoundingClientRect().left;
-				let y = touch.pageY - event.target.getBoundingClientRect().top;
-				TouchStart(x, y, touch.identifier);
-				//}
+			sT.push({
+				id: touch.identifier
+			});
+			let x = touch.pageX - event.target.getBoundingClientRect().left;
+			let y = touch.pageY - event.target.getBoundingClientRect().top;
+			TouchStart(x, y, touch.identifier);
 		}
 	} else {
 		let x = event.pageX - event.target.getBoundingClientRect().left;

@@ -99,7 +99,7 @@ function Turn(side) {
 		M: "LSE",
 		E: "DMS",
 		S: "FME"
-	}[side[0]]).pieceId[0]);
+	} [side[0]]).pieceId[0]);
 }
 
 function turnS(a) {
