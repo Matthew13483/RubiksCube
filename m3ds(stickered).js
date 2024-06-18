@@ -1,10 +1,10 @@
 const colors = [
 	"#fcfcfc", //white
-	"#fcfc00", //yellow
-	"#008500", //green
-	"#0a0ab0", //blue
 	"#dc6000", //orange
+	"#008500", //green
 	"#b00000", //red
+	"#0a0ab0", //blue
+	"#fcfc00", //yellow
 	"#000000" //internals
 ];
 var shading = {

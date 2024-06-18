@@ -1,34 +1,34 @@
 class RubiksCube {
 	constructor() {
 		this.pieces = [
-			new Piece(-1, +1, -1, "UFL", "corner", [6, 4, 2, 0], [0, 90, 0]),
-			new Piece(+1, +1, -1, "UFR", "corner", [6, 2, 5, 0], [0, 0, 0]),
-			new Piece(-1, -1, -1, "DFL", "corner", [6, 2, 4, 1], [180, 180, 0]),
-			new Piece(+1, -1, -1, "DFR", "corner", [6, 5, 2, 1], [180, 90, 0]),
-			new Piece(-1, +1, +1, "UBL", "corner", [6, 3, 4, 0], [0, 180, 0]),
-			new Piece(+1, +1, +1, "UBR", "corner", [6, 5, 3, 0], [0, -90, 0]),
-			new Piece(-1, -1, +1, "DBL", "corner", [6, 4, 3, 1], [180, -90, 0]),
-			new Piece(+1, -1, +1, "DBR", "corner", [6, 3, 5, 1], [180, 0, 0]),
+			new Piece(-1, +1, -1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
+			new Piece(+1, +1, -1, "UFR", "corner", [6, 2, 3, 0], [0, 0, 0]),
+			new Piece(-1, -1, -1, "DFL", "corner", [6, 2, 1, 5], [180, 180, 0]),
+			new Piece(+1, -1, -1, "DFR", "corner", [6, 3, 2, 5], [180, 90, 0]),
+			new Piece(-1, +1, +1, "UBL", "corner", [6, 4, 1, 0], [0, 180, 0]),
+			new Piece(+1, +1, +1, "UBR", "corner", [6, 3, 4, 0], [0, -90, 0]),
+			new Piece(-1, -1, +1, "DBL", "corner", [6, 1, 4, 5], [180, -90, 0]),
+			new Piece(+1, -1, +1, "DBR", "corner", [6, 4, 3, 5], [180, 0, 0]),
 
 			new Piece(0, +1, -1, "UFM", "edge", [6, 2, 0], [0, 0, 0]),
-			new Piece(0, +1, +1, "UBM", "edge", [6, 3, 0], [0, 180, 0]),
-			new Piece(0, -1, -1, "DFM", "edge", [6, 2, 1], [180, 180, 0]),
-			new Piece(0, -1, +1, "DBM", "edge", [6, 3, 1], [180, 0, 0]),
-			new Piece(-1, +1, 0, "ULS", "edge", [6, 4, 0], [0, 90, 0]),
-			new Piece(+1, +1, 0, "URS", "edge", [6, 5, 0], [0, -90, 0]),
-			new Piece(-1, -1, 0, "DLS", "edge", [6, 4, 1], [180, -90, 0]),
-			new Piece(+1, -1, 0, "DRS", "edge", [6, 5, 1], [180, 90, 0]),
-			new Piece(-1, 0, -1, "FLE", "edge", [6, 2, 4], [0, 0, 90]),
-			new Piece(+1, 0, -1, "FRE", "edge", [6, 2, 5], [0, 0, -90]),
-			new Piece(-1, 0, +1, "BLE", "edge", [6, 3, 4], [0, 180, 90]),
-			new Piece(+1, 0, +1, "BRE", "edge", [6, 3, 5], [0, 180, -90]),
+			new Piece(0, +1, +1, "UBM", "edge", [6, 4, 0], [0, 180, 0]),
+			new Piece(0, -1, -1, "DFM", "edge", [6, 2, 5], [180, 180, 0]),
+			new Piece(0, -1, +1, "DBM", "edge", [6, 4, 5], [180, 0, 0]),
+			new Piece(-1, +1, 0, "ULS", "edge", [6, 1, 0], [0, 90, 0]),
+			new Piece(+1, +1, 0, "URS", "edge", [6, 3, 0], [0, -90, 0]),
+			new Piece(-1, -1, 0, "DLS", "edge", [6, 1, 5], [180, -90, 0]),
+			new Piece(+1, -1, 0, "DRS", "edge", [6, 3, 5], [180, 90, 0]),
+			new Piece(-1, 0, -1, "FLE", "edge", [6, 2, 1], [0, 0, 90]),
+			new Piece(+1, 0, -1, "FRE", "edge", [6, 2, 3], [0, 0, -90]),
+			new Piece(-1, 0, +1, "BLE", "edge", [6, 4, 1], [0, 180, 90]),
+			new Piece(+1, 0, +1, "BRE", "edge", [6, 4, 3], [0, 180, -90]),
 
-			new Piece(0, 0, +1, "BME", "center", [6, 3], [-90, 0, 0]),
-			new Piece(+1, 0, 0, "RSE", "center", [6, 5], [0, 0, -90]),
-			new Piece(-1, 0, 0, "LSE", "center", [6, 4], [0, 0, 90]),
+			new Piece(0, 0, +1, "BME", "center", [6, 4], [-90, 0, 0]),
+			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, 0, -90]),
+			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 0, 90]),
 			new Piece(0, 0, -1, "FME", "center", [6, 2], [90, 0, 0]),
 			new Piece(0, +1, 0, "UMS", "center", [6, 0], [0, 0, 0]),
-			new Piece(0, -1, 0, "DMS", "center", [6, 1], [180, 0, 0]),
+			new Piece(0, -1, 0, "DMS", "center", [6, 5], [180, 0, 0]),
 
 			new Piece(0, 0, 0, "", "core", [6], [0, 0, 0]),
 		];
@@ -72,7 +72,14 @@ class RubiksCube {
 		this.scramble;
 		this.scrambleIndex = 0;
 
-		this.map
+		this.map = [
+			[0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[1, 1, 1, 1, 1, 1, 1, 1, 1],
+			[2, 2, 2, 2, 2, 2, 2, 2, 2],
+			[3, 3, 3, 3, 3, 3, 3, 3, 3],
+			[4, 4, 4, 4, 4, 4, 4, 4, 4],
+			[5, 5, 5, 5, 5, 5, 5, 5, 5]
+		];
 	}
 	draw() {
 		let drawFaces = [];
