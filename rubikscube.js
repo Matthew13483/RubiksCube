@@ -166,10 +166,69 @@ class RubiksCube {
 			z: "FME"
 		} [side[0]]);
 		this.turn.times = Number(side[1]) || 1;
+		this.turnMap();
 		if (soundAllowed) {
 			sound.play();
 			sound.currentTime = 0.14;
 		}
+	}
+	turnMap() {
+		this.turn.face
+		this.turn.clockwise
+		this.turn.times
+		let swapCycles = {
+			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
+			D: [[[5, 0], [5, 2], [5, 8], [5, 6]], [[5, 1], [5, 5], [5, 7], [5, 3]], [[1, 6], [2, 6], [3, 6], [4, 6]], [[1, 7], [2, 7], [3, 7], [4, 7]], [[1, 8], [2, 8], [3, 8], [4, 8]]],
+			F: [[[2, 0], [2, 2], [2, 8], [2, 6]], [[2, 1], [2, 5], [2, 7], [2, 3]], [[0, 6], [3, 0], [5, 2], [1, 8]], [[0, 7], [3, 3], [5, 1], [1, 5]], [[0, 8], [3, 6], [5, 0], [1, 2]]],
+			B: [[[4, 0], [4, 2], [4, 8], [4, 6]], [[4, 1], [4, 5], [4, 7], [4, 3]], [[0, 0], [1, 6], [5, 8], [3, 2]], [[0, 1], [1, 3], [5, 7], [3, 5]], [[0, 2], [1, 0], [5, 6], [3, 8]]],
+			L: [[[1, 0], [1, 2], [1, 8], [1, 6]], [[1, 1], [1, 5], [1, 7], [1, 3]], [[0, 0], [2, 0], [5, 0], [4, 8]], [[0, 3], [2, 3], [5, 3], [4, 5]], [[0, 6], [2, 6], [5, 6], [4, 2]]],
+			R: [[[3, 0], [3, 2], [3, 8], [3, 6]], [[3, 1], [3, 5], [3, 7], [3, 3]], [[0, 2], [4, 6], [5, 2], [2, 2]], [[0, 5], [4, 3], [5, 5], [2, 5]], [[0, 8], [4, 0], [5, 8], [2, 8]]],
+			M: [[[0, 1], [2, 1], [5, 1], [4, 7]], [[0, 4], [2, 4], [5, 4], [4, 4]], [[0, 7], [2, 7], [5, 7], [4, 1]]],
+			E: [[[1, 3], [2, 3], [3, 3], [4, 3]], [[1, 4], [2, 4], [3, 4], [4, 4]], [[1, 5], [2, 5], [3, 5], [4, 5]]],
+			S: [[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]]],
+			x: [],
+			y: [],
+			z: []
+		};
+		let swap = (si1, sq1, si2, sq2) => {
+			[this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
+		}
+		swapCycles[this.turn.face].forEach(e => {
+			if (this.turn.clockwise) for (let i = 0; i < this.turn.times; i++) {
+				swap(e[0][0], e[0][1], e[1][0], e[1][1]);
+				swap(e[0][0], e[0][1], e[2][0], e[2][1]);
+				swap(e[0][0], e[0][1], e[3][0], e[3][1]);
+			}
+			else for (let i = 0; i < this.turn.times; i++) {
+				swap(e[0][0], e[0][1], e[3][0], e[3][1]);
+				swap(e[0][0], e[0][1], e[2][0], e[2][1]);
+				swap(e[0][0], e[0][1], e[1][0], e[1][1]);
+			}
+		});
+	}
+	drawMap(x, y, w) {
+		let h = w * 3 / 4;
+		let siW = w / 4;
+		let sqW = siW / 3;
+		let faceCoords = [
+			[1 * siW, 0 * siW],
+			[0 * siW, 1 * siW],
+			[1 * siW, 1 * siW],
+			[2 * siW, 1 * siW],
+			[3 * siW, 1 * siW],
+			[1 * siW, 2 * siW]
+		];
+		this.map.forEach((si, i) => {
+			let siX = faceCoords[i][0];
+			let siY = faceCoords[i][1];
+			si.forEach((sq, j) => {
+				let sqX = (j % 3) * sqW;
+				let sqY = (Math.floor(j / 3)) * sqW;
+				ctx.fillStyle = colors[sq];
+				let padding = 0.05
+				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
+			});
+		})
 	}
 	loop() {
 		if (this.turn.turning) {
@@ -213,6 +272,9 @@ class RubiksCube {
 		rotateI.x *= 0.95;
 		rotateI.y *= 0.95;
 		this.draw();
+		this.drawMap(canvas.width - 10 - 100, 10, 100);
+		/*ctx.strokeStyle = "white";
+		ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);*/
 	}
 	generateScramble(length = 21) {
 		let getRandomI = arr => Math.floor(Math.random() * arr.length);
