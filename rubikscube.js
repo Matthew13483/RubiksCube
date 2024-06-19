@@ -170,6 +170,19 @@ class RubiksCube {
 			sound.currentTime = 0.14;
 		}
 	}
+	turnAbsolute(side) {
+		Rubik.turnCube(Rubik.pieces.find(e => e.pieceIdO == {
+			U: "UMS",
+			D: "DMS",
+			F: "FME",
+			B: "BME",
+			L: "LSE",
+			R: "RSE",
+			M: "LSE",
+			E: "DMS",
+			S: "FME"
+		} [side[0]]).pieceId[0]);
+	}
 	turnMap() {
 		let swapCycles = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
@@ -393,7 +406,7 @@ class RubiksCube {
 		this.scrambling = true;
 		this.scramble = this.generateScramble().split(" ");
 		this.scrambleIndex = 0;
-		this.turnCube(this.scramble[0]);
+		this.turnAbsolute(this.scramble[0]);
 	}
 	findPiece(id) {
 		return this.pieces.find(e => e.pieceId == id);

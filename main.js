@@ -84,20 +84,6 @@ function loop() {
 	Rubik.loop();
 }
 
-function Turn(side) {
-	Rubik.turnCube(Rubik.pieces.find(e => e.pieceIdO == {
-		U: "UMS",
-		D: "DMS",
-		F: "FME",
-		B: "BME",
-		L: "LSE",
-		R: "RSE",
-		M: "LSE",
-		E: "DMS",
-		S: "FME"
-	} [side[0]]).pieceId[0]);
-}
-
 function turnS(a) {
 	Rubik.turn.angle += a;
 	Rubik.pieces.forEach(c => {
