@@ -282,8 +282,10 @@ class RubiksCube {
 		rotateI.y *= 0.95;
 		this.draw();
 		this.drawMap(canvas.width - 10 - 100, 10, 100);
-		/*ctx.strokeStyle = "white";
-		ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);*/
+		if (this.isSolved()) {
+			ctx.strokeStyle = "lime";
+			ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);
+		}
 	}
 	generateScramble(length = 21) {
 		let getRandomI = arr => Math.floor(Math.random() * arr.length);
@@ -317,7 +319,7 @@ class RubiksCube {
 		return Rubik.pieces.find(e => e.pieceId == id);
 	}
 	isSolved() {
-
+		return this.map.map(e => e.reduce((a, b) => a && b === e[0], true)).reduce((a, b) => a && b, true);
 	}
 }
 
