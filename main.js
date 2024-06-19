@@ -48,10 +48,6 @@ const origin = { x: 0, y: 0, z: 0 };
 
 var ctx = canvas.getContext("2d");
 
-let touching = false;
-
-const rotateI = { x: 0, y: 0 };
-
 const sound = new Audio();
 sound.src = `assets/turn.mp3`;
 let soundAllowed = false;
