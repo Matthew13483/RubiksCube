@@ -1,6 +1,6 @@
 # Virtual Rubik's Cube
 
-![logo](/Rubik's Cube Stickerless.png)
+![logo](../Rubik's Cube Stickerless.png)
 
 Welcome to the **Virtual Rubik's Cube** project!
 
