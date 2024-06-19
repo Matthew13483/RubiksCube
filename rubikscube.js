@@ -118,11 +118,6 @@ class RubiksCube {
 				ctx.globalAlpha = 1;
 			}
 		});
-		/*this.pieces.forEach(c => {
-			let p = c32(c.x * scale * 1.5, c.y * scale * 1.5, c.z + pos.z);
-			ctx.strokeStyle = "#00ffff";
-			ctx.strokeText(c.pieceIdO, p.x + canvas.width / 2, -p.y + canvas.height / 2);
-		});*/
 	}
 	rotateCube(ax, ay) {
 		let rf = p => {
@@ -231,7 +226,7 @@ class RubiksCube {
 				let sqX = (j % 3) * sqW;
 				let sqY = (Math.floor(j / 3)) * sqW;
 				ctx.fillStyle = colors[sq];
-				let padding = 0.05
+				let padding = 0.05;
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
 		})
