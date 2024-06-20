@@ -154,7 +154,7 @@ class RubiksCube {
 		drawFaces.forEach(e => {
 			ctx.beginPath();
 			e[1].points.forEach((e1, i) => {
-				let p = c32(e1.x * scale, e1.y * scale, e1.z + pos.z);
+				let p = c32(e1.x * scale, e1.y * scale, e1.z + pos.z, canvas.width, canvas.height);
 				ctx[i == 0 ? "moveTo" : "lineTo"](p.x + canvas.width / 2, -p.y + canvas.height / 2);
 			});
 			ctx.closePath();
@@ -411,10 +411,10 @@ class RubiksCube {
 		this.rotate.x = this.rotate.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
-				let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z);
-				let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z);
-				let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z);
-				let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z);
+				let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z, canvas.width, canvas.height);
+				let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z, canvas.width, canvas.height);
+				let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z, canvas.width, canvas.height);
+				let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z, canvas.width, canvas.height);
 				let Ply = new Polygon([
 					new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
 					new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),
@@ -442,10 +442,10 @@ class RubiksCube {
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
-			let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z);
-			let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z);
-			let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z);
-			let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z);
+			let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z, canvas.width, canvas.height);
+			let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z, canvas.width, canvas.height);
+			let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z, canvas.width, canvas.height);
+			let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z, canvas.width, canvas.height);
 			let Ply = new Polygon([
 				new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
 				new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),

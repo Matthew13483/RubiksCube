@@ -30,8 +30,9 @@ function basicLighting(a, b, c, d) {
 	return getNormal(a, b, c).y;
 }
 
-function c32(x, y, z) {
-	let fl = 700;
+function c32(x, y, z, w, h) {
+	let FOV = 60 * Math.PI / 180;
+	let fl = Math.hypot(w, h) / (2 * Math.tan(FOV / 2));
 	return {
 		x: x * fl / z,
 		y: y * fl / z
