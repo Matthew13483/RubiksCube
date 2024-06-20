@@ -1,4 +1,5 @@
 class RubiksCube {
+
 	constructor() {
 		this.pieces = [
 			new Piece(-1, +1, -1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
@@ -128,6 +129,7 @@ class RubiksCube {
 			[5, 5, 5, 5, 5, 5, 5, 5, 5]
 		];
 	}
+
 	draw() {
 		let drawFaces = [];
 		this.pieces.forEach(c => {
@@ -166,6 +168,7 @@ class RubiksCube {
 			}
 		});
 	}
+
 	rotateCube(ax, ay) {
 		let rf = p => {
 			p = rotateY(p, origin, ay * Math.PI / 180);
@@ -187,6 +190,7 @@ class RubiksCube {
 			}
 		});
 	}
+
 	turnCube(side) {
 		if (this.turn.turning) return;
 		this.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
@@ -211,6 +215,7 @@ class RubiksCube {
 		this.turnMap();
 		sound.play();
 	}
+
 	turnAbsolute(side) {
 		this.turnCube(this.pieces.find(e => e.pieceIdO == {
 			U: "UMS",
@@ -224,6 +229,7 @@ class RubiksCube {
 			S: "FME"
 		} [side[0]]).pieceId[0]);
 	}
+
 	turnAngle(a) {
 		this.turn.angle += a;
 		this.pieces.forEach(c => {
@@ -244,6 +250,7 @@ class RubiksCube {
 			}
 		});
 	}
+
 	turnMap() {
 		let swapCycles = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
@@ -284,6 +291,7 @@ class RubiksCube {
 				}
 		});
 	}
+
 	drawMap(x, y, w) {
 		let h = w * 3 / 4;
 		let siW = w / 4;
@@ -308,6 +316,7 @@ class RubiksCube {
 			});
 		})
 	}
+
 	loop() {
 		if (this.turn.turning) {
 			this.turnAngle(!this.scrambling ? this.turn.speed : 40);
@@ -356,6 +365,7 @@ class RubiksCube {
 			ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);
 		}
 	}
+
 	touchStart(x, y, id) {
 		this.touching = true;
 		let index = 0;
@@ -395,6 +405,7 @@ class RubiksCube {
 		sT[index].faceI = faceI;
 		sT[index].gotLine = false;
 	}
+
 	touchMove(x, y, id) {
 		this.touching = true;
 		let index = 0;
@@ -438,9 +449,11 @@ class RubiksCube {
 		sT[index].x = x;
 		sT[index].y = y;
 	}
+
 	touchEnd() {
 		this.touching = false;
 	}
+
 	generateScramble(length = 21) {
 		let getRandomI = arr => Math.floor(Math.random() * arr.length);
 		let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
@@ -462,6 +475,7 @@ class RubiksCube {
 		}
 		return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]).join(" ");
 	}
+
 	scrambleCube() {
 		if (this.scrambling) return;
 		this.scrambling = true;
@@ -469,9 +483,11 @@ class RubiksCube {
 		this.scrambleIndex = 0;
 		this.turnAbsolute(this.scramble[0]);
 	}
+
 	findPiece(id) {
 		return this.pieces.find(e => e.pieceId == id);
 	}
+
 	isSolved() {
 		return this.map.map(e => e.reduce((a, b) => a && b === e[0], true)).reduce((a, b) => a && b, true);
 	}
