@@ -108,7 +108,7 @@ class RubiksCube {
 			RSE: ["", "", "", "", "", "S',E,S,E'"]
 		};
 
-		this.rotate = { x: 0, y: 0 };
+		this.rotate = { x: 0, y: 0, z: 0 };
 		
 		this.touches = [];
 		this.touching = false;
@@ -171,10 +171,11 @@ class RubiksCube {
 		});
 	}
 
-	rotateCube(ax, ay) {
+	rotateCube(ax, ay, az) {
 		let rf = p => {
 			p = rotateY(p, origin, ay * Math.PI / 180);
 			p = rotateX(p, origin, ax * Math.PI / 180);
+			p = rotateZ(p, origin, az * Math.PI / 180);
 			return p;
 		};
 		this.pieces.forEach((p1, i) => {
@@ -357,15 +358,45 @@ class RubiksCube {
 				}
 			}
 		}
-		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y);
+
+		//-------------------------
+		let touchesR = this.touches.filter(e => !e.intng);
+		if (touchesR.length >= 2) {
+			let x =	touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
+			let y = touchesR.map(e => e.y).reduce((a, b) => a + b) / touchesR.length;
+			let angle = touchesR.map((e, i) => {
+				if (e.ax !== undefined &&  e.ay !== undefined) {
+					let ax = e.x - x;
+					let ay = e.y - y;
+					let bx = e.ax - x;
+					let by = e.ay - y;
+					let ad = Math.hypot(ax, ay);
+					let bd = Math.hypot(bx, by);
+					let a = Math.acos((ax * bx + ay * by) / (ad * bd)) * Math.sign(ax * by - ay * bx);
+					e.ax = undefined;
+					e.ay = undefined;
+					return a;
+				}
+				else {
+					return 0;
+				}
+			}).reduce((a, b) => a + b) / touchesR.length;
+			this.rotate.z = 2 * angle * 180 / Math.PI;
+			this.rotateCube(0, 0, this.rotate.z);
+		}
+
+		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
 		this.rotate.x *= 0.95;
 		this.rotate.y *= 0.95;
+		this.rotate.z *= 0.95;
+
 		this.draw();
 		this.drawMap(canvas.width - 10 - 100, 10, 100);
-		if (this.isSolved()) {
+		/*if (this.isSolved()) {
 			ctx.strokeStyle = "lime";
 			ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);
-		}
+		}*/
+		//ctx.fillText(Math.atan, 100, 100);
 	}
 
 	touchStart(x, y, id) {
@@ -409,8 +440,12 @@ class RubiksCube {
 	touchMove(x, y, id) {
 		this.touching = true;
 		let index = this.touches.findIndex(e => e.id === id);
-		let ax = -(this.touches[index].y - y);
+		/*let ax = -(this.touches[index].y - y);
 		let ay = (this.touches[index].x - x);
+		if (!this.touches[index].intng) {
+			this.touches[index].ax = x;
+			this.touches[index].ay = y;
+		}*/
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
@@ -438,9 +473,11 @@ class RubiksCube {
 			//}
 		}
 		if (!this.touches[index].intng) {
-			this.rotate.x = ax * (300 / Math.min(canvas.width, canvas.height));
-			this.rotate.y = ay * (300 / Math.min(canvas.width, canvas.height));
-			this.rotateCube(this.rotate.x, this.rotate.y);
+			this.touches[index].ax = this.touches[index].x;
+			this.touches[index].ay = this.touches[index].y;
+			this.rotate.x = -(this.touches[index].y - y) * (300 / Math.min(canvas.width, canvas.height));
+			this.rotate.y = (this.touches[index].x - x) * (300 / Math.min(canvas.width, canvas.height));
+			this.rotateCube(this.rotate.x, this.rotate.y, 0);
 		}
 		this.touches[index].x = x;
 		this.touches[index].y = y;

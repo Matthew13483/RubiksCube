@@ -2,7 +2,7 @@ window.onload = () => {
 	window.onresize();
 
 	window.Rubik = new RubiksCube();
-	Rubik.rotateCube(200, -20);
+	Rubik.rotateCube(200, -20, 0);
 
 	loop();
 };
