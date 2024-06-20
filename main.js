@@ -2,7 +2,7 @@
 
 const origin = { x: 0, y: 0, z: 0 };
 
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext('2d');
 
 let sT = [];
 const pos = { z: 22 };
@@ -27,6 +27,8 @@ class Sound {
 }
 
 const sound = new Sound('assets/turn.mp3', 0.14);
+//const sound = new Sound('assets/turn 1.mp3', 0.04);
+//const sound = new Sound('assets/turn.mp3', 0.14);
 
 function toggleSound() {
 	sound.toggle();
@@ -60,7 +62,7 @@ const fps = {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
-			if (fps.visible) fps.display.innerHTML = "FPS: " + (1000 * fps.frameCount / time).toFixed(2);
+			if (fps.visible) fps.display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
 			fps.startTime = new Date().getTime();
 			fps.frameCount = 0;
 		}
