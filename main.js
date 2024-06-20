@@ -4,7 +4,6 @@ const origin = { x: 0, y: 0, z: 0 };
 
 var ctx = canvas.getContext('2d');
 
-let sT = [];
 const pos = { z: 22 };
 let scale = 1;
 

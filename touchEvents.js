@@ -12,9 +12,6 @@ function handleStart(event) {
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let touch = event.changedTouches[i];
-			sT.push({
-				id: touch.identifier
-			});
 			let x = touch.pageX - event.target.getBoundingClientRect().left;
 			let y = touch.pageY - event.target.getBoundingClientRect().top;
 			Rubik.touchStart(x, y, touch.identifier);
@@ -22,7 +19,7 @@ function handleStart(event) {
 	} else {
 		let x = event.pageX - event.target.getBoundingClientRect().left;
 		let y = event.pageY - event.target.getBoundingClientRect().top;
-		Rubik.touchStart(x, y);
+		Rubik.touchStart(x, y, 0);
 	}
 }
 
@@ -30,18 +27,14 @@ function handleMove(event) {
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let f = event.changedTouches.item(i);
-			sT.forEach(e => {
-				if (e.id == f.identifier) {
-					let x = f.pageX - event.target.getBoundingClientRect().left;
-					let y = f.pageY - event.target.getBoundingClientRect().top;
-					Rubik.touchMove(x, y, e.id);
-				}
-			});
+			let x = f.pageX - event.target.getBoundingClientRect().left;
+			let y = f.pageY - event.target.getBoundingClientRect().top;
+			Rubik.touchMove(x, y, f.identifier);
 		}
 	} else {
 		let x = event.pageX - event.target.getBoundingClientRect().left;
 		let y = event.pageY - event.target.getBoundingClientRect().top;
-		Rubik.touchMove(x, y);
+		Rubik.touchMove(x, y, 0);
 	}
 }
 
@@ -49,14 +42,9 @@ function handleEnd(event) {
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let f = event.changedTouches.item(i);
-			sT.forEach(e => {
-				if (e.id == f.identifier) {
-					e.id = undefined;
-				}
-			});
+			Rubik.touchEnd(f.identifier);
 		}
 	}
-	Rubik.touchEnd();
 }
 
 /*

@@ -109,6 +109,8 @@ class RubiksCube {
 		};
 
 		this.rotate = { x: 0, y: 0 };
+		
+		this.touches = [];
 		this.touching = false;
 
 		this.turn = {
@@ -367,13 +369,11 @@ class RubiksCube {
 	}
 
 	touchStart(x, y, id) {
+		this.touches.push({ id: id });
 		this.touching = true;
-		let index = 0;
-		sT.forEach((e, i) => {
-			if (e.id == id) index = i;
-		});
-		sT[index].x = x;
-		sT[index].y = y;
+		let index = this.touches.findIndex(e => e.id === id);
+		this.touches[index].x = x;
+		this.touches[index].y = y;
 		let intng = false;
 		let cube;
 		let face;
@@ -391,7 +391,7 @@ class RubiksCube {
 					new Point(p3.x + canvas.width / 2, -p3.y + canvas.height / 2),
 					new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
 				]);
-				if (clockwise(e.p1, e.p2, e.p3) && c.acFaces[i] && cllnPolyPnt(Ply, sT[index])) {
+				if (clockwise(e.p1, e.p2, e.p3) && c.acFaces[i] && cllnPolyPnt(Ply, this.touches[index])) {
 					intng = true;
 					cube = this.Gpieces[i1];
 					face = cube.faces[i];
@@ -399,24 +399,21 @@ class RubiksCube {
 				}
 			});
 		});
-		sT[index].intng = intng;
-		sT[index].cube = cube;
-		sT[index].face = face;
-		sT[index].faceI = faceI;
-		sT[index].gotLine = false;
+		this.touches[index].intng = intng;
+		this.touches[index].cube = cube;
+		this.touches[index].face = face;
+		this.touches[index].faceI = faceI;
+		this.touches[index].gotLine = false;
 	}
 
 	touchMove(x, y, id) {
 		this.touching = true;
-		let index = 0;
-		sT.forEach((e, i) => {
-			if (e.id == id) index = i;
-		});
-		let ax = -(sT[index].y - y);
-		let ay = (sT[index].x - x);
-		if (sT[index].intng && !sT[index].gotLine) {
-			let c = sT[index].cube;
-			let e = sT[index].face;
+		let index = this.touches.findIndex(e => e.id === id);
+		let ax = -(this.touches[index].y - y);
+		let ay = (this.touches[index].x - x);
+		if (this.touches[index].intng && !this.touches[index].gotLine) {
+			let c = this.touches[index].cube;
+			let e = this.touches[index].face;
 			let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z);
 			let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z);
 			let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z);
@@ -428,29 +425,29 @@ class RubiksCube {
 				new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
 			]);
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
-			if (this.turnAtlas[c.pieceId]) {
-				lines.forEach((e, i2) => {
-					let a = Math.atan2(y - sT[index].y, x - sT[index].x);
-					let d = canvas.width; //Math.hypot(st.y - y, st.x - x) * 1e6;
-					let p = new Point(sT[index].x + Math.cos(a) * d, sT[index].y + Math.sin(a) * d);
-					if (cllnLineLine(e, new Line(sT[index], p))) {
-						this.turnCube(this.turnAtlas[c.pieceId][sT[index].faceI].split(",")[i2]);
-						sT[index].gotLine = true;
+			//if (this.turnAtlas[c.pieceId]) {
+				lines.forEach((e, i) => {
+					let a = Math.atan2(y - this.touches[index].y, x - this.touches[index].x);
+					let d = canvas.width; //Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 1e6;
+					let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
+					if (cllnLineLine(e, new Line(this.touches[index], p))) {
+						this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
+						this.touches[index].gotLine = true;
 					}
 				});
-			}
+			//}
 		}
-		if (!sT[index].intng) {
+		if (!this.touches[index].intng) {
 			this.rotate.x = ax * (300 / Math.min(canvas.width, canvas.height));
 			this.rotate.y = ay * (300 / Math.min(canvas.width, canvas.height));
 			this.rotateCube(this.rotate.x, this.rotate.y);
 		}
-	
-		sT[index].x = x;
-		sT[index].y = y;
+		this.touches[index].x = x;
+		this.touches[index].y = y;
 	}
 
-	touchEnd() {
+	touchEnd(id) {
+		this.touches.splice(this.touches.findIndex(e => e.id === id), 1);
 		this.touching = false;
 	}
 
