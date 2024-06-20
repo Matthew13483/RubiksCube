@@ -117,24 +117,3 @@ function loop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	Rubik.loop();
 }
-
-function turnS(a) {
-	Rubik.turn.angle += a;
-	Rubik.pieces.forEach(c => {
-		if (c.turning) {
-			let a1 = Math.atan2(Rubik.turn.piece.z, Rubik.turn.piece.y);
-			let tP2 = rotateX(Rubik.turn.piece, origin, a1);
-			let a2 = Math.atan2(tP2.x, tP2.y);
-			let rf = (p) => {
-				p = rotateX(p, origin, a1);
-				p = rotateZ(p, origin, a2);
-				p = rotateY(p, origin, Rubik.turn.times * (Rubik.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
-				p = rotateZ(p, origin, -a2);
-				p = rotateX(p, origin, -a1);
-				return p;
-			};
-			Object.assign(c, rf(c));
-			c.geometry.forEach(e => e.points.forEach(p => Object.assign(p, rf(p))));
-		}
-	});
-}

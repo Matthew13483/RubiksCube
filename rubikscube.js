@@ -168,7 +168,7 @@ class RubiksCube {
 		sound.play();
 	}
 	turnAbsolute(side) {
-		Rubik.turnCube(Rubik.pieces.find(e => e.pieceIdO == {
+		this.turnCube(this.pieces.find(e => e.pieceIdO == {
 			U: "UMS",
 			D: "DMS",
 			F: "FME",
@@ -179,6 +179,26 @@ class RubiksCube {
 			E: "DMS",
 			S: "FME"
 		} [side[0]]).pieceId[0]);
+	}
+	turnAngle(a) {
+		this.turn.angle += a;
+		this.pieces.forEach(c => {
+			if (c.turning) {
+				let a1 = Math.atan2(this.turn.piece.z, this.turn.piece.y);
+				let tP2 = rotateX(this.turn.piece, origin, a1);
+				let a2 = Math.atan2(tP2.x, tP2.y);
+				let rf = (p) => {
+					p = rotateX(p, origin, a1);
+					p = rotateZ(p, origin, a2);
+					p = rotateY(p, origin, this.turn.times * (this.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
+					p = rotateZ(p, origin, -a2);
+					p = rotateX(p, origin, -a1);
+					return p;
+				};
+				Object.assign(c, rf(c));
+				c.geometry.forEach(e => e.points.forEach(p => Object.assign(p, rf(p))));
+			}
+		});
 	}
 	turnMap() {
 		let swapCycles = {
@@ -246,9 +266,9 @@ class RubiksCube {
 	}
 	loop() {
 		if (this.turn.turning) {
-			turnS(!this.scrambling ? this.turn.speed : 40);
+			this.turnAngle(!this.scrambling ? this.turn.speed : 40);
 			if (this.turn.angle > 90) {
-				turnS(90 - this.turn.angle);
+				this.turnAngle(90 - this.turn.angle);
 				this.turn.angle = 0;
 				this.turn.turning = false;
 				for (let i = 0; i < this.turn.times; i++) {
