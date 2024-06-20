@@ -9,16 +9,15 @@ const pos = { z: 22 };
 let scale = 1;
 
 class Sound {
-	constructor(src, offset) {
+	constructor(src) {
 		this.enabled = false;
 		this.audio = new Audio();
 		this.audio.src = src;
-		this.offset = offset;
 	}
 	play() {
 		if (this.enabled) {
+			this.audio.currentTime = 0;
 			this.audio.play();
-			this.audio.currentTime = this.offset;
 		}
 	}
 	toggle() {
@@ -26,9 +25,7 @@ class Sound {
 	}
 }
 
-const sound = new Sound('assets/turn.mp3', 0.14);
-//const sound = new Sound('assets/turn 1.mp3', 0.04);
-//const sound = new Sound('assets/turn.mp3', 0.14);
+const sound = new Sound('assets/turn1.mp3');
 
 function toggleSound() {
 	sound.toggle();
