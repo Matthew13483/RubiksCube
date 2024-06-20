@@ -359,7 +359,6 @@ class RubiksCube {
 			}
 		}
 
-		//-------------------------
 		let touchesR = this.touches.filter(e => !e.intng);
 		if (touchesR.length >= 2) {
 			let x =	touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
@@ -440,12 +439,6 @@ class RubiksCube {
 	touchMove(x, y, id) {
 		this.touching = true;
 		let index = this.touches.findIndex(e => e.id === id);
-		/*let ax = -(this.touches[index].y - y);
-		let ay = (this.touches[index].x - x);
-		if (!this.touches[index].intng) {
-			this.touches[index].ax = x;
-			this.touches[index].ay = y;
-		}*/
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
