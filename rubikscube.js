@@ -223,7 +223,7 @@ class RubiksCube {
 	}
 
 	turnUndo() {
-		if (this.turns.length == 0) return;
+		if (this.turns.length == 0 || this.turn.turning) return;
 		let side = this.turns.pop();
 		side = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
 		this.turnCube(side);
