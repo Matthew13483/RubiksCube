@@ -118,6 +118,8 @@ class RubiksCube {
 			angle: 0,
 			speed: 15
 		};
+		this.turns = [];
+
 		this.scrambling = false;
 		this.scramble;
 		this.scrambleIndex = 0;
@@ -216,7 +218,16 @@ class RubiksCube {
 		} [side[0]]);
 		this.turn.times = Number(side[1]) || 1;
 		this.turnMap();
+		this.turns.push(side);
 		sound.play();
+	}
+
+	turnUndo() {
+		if (this.turns.length == 0) return;
+		let side = this.turns.pop();
+		side = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
+		this.turnCube(side);
+		this.turns.pop();
 	}
 
 	turnAbsolute(side) {
