@@ -61,6 +61,7 @@ function rotateZ(p, rp, a) {
 		z: p.z
 	};
 }
+
 class Point {
 	constructor(x, y, z) {
 		this.x = x;
@@ -68,12 +69,14 @@ class Point {
 		this.z = z;
 	}
 }
+
 class Line {
 	constructor(p1, p2) {
 		this.p1 = p1;
 		this.p2 = p2;
 	}
 }
+
 class Polygon {
 	constructor(points) {
 		this.points = points;
