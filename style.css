@@ -32,19 +32,23 @@ div.column {
 
 #buttons_container {
 	position: absolute;
-	bottom:20px;
+	bottom: 20px;
 }
 
 .button {
 	margin: 10px;
 	padding: 2px;
-	border-radius: 20%;
-	cursor: pointer;
 	outline: none;
 	width: 30px;
 	height: 30px;
+	fill: #ffffff;
 }
 
-#tON, #sON {
+.button:active {
+	fill: #707070;
+}
+
+#tON,
+#sON {
 	display: none;
 }
