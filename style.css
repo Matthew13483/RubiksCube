@@ -4,7 +4,7 @@ body {
 	overflow: hidden;
 }
 
-canvas {
+#canvas {
 	background-color: #202030;
 	position: fixed;
 	top: 0;
@@ -43,4 +43,8 @@ div.column {
 	outline: none;
 	width: 30px;
 	height: 30px;
+}
+
+#tON, #sON {
+	display: none;
 }
