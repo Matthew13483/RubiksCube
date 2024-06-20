@@ -63,6 +63,50 @@ class RubiksCube {
 			new Gpiece(0, -1, 0, "DMS", [0, 1, 0, 0, 0, 0])
 		];
 
+		this.cycles = {
+			U: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS"],
+			D: ["DFL,DFR,DBR,DBL", "DFM,DRS,DBM,DLS"],
+			F: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE"],
+			B: ["UBR,UBL,DBL,DBR", "UBM,BLE,DBM,BRE"],
+			L: ["UBL,UFL,DFL,DBL", "ULS,FLE,DLS,BLE"],
+			R: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE"],
+			M: ["UFM,DFM,DBM,UBM", "UMS,FME,DMS,BME"],
+			E: ["FLE,FRE,BRE,BLE", "FME,RSE,BME,LSE"],
+			S: ["URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE"],
+			x: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE", "DBM,DFM,UFM,UBM", "DMS,FME,UMS,BME", "DFL,UFL,UBL,DBL", "DLS,FLE,ULS,BLE"],
+			y: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS", "BRE,FRE,FLE,BLE", "BME,RSE,FME,LSE", "DBR,DFR,DFL,DBL", "DBM,DRS,DFM,DLS"],
+			z: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE", "URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE", "DBL,UBL,UBR,DBR", "DBM,BLE,UBM,BRE"],
+		};
+		
+		this.turnAtlas = {
+			UFL: ["L',F,L,F'", "", "L',U',L,U", "", "F,U',F',U", ""],
+			UFR: ["R,F,R',F'", "", "R,U',R',U", "", "", "F',U',F,U"],
+			DFL: ["", "L',F',L,F", "L',D,L,D'", "", "F,D,F',D'", ""],
+			DFR: ["", "R,F',R',F", "R,D,R',D'", "", "", "F',D,F,D'"],
+			UBL: ["L',B',L,B", "", "", "L,U',L',U", "B',U',B,U", ""],
+			UBR: ["R,B',R',B", "", "", "R',U',R,U", "", "B,U',B',U"],
+			DBL: ["", "L',B,L,B'", "", "L,D,L',D'", "B',D,B,D'", ""],
+			DBR: ["", "R,B,R',B'", "", "R',D,R,D'", "", "B,D,B',D'"],
+			UFM: ["M',F,M,F'", "", "M',U',M,U", "", "", ""],
+			UBM: ["M',B',M,B", "", "", "M,U',M',U", "", ""],
+			DFM: ["", "M',F',M,F", "M',D,M,D'", "", "", ""],
+			DBM: ["", "M',B,M,B'", "", "M,D,M',D'", "", ""],
+			ULS: ["L',S,L,S'", "", "", "", "S,U',S',U", ""],
+			URS: ["R,S,R',S'", "", "", "", "", "S',U',S,U"],
+			DLS: ["", "L',S',L,S", "", "", "S,D,S',D'", ""],
+			DRS: ["", "R,S',R',S", "", "", "", "S',D,S,D'"],
+			FLE: ["", "", "L',E,L,E'", "", "F,E,F',E'", ""],
+			FRE: ["", "", "R,E,R',E'", "", "", "F',E,F,E'"],
+			BLE: ["", "", "", "L,E,L',E'", "B',E,B,E'", ""],
+			BRE: ["", "", "", "R',E,R,E'", "", "B,E,B',E'"],
+			UMS: ["M',S,M,S'", "", "", "", "", ""],
+			DMS: ["", "M',S',M,S", "", "", "", ""],
+			FME: ["", "", "M',E,M,E'", "", "", ""],
+			BME: ["", "", "", "M,E,M',E'", "", ""],
+			LSE: ["", "", "", "", "S,E,S',E'", ""],
+			RSE: ["", "", "", "", "", "S',E,S,E'"]
+		};
+
 		this.rotate = { x: 0, y: 0 };
 		this.touching = false;
 
@@ -272,7 +316,7 @@ class RubiksCube {
 				this.turn.angle = 0;
 				this.turn.turning = false;
 				for (let i = 0; i < this.turn.times; i++) {
-					let C = cycles[this.turn.face];
+					let C = this.cycles[this.turn.face];
 					let Cf = e => {
 						if (this.turn.clockwise) {
 							this.findPiece(e[0]).pieceIdN = e[1];
@@ -373,13 +417,13 @@ class RubiksCube {
 				new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
 			]);
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
-			if (turnAtlas[c.pieceId]) {
+			if (this.turnAtlas[c.pieceId]) {
 				lines.forEach((e, i2) => {
 					let a = Math.atan2(y - sT[index].y, x - sT[index].x);
 					let d = canvas.width; //Math.hypot(st.y - y, st.x - x) * 1e6;
 					let p = new Point(sT[index].x + Math.cos(a) * d, sT[index].y + Math.sin(a) * d);
 					if (cllnLineLine(e, new Line(sT[index], p))) {
-						this.turnCube(turnAtlas[c.pieceId][sT[index].faceI].split(",")[i2]);
+						this.turnCube(this.turnAtlas[c.pieceId][sT[index].faceI].split(",")[i2]);
 						sT[index].gotLine = true;
 					}
 				});
