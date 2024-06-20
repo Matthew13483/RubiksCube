@@ -32,7 +32,7 @@ div.column {
 
 #buttons_container {
 	position: absolute;
-	margin: 10px;
+	bottom:20px;
 }
 
 .button {

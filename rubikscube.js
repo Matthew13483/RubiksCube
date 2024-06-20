@@ -165,10 +165,7 @@ class RubiksCube {
 		} [side[0]]);
 		this.turn.times = Number(side[1]) || 1;
 		this.turnMap();
-		if (soundAllowed) {
-			sound.play();
-			sound.currentTime = 0.14;
-		}
+		sound.play();
 	}
 	turnAbsolute(side) {
 		Rubik.turnCube(Rubik.pieces.find(e => e.pieceIdO == {
