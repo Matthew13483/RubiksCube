@@ -64,7 +64,7 @@ function toggleTimer() {
 }
 
 const fps = {
-	visible: false,
+	visible: true,
 	display: FPS,
 	startTime: Date.now(),
 	frameCount: 0,

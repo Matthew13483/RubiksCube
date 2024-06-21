@@ -422,6 +422,7 @@ class RubiksCube {
 		this.rotate.x = this.rotate.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
+				if (!clockwise(e.p1, e.p2, e.p3)) return;
 				let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z, canvas.width, canvas.height);
 				let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z, canvas.width, canvas.height);
 				let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z, canvas.width, canvas.height);
@@ -432,7 +433,7 @@ class RubiksCube {
 					new Point(p3.x + canvas.width / 2, -p3.y + canvas.height / 2),
 					new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
 				]);
-				if (clockwise(e.p1, e.p2, e.p3) && c.acFaces[i] && cllnPolyPnt(Ply, this.touches[index])) {
+				if (c.acFaces[i] && cllnPolyPnt(Ply, this.touches[index])) {
 					intng = true;
 					cube = this.Gpieces[i1];
 					face = cube.faces[i];
@@ -465,17 +466,15 @@ class RubiksCube {
 				new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
 			]);
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
-			//if (this.turnAtlas[c.pieceId]) {
-				lines.forEach((e, i) => {
-					let a = Math.atan2(y - this.touches[index].y, x - this.touches[index].x);
-					let d = canvas.width; //Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 1e6;
-					let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
-					if (cllnLineLine(e, new Line(this.touches[index], p))) {
-						this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
-						this.touches[index].gotLine = true;
-					}
-				});
-			//}
+			lines.forEach((e, i) => {
+				let a = Math.atan2(y - this.touches[index].y, x - this.touches[index].x);
+				let d = Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 10;
+				let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
+				if (cllnLineLine(e, new Line(this.touches[index], p))) {
+					this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
+					this.touches[index].gotLine = true;
+				}
+			});
 		}
 		if (!this.touches[index].intng) {
 			this.touches[index].ax = this.touches[index].x;
