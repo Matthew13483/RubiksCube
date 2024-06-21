@@ -139,7 +139,7 @@ class RubiksCube {
 		let drawFaces = [];
 		this.pieces.forEach(c => {
 			c.geometry.forEach(e => {
-				if (clockwise(...e.points)) {
+				if (clockwise(...e.points.map(e => ({ x: e.x + Rubik.pos.x, y: e.y + Rubik.pos.y, z: e.z + Rubik.pos.z})))) {
 					let cx = 0;
 					let cy = 0;
 					let cz = 0;
@@ -423,7 +423,7 @@ class RubiksCube {
 		this.rotate.x = this.rotate.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
-				if (!clockwise(e.p1, e.p2, e.p3)) return;
+				if (!clockwise(...[e.p1, e.p2, e.p3].map(e => ({ x: e.x + Rubik.pos.x, y: e.y + Rubik.pos.y, z: e.z + Rubik.pos.z})))) return;
 				let p1 = c32(e.p1.x * scale + this.pos.x, e.p1.y * scale + this.pos.y, e.p1.z * scale + this.pos.z, canvas.width, canvas.height);
 				let p2 = c32(e.p2.x * scale + this.pos.x, e.p2.y * scale + this.pos.y, e.p2.z * scale + this.pos.z, canvas.width, canvas.height);
 				let p3 = c32(e.p3.x * scale + this.pos.x, e.p3.y * scale + this.pos.y, e.p3.z * scale + this.pos.z, canvas.width, canvas.height);

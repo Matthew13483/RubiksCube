@@ -19,11 +19,7 @@ function getNormal(a, b, c) {
 
 function clockwise(a, b, c) {
 	let normal = getNormal(a, b, c);
-	let p = new Point(0, 0, -Rubik.pos.z);
-	return (
-		normal.x * (b.x - p.x) +
-		normal.y * (b.y - p.y) +
-		normal.z * (b.z - p.z)) > 0;
+	return (normal.x * b.x + normal.y * b.y + normal.z * b.z) > 0;
 }
 
 function basicLighting(a, b, c, d) {
