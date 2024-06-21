@@ -19,7 +19,7 @@ function getNormal(a, b, c) {
 
 function clockwise(a, b, c) {
 	let normal = getNormal(a, b, c);
-	let p = new Point(0, 0, -pos.z);
+	let p = new Point(0, 0, -Rubik.pos.z);
 	return (
 		normal.x * (b.x - p.x) +
 		normal.y * (b.y - p.y) +

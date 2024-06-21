@@ -4,7 +4,6 @@ const origin = { x: 0, y: 0, z: 0 };
 
 var ctx = canvas.getContext('2d');
 
-const pos = { z: 21 };
 let scale = 1;
 
 class Sound {

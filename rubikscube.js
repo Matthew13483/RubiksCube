@@ -108,6 +108,7 @@ class RubiksCube {
 			RSE: ["", "", "", "", "", "S',E,S,E'"]
 		};
 
+		this.pos = { x: 0, y: 0, z: 21};
 		this.rotate = { x: 0, y: 0, z: 0 };
 		
 		this.touches = [];
@@ -147,7 +148,7 @@ class RubiksCube {
 						cy += p.y / a.length;
 						cz += p.z / a.length;
 					});
-					let dist = Math.hypot(cx * scale, cy * scale, cz + pos.z);
+					let dist = Math.hypot(cx * scale, cy * scale, cz + this.pos.z);
 					drawFaces.push([dist, e, c, c.color[e.color]]);
 				}
 			});
@@ -156,7 +157,7 @@ class RubiksCube {
 		drawFaces.forEach(e => {
 			ctx.beginPath();
 			e[1].points.forEach((e1, i) => {
-				let p = c32(e1.x * scale, e1.y * scale, e1.z + pos.z, canvas.width, canvas.height);
+				let p = c32(e1.x * scale + this.pos.x, e1.y * scale + this.pos.y, e1.z * scale + this.pos.z, canvas.width, canvas.height);
 				ctx[i == 0 ? "moveTo" : "lineTo"](p.x + canvas.width / 2, -p.y + canvas.height / 2);
 			});
 			ctx.closePath();
@@ -324,8 +325,8 @@ class RubiksCube {
 			si.forEach((sq, j) => {
 				let sqX = (j % 3) * sqW;
 				let sqY = (Math.floor(j / 3)) * sqW;
-				ctx.fillStyle = colors[sq];
 				let padding = 0.05;
+				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
 		})
@@ -375,7 +376,7 @@ class RubiksCube {
 			let x =	touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
 			let y = touchesR.map(e => e.y).reduce((a, b) => a + b) / touchesR.length;
 			let angle = touchesR.map((e, i) => {
-				if (e.ax !== undefined &&  e.ay !== undefined) {
+				if (e.ax !== undefined && e.ay !== undefined) {
 					let ax = e.x - x;
 					let ay = e.y - y;
 					let bx = e.ax - x;
@@ -423,10 +424,10 @@ class RubiksCube {
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
 				if (!clockwise(e.p1, e.p2, e.p3)) return;
-				let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z, canvas.width, canvas.height);
-				let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z, canvas.width, canvas.height);
-				let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z, canvas.width, canvas.height);
-				let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z, canvas.width, canvas.height);
+				let p1 = c32(e.p1.x * scale + this.pos.x, e.p1.y * scale + this.pos.y, e.p1.z * scale + this.pos.z, canvas.width, canvas.height);
+				let p2 = c32(e.p2.x * scale + this.pos.x, e.p2.y * scale + this.pos.y, e.p2.z * scale + this.pos.z, canvas.width, canvas.height);
+				let p3 = c32(e.p3.x * scale + this.pos.x, e.p3.y * scale + this.pos.y, e.p3.z * scale + this.pos.z, canvas.width, canvas.height);
+				let p4 = c32(e.p4.x * scale + this.pos.x, e.p4.y * scale + this.pos.y, e.p4.z * scale + this.pos.z, canvas.width, canvas.height);
 				let Ply = new Polygon([
 					new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
 					new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),
@@ -455,10 +456,10 @@ class RubiksCube {
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
-			let p1 = c32(e.p1.x * scale, e.p1.y * scale, e.p1.z + pos.z, canvas.width, canvas.height);
-			let p2 = c32(e.p2.x * scale, e.p2.y * scale, e.p2.z + pos.z, canvas.width, canvas.height);
-			let p3 = c32(e.p3.x * scale, e.p3.y * scale, e.p3.z + pos.z, canvas.width, canvas.height);
-			let p4 = c32(e.p4.x * scale, e.p4.y * scale, e.p4.z + pos.z, canvas.width, canvas.height);
+			let p1 = c32(e.p1.x * scale + this.pos.x, e.p1.y * scale + this.pos.y, e.p1.z * scale + this.pos.z, canvas.width, canvas.height);
+			let p2 = c32(e.p2.x * scale + this.pos.x, e.p2.y * scale + this.pos.y, e.p2.z * scale + this.pos.z, canvas.width, canvas.height);
+			let p3 = c32(e.p3.x * scale + this.pos.x, e.p3.y * scale + this.pos.y, e.p3.z * scale + this.pos.z, canvas.width, canvas.height);
+			let p4 = c32(e.p4.x * scale + this.pos.x, e.p4.y * scale + this.pos.y, e.p4.z * scale + this.pos.z, canvas.width, canvas.height);
 			let Ply = new Polygon([
 				new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
 				new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),
