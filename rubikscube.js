@@ -560,9 +560,9 @@ class Piece {
 
 class Gpiece {
 	constructor(x, y, z, pieceId, acFaces) {
-		this.x = x * 2;
-		this.y = y * 2;
-		this.z = z * 2;
+		this.x = x * 2.02;
+		this.y = y * 2.02;
+		this.z = z * 2.02;
 		this.pieceId = this.pieceIdN = pieceId;
 		this.acFaces = acFaces;
 		this.faces = [
