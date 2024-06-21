@@ -362,14 +362,14 @@ class RubiksCube {
 						e.pieceId = e.pieceIdN;
 					});
 				}
-				if (this.scrambling) {
-					if (this.scrambleIndex < this.scramble.length - 1) {
-						this.scrambleIndex++;
-						this.turnCube(this.scramble[this.scrambleIndex]);
-					}
-					else this.scrambling = false;
-				}
 			}
+		}
+		if (this.scrambling && !this.turn.turning) {
+			if (this.scrambleIndex < this.scramble.length) {
+				this.turnCube(this.scramble[this.scrambleIndex]);
+				this.scrambleIndex++;
+			}
+			else this.scrambling = false;
 		}
 
 		let touchesR = this.touches.filter(e => !e.intng);
@@ -409,7 +409,6 @@ class RubiksCube {
 			}).reduce((a, b) => a + b) / touchesR.length;
 			this.rotate.z = 2 * angle * 180 / Math.PI;
 			this.rotateCube(0, 0, this.rotate.z);
-			//Zoom
 			this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.1, 15), 40);
 		}
 
@@ -532,7 +531,6 @@ class RubiksCube {
 		this.scrambling = true;
 		this.scramble = this.generateScramble();
 		this.scrambleIndex = 0;
-		this.turnAbsolute(this.scramble[0]);
 	}
 
 	findPiece(id) {
