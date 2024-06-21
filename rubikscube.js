@@ -524,13 +524,13 @@ class RubiksCube {
 			let symbol = getRandomI(p_symbol);
 			scr.push({ axis, dir, symbol });
 		}
-		return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]).join(" ");
+		return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]);
 	}
 
 	scrambleCube() {
 		if (this.scrambling) return;
 		this.scrambling = true;
-		this.scramble = this.generateScramble().split(" ");
+		this.scramble = this.generateScramble();
 		this.scrambleIndex = 0;
 		this.turnAbsolute(this.scramble[0]);
 	}
