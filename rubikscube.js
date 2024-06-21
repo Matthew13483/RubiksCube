@@ -242,7 +242,7 @@ class RubiksCube {
 			z: "FME"
 		} [side[0]]);
 		this.turn.times = Number(side[1]) || 1;
-		this.turnMap();
+		this.turnMap(side);
 		this.turns.push(side);
 		sound.play();
 	}
@@ -290,17 +290,17 @@ class RubiksCube {
 		});
 	}
 
-	turnMap() {
+	turnMap(side) {
 		let swap = (si1, sq1, si2, sq2) => [this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
-		this.cyclesMap[this.turn.face].forEach(e => {
-			if (this.turn.clockwise)
-				for (let i = 0; i < this.turn.times; i++) {
+		this.cyclesMap[side[0]].forEach(e => {
+			if (side[side.length - 1] !== "'")
+				for (let i = 0; i < (Number(side[1]) || 1); i++) {
 					swap(e[0][0], e[0][1], e[1][0], e[1][1]);
 					swap(e[0][0], e[0][1], e[2][0], e[2][1]);
 					swap(e[0][0], e[0][1], e[3][0], e[3][1]);
 				}
 			else
-				for (let i = 0; i < this.turn.times; i++) {
+				for (let i = 0; i < (Number(side[1]) || 1); i++) {
 					swap(e[0][0], e[0][1], e[3][0], e[3][1]);
 					swap(e[0][0], e[0][1], e[2][0], e[2][1]);
 					swap(e[0][0], e[0][1], e[1][0], e[1][1]);
