@@ -409,7 +409,7 @@ class RubiksCube {
 			}).reduce((a, b) => a + b) / touchesR.length;
 			this.rotate.z = 2 * angle * 180 / Math.PI;
 			this.rotateCube(0, 0, this.rotate.z);
-			this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.1, 15), 40);
+			this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
 		}
 
 		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
