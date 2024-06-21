@@ -35,6 +35,20 @@ function toggleSound() {
 class Timer {
 	constructor() {
 		this.enabled = false;
+		this.time = [0, 0];
+		
+	}
+	start() {
+		
+	}
+	stop() {
+		
+	}
+	reset() {
+		this.time = [0, 0];
+	}
+	display() {
+		
 	}
 	toggle() {
 		this.enabled = !this.enabled;
@@ -59,7 +73,7 @@ const fps = {
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
 			if (fps.visible) fps.display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
-			fps.startTime = new Date().getTime();
+			fps.startTime = Date.now();
 			fps.frameCount = 0;
 		}
 	}

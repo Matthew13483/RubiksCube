@@ -410,9 +410,9 @@ class RubiksCube {
 	}
 
 	touchStart(x, y, id) {
-		this.touches.push({ id: id });
 		this.touching = true;
-		let index = this.touches.findIndex(e => e.id === id);
+		this.touches.push({ id: id });
+		let index = this.touches.length - 1;
 		this.touches[index].x = x;
 		this.touches[index].y = y;
 		let intng = false;
@@ -450,6 +450,7 @@ class RubiksCube {
 	touchMove(x, y, id) {
 		this.touching = true;
 		let index = this.touches.findIndex(e => e.id === id);
+		if (index === -1) return;
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
