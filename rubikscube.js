@@ -31,7 +31,7 @@ class RubiksCube {
 			new Piece(0, +1, 0, "UMS", "center", [6, 0], [0, 0, 0]),
 			new Piece(0, -1, 0, "DMS", "center", [6, 5], [180, 0, 0]),
 
-			new Piece(0, 0, 0, "", "core", [6], [0, 0, 0]),
+			new Piece(0, 0, 0, "MES", "core", [6], [0, 0, 0]),
 		];
 		this.Gpieces = [
 			new Gpiece(-1, +1, -1, "UFL", [1, 0, 1, 0, 1, 0]),
