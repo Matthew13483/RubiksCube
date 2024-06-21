@@ -78,7 +78,7 @@ class RubiksCube {
 			y: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS", "BRE,FRE,FLE,BLE", "BME,RSE,FME,LSE", "DBR,DFR,DFL,DBL", "DBM,DRS,DFM,DLS"],
 			z: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE", "URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE", "DBL,UBL,UBR,DBR", "DBM,BLE,UBM,BRE"],
 		};
-		
+
 		this.turnAtlas = {
 			UFL: ["L',F,L,F'", "", "L',U',L,U", "", "F,U',F',U", ""],
 			UFR: ["R,F,R',F'", "", "R,U',R',U", "", "", "F',U',F,U"],
@@ -108,9 +108,9 @@ class RubiksCube {
 			RSE: ["", "", "", "", "", "S',E,S,E'"]
 		};
 
-		this.pos = { x: 0, y: 0, z: 21};
+		this.pos = { x: 0, y: 0, z: 21 };
 		this.rotate = { x: 0, y: 0, z: 0 };
-		
+
 		this.touches = [];
 		this.touching = false;
 
@@ -373,7 +373,7 @@ class RubiksCube {
 
 		let touchesR = this.touches.filter(e => !e.intng);
 		if (touchesR.length >= 2) {
-			let x =	touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
+			let x = touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
 			let y = touchesR.map(e => e.y).reduce((a, b) => a + b) / touchesR.length;
 			let angle = touchesR.map((e, i) => {
 				if (e.ax !== undefined && e.ay !== undefined) {
