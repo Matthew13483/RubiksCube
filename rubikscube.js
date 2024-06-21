@@ -536,11 +536,11 @@ class RubiksCube {
 	}
 
 	findPiece(id) {
-		return this.pieces.find(e => e.pieceId == id);
+		return this.pieces.find(e => e.pieceId === id);
 	}
 
 	isSolved() {
-		return this.map.map(e => e.reduce((a, b) => a && b === e[0], true)).reduce((a, b) => a && b, true);
+		return this.map.map(e => e.reduce((a, b) => a && b === e[0], true)).reduce((a, b) => a && b);
 	}
 }
 
