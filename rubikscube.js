@@ -375,6 +375,20 @@ class RubiksCube {
 		if (touchesR.length >= 2) {
 			let x = touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
 			let y = touchesR.map(e => e.y).reduce((a, b) => a + b) / touchesR.length;
+			let dist = touchesR.map((e, i) => {
+				if (e.ax !== undefined && e.ay !== undefined) {
+					let ax = e.x - x;
+					let ay = e.y - y;
+					let bx = e.ax - x;
+					let by = e.ay - y;
+					let ad = Math.hypot(ax, ay);
+					let bd = Math.hypot(bx, by);
+					return ad - bd;
+				}
+				else {
+					return 0;
+				}
+			}).reduce((a, b) => a + b) / touchesR.length;
 			let angle = touchesR.map((e, i) => {
 				if (e.ax !== undefined && e.ay !== undefined) {
 					let ax = e.x - x;
@@ -394,6 +408,8 @@ class RubiksCube {
 			}).reduce((a, b) => a + b) / touchesR.length;
 			this.rotate.z = 2 * angle * 180 / Math.PI;
 			this.rotateCube(0, 0, this.rotate.z);
+			//Zoom
+			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.1, 15), 40);
 		}
 
 		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
@@ -403,11 +419,6 @@ class RubiksCube {
 
 		this.draw();
 		this.drawMap(canvas.width - 10 - 100, 10, 100);
-		/*if (this.isSolved()) {
-			ctx.strokeStyle = "lime";
-			ctx.strokeRect(canvas.width - 10 - 100, 10, 100, 75);
-		}*/
-		//ctx.fillText(Math.atan, 100, 100);
 	}
 
 	touchStart(x, y, id) {
