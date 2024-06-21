@@ -488,8 +488,8 @@ class RubiksCube {
 	}
 
 	touchEnd(id) {
-		this.touches.splice(this.touches.findIndex(e => e.id === id), 1);
 		this.touching = false;
+		this.touches.splice(this.touches.findIndex(e => e.id === id), 1);
 	}
 
 	generateScramble(length = 21) {
