@@ -4,11 +4,12 @@ let startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
 let moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
 let endEvent = isTouchDevice ? 'touchend' : 'mouseup';
 
-canvas.addEventListener(startEvent, handleStart);
-canvas.addEventListener(moveEvent, handleMove);
-canvas.addEventListener(endEvent, handleEnd);
+canvas.addEventListener(startEvent, handleStart, { passive: false });
+canvas.addEventListener(moveEvent, handleMove, { passive: false });
+canvas.addEventListener(endEvent, handleEnd, { passive: false });
 
 function handleStart(event) {
+	event.preventDefault();
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let touch = event.changedTouches[i];
@@ -24,6 +25,7 @@ function handleStart(event) {
 }
 
 function handleMove(event) {
+	event.preventDefault();
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let f = event.changedTouches.item(i);
@@ -39,6 +41,7 @@ function handleMove(event) {
 }
 
 function handleEnd(event) {
+	event.preventDefault();
 	if (isTouchDevice) {
 		for (let i = 0; i < event.changedTouches.length; i++) {
 			let f = event.changedTouches.item(i);
