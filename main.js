@@ -1,10 +1,8 @@
 // 3/7/22
 
+const ctx = canvas.getContext('2d');
+
 const origin = { x: 0, y: 0, z: 0 };
-
-var ctx = canvas.getContext('2d');
-
-let scale = 1;
 
 class Sound {
 	constructor(src) {

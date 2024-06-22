@@ -10,6 +10,4 @@ window.onload = () => {
 window.onresize = () => {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
-
-	scale = Math.min(canvas.width, canvas.height) / 360;
 };

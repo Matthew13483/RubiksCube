@@ -4,9 +4,9 @@ let startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
 let moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
 let endEvent = isTouchDevice ? 'touchend' : 'mouseup';
 
-canvas.addEventListener(startEvent, handleStart, { passive: false });
-canvas.addEventListener(moveEvent, handleMove, { passive: false });
-canvas.addEventListener(endEvent, handleEnd, { passive: false });
+canvas.addEventListener(startEvent, handleStart);
+canvas.addEventListener(moveEvent, handleMove);
+canvas.addEventListener(endEvent, handleEnd);
 
 function handleStart(event) {
 	event.preventDefault();
