@@ -139,8 +139,7 @@ class RubiksCube {
 		this.touching = false;
 
 		this.turn = {
-			turning: false,
-			angle: 0,
+			turning: () => this.pieces.map(e => e.turning).reduce((a, b) => a || b),
 			speed: 15
 		};
 		this.turns = [];
@@ -222,37 +221,63 @@ class RubiksCube {
 	}
 
 	turnCube(side) {
-		if (this.turn.turning) return;
-		this.pieces.forEach(e => e.turning = (e.pieceId + "xyz").split("").find(e => e == side[0]));
-		this.turn.turning = true;
-		this.turn.face = side[0];
-		this.turn.clockwise = side[side.length - 1] !== "'";
-		this.turn.piece = this.findPiece({
-			U: "UMS",
-			D: "DMS",
-			F: "FME",
-			B: "BME",
-			L: "LSE",
-			R: "RSE",
-			M: "LSE",
-			E: "DMS",
-			S: "FME",
-			x: "RSE",
-			y: "UMS",
-			z: "FME"
-		} [side[0]]);
-		this.turn.times = Number(side[1]) || 1;
+		let turning = false;
+		if (this.pieces.map(e => e.turning && (e.pieceId + "xyz").split("").find(e => e == side[0])).reduce((a, b) => a || b)) return false;
+		this.pieces.forEach(e => {
+			if ((e.pieceId + "xyz").split("").find(e => e == side[0])) {
+				e.turning = true;
+				turning = true;
+				e.turn.angle = 0;
+				e.turn.face = side[0];
+				e.turn.clockwise = side[side.length - 1] !== "'";
+				e.turn.piece = this.findPiece({
+					U: "UMS",
+					D: "DMS",
+					F: "FME",
+					B: "BME",
+					L: "LSE",
+					R: "RSE",
+					M: "LSE",
+					E: "DMS",
+					S: "FME",
+					x: "RSE",
+					y: "UMS",
+					z: "FME"
+				} [side[0]]);
+				e.turn.pieceId = {
+					U: "UMS",
+					D: "DMS",
+					F: "FME",
+					B: "BME",
+					L: "LSE",
+					R: "RSE",
+					M: "MES",
+					E: "MES",
+					S: "MES",
+					x: "MES",
+					y: "MES",
+					z: "MES"
+				} [side[0]];
+				e.turn.times = Number(side[1]) || 1;
+			}
+		});
+
 		this.turnMap(side);
 		this.turns.push(side);
 		sound.play();
+		return turning;
 	}
 
 	turnUndo() {
-		if (this.turns.length == 0 || this.turn.turning) return;
+		if (this.turns.length == 0) return;
 		let side = this.turns.pop();
-		side = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
-		this.turnCube(side);
-		this.turns.pop();
+		let side2 = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
+		if (this.turnCube(side2)) {
+			this.turns.pop();
+		}
+		else {
+			this.turns.push(side);
+		}
 	}
 
 	turnAbsolute(side) {
@@ -269,17 +294,17 @@ class RubiksCube {
 		} [side[0]]).pieceId[0]);
 	}
 
-	turnAngle(a) {
-		this.turn.angle += a;
+	turnAngle(f, a) {
 		this.pieces.forEach(c => {
-			if (c.turning) {
-				let a1 = Math.atan2(this.turn.piece.z, this.turn.piece.y);
-				let tP2 = rotateX(this.turn.piece, origin, a1);
+			if (f == c.turn.pieceId && c.turning) {
+				c.turn.angle += a;
+				let a1 = Math.atan2(c.turn.piece.z, c.turn.piece.y);
+				let tP2 = rotateX(c.turn.piece, origin, a1);
 				let a2 = Math.atan2(tP2.x, tP2.y);
 				let rf = (p) => {
 					p = rotateX(p, origin, a1);
 					p = rotateZ(p, origin, a2);
-					p = rotateY(p, origin, this.turn.times * (this.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
+					p = rotateY(p, origin, (c.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
 					p = rotateZ(p, origin, -a2);
 					p = rotateX(p, origin, -a1);
 					return p;
@@ -330,41 +355,44 @@ class RubiksCube {
 				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
-		})
+		});
 	}
 
 	loop() {
-		if (this.turn.turning) {
-			this.turnAngle(!this.scrambling ? this.turn.speed : 40);
-			if (this.turn.angle > 90) {
-				this.turnAngle(90 - this.turn.angle);
-				this.turn.angle = 0;
-				this.turn.turning = false;
-				for (let i = 0; i < this.turn.times; i++) {
-					let C = this.cycles[this.turn.face];
-					let Cf = e => {
-						if (this.turn.clockwise) {
-							this.findPiece(e[0]).pieceIdN = e[1];
-							this.findPiece(e[1]).pieceIdN = e[2];
-							this.findPiece(e[2]).pieceIdN = e[3];
-							this.findPiece(e[3]).pieceIdN = e[0];
-						}
-						else {
-							this.findPiece(e[0]).pieceIdN = e[3];
-							this.findPiece(e[1]).pieceIdN = e[0];
-							this.findPiece(e[2]).pieceIdN = e[1];
-							this.findPiece(e[3]).pieceIdN = e[2];
-						}
-					};
-					C.forEach(e => Cf(e.split(",")));
-					this.pieces.forEach(e => {
-						e.turning = false;
-						e.pieceId = e.pieceIdN;
-					});
+		this.pieces.forEach(c => {
+			if (c.pieceId == c.turn.pieceId && c.turning) {
+				this.turnAngle(c.pieceId, this.turn.speed * (this.scrambling ? 2 : 1));
+				if (c.turn.angle > 90 * c.turn.times) {
+					this.turnAngle(c.pieceId, 90 * c.turn.times - c.turn.angle);
+					for (let i = 0; i < c.turn.times; i++) {
+						let C = this.cycles[c.turn.face];
+						let Cf = e => {
+							if (c.turn.clockwise) {
+								this.findPiece(e[0]).pieceIdN = e[1];
+								this.findPiece(e[1]).pieceIdN = e[2];
+								this.findPiece(e[2]).pieceIdN = e[3];
+								this.findPiece(e[3]).pieceIdN = e[0];
+							}
+							else {
+								this.findPiece(e[0]).pieceIdN = e[3];
+								this.findPiece(e[1]).pieceIdN = e[0];
+								this.findPiece(e[2]).pieceIdN = e[1];
+								this.findPiece(e[3]).pieceIdN = e[2];
+							}
+						};
+						C.forEach(e => Cf(e.split(",")));
+						this.pieces.forEach(e => {
+							if (e.turn.pieceId == c.turn.pieceId) {
+								e.turning = false;
+								e.turn.angle = 0;
+								e.pieceId = e.pieceIdN;
+							}
+						});
+					}
 				}
 			}
-		}
-		if (this.scrambling && !this.turn.turning) {
+		});
+		if (this.scrambling && !this.turn.turning()) {
 			if (this.scrambleIndex < this.scramble.length) {
 				this.turnCube(this.scramble[this.scrambleIndex]);
 				this.scrambleIndex++;
@@ -473,7 +501,7 @@ class RubiksCube {
 				let d = Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 10;
 				let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
 				if (cllnLineLine(e, new Line(this.touches[index], p))) {
-					this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
+					if (!this.scrambling) this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
 					this.touches[index].gotLine = true;
 				}
 			});
@@ -533,12 +561,13 @@ class RubiksCube {
 }
 
 class Piece {
-	constructor(x, y, z, pieceId, geometry, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
+	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
 		this.x = x * 2.02;
 		this.y = y * 2.02;
 		this.z = z * 2.02;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
-		this.geometry = JSON.parse(JSON.stringify(m3ds[geometry])).map(e => {
+		this.pieceType = pieceType;
+		this.geometry = JSON.parse(JSON.stringify(m3ds[pieceType])).map(e => {
 			return {
 				color: e.color,
 				points: e.points.map(f => {
@@ -555,6 +584,7 @@ class Piece {
 			}
 		});
 		this.color = color;
+		this.turn = {};
 	}
 }
 
