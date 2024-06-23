@@ -374,9 +374,15 @@ class RubiksCube {
 
 		let touchesR = this.touches.filter(e => !e.intng);
 		if (touchesR.length >= 2) {
-			let x = touchesR.map(e => e.x).reduce((a, b) => a + b) / touchesR.length;
-			let y = touchesR.map(e => e.y).reduce((a, b) => a + b) / touchesR.length;
-			let dist = touchesR.map((e, i) => {
+			let x = 0;
+			let y = 0;
+			let dist = 0;
+			let angle = 0;
+			touchesR.forEach(e => {
+				x += e.x / touchesR.length;
+				y += e.y / touchesR.length;
+			});
+			touchesR.forEach(e => {
 				if (e.ax !== undefined && e.ay !== undefined) {
 					let ax = e.x - x;
 					let ay = e.y - y;
@@ -384,29 +390,13 @@ class RubiksCube {
 					let by = e.ay - y;
 					let ad = Math.hypot(ax, ay);
 					let bd = Math.hypot(bx, by);
-					return ad - bd;
-				}
-				else {
-					return 0;
-				}
-			}).reduce((a, b) => a + b);
-			let angle = touchesR.map((e, i) => {
-				if (e.ax !== undefined && e.ay !== undefined) {
-					let ax = e.x - x;
-					let ay = e.y - y;
-					let bx = e.ax - x;
-					let by = e.ay - y;
-					let ad = Math.hypot(ax, ay);
-					let bd = Math.hypot(bx, by);
-					let a = Math.acos((ax * bx + ay * by) / (ad * bd)) * Math.sign(ax * by - ay * bx);
+					dist += ad - bd;
+					angle += Math.acos((ax * bx + ay * by) / (ad * bd)) * Math.sign(ax * by - ay * bx);
 					e.ax = undefined;
 					e.ay = undefined;
-					return a;
 				}
-				else {
-					return 0;
-				}
-			}).reduce((a, b) => a + b);
+			});
+			
 			this.rotate.z = angle * 180 / Math.PI;
 			this.rotateCube(0, 0, this.rotate.z);
 			this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
