@@ -1,12 +1,9 @@
 let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
 
-let startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
-let moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
-let endEvent = isTouchDevice ? 'touchend' : 'mouseup';
-
-canvas.addEventListener(startEvent, handleStart);
-canvas.addEventListener(moveEvent, handleMove);
-canvas.addEventListener(endEvent, handleEnd);
+canvas.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', handleStart);
+canvas.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', handleMove);
+canvas.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', handleEnd);
+canvas.addEventListener(isTouchDevice ? 'touchcancel' : '', handleCancel);
 
 function handleStart(event) {
 	event.preventDefault();
@@ -48,6 +45,10 @@ function handleEnd(event) {
 			Rubik.touchEnd(f.identifier);
 		}
 	}
+}
+
+function handleCancel(event) {
+	Rubik.touchCancel();
 }
 
 /*

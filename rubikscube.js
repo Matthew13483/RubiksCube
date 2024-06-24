@@ -522,6 +522,11 @@ class RubiksCube {
 		this.touches.splice(this.touches.findIndex(e => e.id === id), 1);
 	}
 
+	touchCancel() {
+		this.touching = false;
+		this.touches.length = 0;
+	}
+
 	generateScramble(length = 21) {
 		let getRandomI = arr => Math.floor(Math.random() * arr.length);
 		let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
