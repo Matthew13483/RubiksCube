@@ -441,6 +441,13 @@ class RubiksCube {
 
 		this.draw();
 		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
+		
+		if (this.isSolved() && timer.running) {
+			timer.stop();
+			timer.maystart = false;
+			this.undoCap = this.turns.length;
+		}
+		timerElement.innerHTML = timer.display();
 	}
 
 	touchStart(x, y, id) {
@@ -562,8 +569,8 @@ class RubiksCube {
 		this.scramble = this.generateScramble();
 		this.scrambleIndex = 0;
 		if (timer.enabled) {
-			timer.maystart = true;
 			timer.reset();
+			timer.maystart = true;
 			timerElement.style.color = '#ffffff';
 		}
 	}

@@ -81,6 +81,7 @@ function toggleTimer() {
 		tOFF.style.display = 'block';
 		timer_container.style.display = 'none';
 		button_scramble.style.animation = 'none';
+		timer.reset();
 		timer.maystart = false;
 		Rubik.undoCap = 0;
 	}
@@ -107,10 +108,4 @@ function loop() {
 	fps.inLoop();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	Rubik.loop();
-	if (Rubik.isSolved() && timer.running) {
-		timer.stop();
-		timer.maystart = false;
-		Rubik.undoCap = Rubik.turns.length;
-	}
-	timerElement.innerHTML = timer.display();
 }
