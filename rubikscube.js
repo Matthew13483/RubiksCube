@@ -143,6 +143,7 @@ class RubiksCube {
 			speed: 15
 		};
 		this.turns = [];
+		this.undoCap = 0;
 
 		this.scrambling = false;
 		this.scramble;
@@ -269,7 +270,7 @@ class RubiksCube {
 	}
 
 	turnUndo() {
-		if (this.turns.length == 0) return;
+		if (this.turns.length <= this.undoCap) return;
 		let side = this.turns.pop();
 		let side2 = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
 		if (this.turnCube(side2)) {
@@ -397,7 +398,10 @@ class RubiksCube {
 				this.turnCube(this.scramble[this.scrambleIndex]);
 				this.scrambleIndex++;
 			}
-			else this.scrambling = false;
+			else {
+				this.scrambling = false;
+				if (timer.maystart) this.undoCap = this.turns.length;
+			}
 		}
 
 		let touchesR = this.touches.filter(e => !e.intng);
@@ -501,7 +505,10 @@ class RubiksCube {
 				let d = Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 10;
 				let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
 				if (cllnLineLine(e, new Line(this.touches[index], p))) {
-					if (!this.scrambling) this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
+					if (!this.scrambling) {
+						this.turnCube(this.turnAtlas[c.pieceId][this.touches[index].faceI].split(",")[i]);
+						if (timer.maystart && !timer.running) timer.start();
+					}
 					this.touches[index].gotLine = true;
 				}
 			});
@@ -554,6 +561,11 @@ class RubiksCube {
 		this.scrambling = true;
 		this.scramble = this.generateScramble();
 		this.scrambleIndex = 0;
+		if (timer.enabled) {
+			timer.maystart = true;
+			timer.reset();
+			timerElement.style.color = '#ffffff';
+		}
 	}
 
 	findPiece(id) {

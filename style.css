@@ -24,14 +24,30 @@ div.column {
 }
 
 #FPS {
-	position: absolute;
+	position: fixed;
 	top: 5px;
 	left: 15px;
 	color: white;
 }
 
+#timer_container {
+	position: fixed;
+	left: 50%;
+	bottom: 60px;
+	transform: translate(-50%, 0%);
+	display: none;
+	pointer-events: none;
+}
+
+#timerElement {
+	margin: 10px;
+	font-family: monospace;
+	font-size: 40px;
+	color: white;
+}
+
 #buttons_container {
-	position: absolute;
+	position: fixed;
 	bottom: 20px;
 }
 
@@ -51,4 +67,16 @@ div.column {
 #tON,
 #sON {
 	display: none;
+}
+
+@keyframes highlight {
+	0% {
+		fill: #ffffff;
+	}
+	50% {
+			fill: #50ff50;
+	}
+	100% {
+		fill: #ffffff;
+	}
 }

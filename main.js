@@ -31,33 +31,59 @@ function toggleSound() {
 
 class Timer {
 	constructor() {
-		this.enabled = false;
-		this.time = [0, 0];
-		
+		this.running = false;
+		this.startTime = 0;
+		this.endTime = 0;
+	}
+	time() {
+		return this.endTime - this.startTime;
 	}
 	start() {
-		
+		this.running = true;
+		this.startTime = Date.now();
 	}
 	stop() {
-		
+		this.running = false;
+		this.endTime = Date.now();
 	}
 	reset() {
-		this.time = [0, 0];
+		this.running = false;
+		this.startTime = 0;
+		this.endTime = 0;
 	}
 	display() {
-		
+		if (this.running) this.endTime = Date.now();
+		return this.toString(this.time());
 	}
-	toggle() {
-		this.enabled = !this.enabled;
+	toString(msec) {
+		let min = Math.floor(msec / 60000);
+		let sec = (msec / 1000) % 60;
+		return min.toString().padStart(2, 0) + ':' + sec.toFixed(3).toString().padStart(6, 0);
 	}
 }
 
 const timer = new Timer();
 
+timer.enabled = false;
+timer.maystart = false;
+
 function toggleTimer() {
-	timer.toggle();
-	tON.style.display = timer.enabled ? 'block' : 'none';
-	tOFF.style.display = !timer.enabled ? 'block' : 'none';
+	timer.enabled = !timer.enabled;
+	if (timer.enabled) {
+		tON.style.display = 'block'
+		tOFF.style.display = 'none';
+		timer_container.style.display = 'block';
+		button_scramble.style.animation = 'highlight 2s';
+		timerElement.style.color = '#909090';
+	}
+	else {
+		tON.style.display = 'none';
+		tOFF.style.display = 'block';
+		timer_container.style.display = 'none';
+		button_scramble.style.animation = 'none';
+		timer.maystart = false;
+		Rubik.undoCap = 0;
+	}
 }
 
 const fps = {
@@ -81,4 +107,10 @@ function loop() {
 	fps.inLoop();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	Rubik.loop();
+	if (Rubik.isSolved() && timer.running) {
+		timer.stop();
+		timer.maystart = false;
+		Rubik.undoCap = Rubik.turns.length;
+	}
+	timerElement.innerHTML = timer.display();
 }
