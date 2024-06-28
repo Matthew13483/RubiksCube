@@ -87,6 +87,19 @@ function toggleTimer() {
 	}
 }
 
+function scrambleCube() {
+	if (timer.enabled) {
+		Rubik = new RubiksCube();
+		Rubik.rotateCube(20, -20, 0);
+		Rubik.rotate = {
+			x: (Math.random() - 0.5) * 20,
+			y: (Math.random() - 0.5) * 20,
+			z: (Math.random() - 0.5) * 20
+		};
+	}
+	Rubik.scrambleCube();
+}
+
 const fps = {
 	visible: true,
 	display: FPS,
@@ -105,7 +118,7 @@ const fps = {
 
 function loop() {
 	requestAnimationFrame(loop);
-	fps.inLoop();
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	fps.inLoop();
 	Rubik.loop();
 }

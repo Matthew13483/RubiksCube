@@ -5,11 +5,11 @@ const colors = [
 	"#b00000", //red
 	"#0a0ab0", //blue
 	"#fcfc00", //yellow
-	"#000000" //internals
+	"#202020" //internals
 ];
 var shading = {
 	surface: 0.1,
-	internals: 0
+	internals: 0.1
 };
 var M = [0, 0.6];
 const m3ds = {
