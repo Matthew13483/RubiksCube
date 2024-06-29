@@ -423,7 +423,7 @@ class RubiksCube {
 					let ad = Math.hypot(ax, ay);
 					let bd = Math.hypot(bx, by);
 					dist += ad - bd;
-					angle += Math.acos((ax * bx + ay * by) / (ad * bd)) * Math.sign(ax * by - ay * bx);
+					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd)), -1), 1) * Math.sign(ax * by - ay * bx);
 					e.ax = undefined;
 					e.ay = undefined;
 				}
