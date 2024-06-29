@@ -5,7 +5,7 @@ const colors = [
 	"#b00000", //red
 	"#0a0ab0", //blue
 	"#fcfc00", //yellow
-	"#202020" //internals
+	"#101010" //internals
 ];
 var shading = {
 	surface: 0.1,

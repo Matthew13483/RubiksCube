@@ -200,9 +200,9 @@ class RubiksCube {
 
 	rotateCube(ax, ay, az) {
 		let rf = p => {
-			p = rotateY(p, origin, ay * Math.PI / 180);
-			p = rotateX(p, origin, ax * Math.PI / 180);
-			p = rotateZ(p, origin, az * Math.PI / 180);
+			p = rotateY(p, { x: 0, y: 0, z: 0 }, ay * Math.PI / 180);
+			p = rotateX(p, { x: 0, y: 0, z: 0 }, ax * Math.PI / 180);
+			p = rotateZ(p, { x: 0, y: 0, z: 0 }, az * Math.PI / 180);
 			return p;
 		};
 		this.pieces.forEach((p1, i) => {
@@ -300,14 +300,14 @@ class RubiksCube {
 			if (f == c.turn.pieceId && c.turning) {
 				c.turn.angle += a;
 				let a1 = Math.atan2(c.turn.piece.z, c.turn.piece.y);
-				let tP2 = rotateX(c.turn.piece, origin, a1);
+				let tP2 = rotateX(c.turn.piece, { x: 0, y: 0, z: 0 }, a1);
 				let a2 = Math.atan2(tP2.x, tP2.y);
 				let rf = (p) => {
-					p = rotateX(p, origin, a1);
-					p = rotateZ(p, origin, a2);
-					p = rotateY(p, origin, (c.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
-					p = rotateZ(p, origin, -a2);
-					p = rotateX(p, origin, -a1);
+					p = rotateX(p, { x: 0, y: 0, z: 0 }, a1);
+					p = rotateZ(p, { x: 0, y: 0, z: 0 }, a2);
+					p = rotateY(p, { x: 0, y: 0, z: 0 }, (c.turn.clockwise ? 1 : -1) * (a * Math.PI / 180));
+					p = rotateZ(p, { x: 0, y: 0, z: 0 }, -a2);
+					p = rotateX(p, { x: 0, y: 0, z: 0 }, -a1);
 					return p;
 				};
 				Object.assign(c, rf(c));

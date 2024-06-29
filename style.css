@@ -5,7 +5,8 @@ body {
 }
 
 #canvas {
-	background-color: #202030;
+	background-color: #f02030;
+	background: linear-gradient(135deg, #202030, #303040);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -23,11 +24,16 @@ div.column {
 	align-items: center;
 }
 
-#FPS {
+#fps_display {
 	position: fixed;
-	top: 5px;
-	left: 15px;
+	top: 10px;
+	left: 20px;
 	color: white;
+	font-family: monospace;
+	font-size: 15px;
+	background: #00000040;
+	padding: 5px 10px;
+	border-radius: 5px;
 }
 
 #timer_container {
@@ -35,24 +41,29 @@ div.column {
 	left: 50%;
 	bottom: 60px;
 	transform: translate(-50%, 0%);
-	display: none;
 	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.2s;
 }
 
 #timerElement {
 	margin: 10px;
 	font-family: monospace;
 	font-size: 35px;
-	color: white;
+	color: #565670;
+	transition: color 0.2s;
 }
 
 #buttons_container {
 	position: fixed;
 	bottom: 20px;
+	background-color: rgba(100, 100, 200, 0.5);
+	border-radius: 10px;
+	box-shadow: 0 3px 5px #11111a;
 }
 
 .button {
-	margin: 10px;
+	margin: 5px 10px;
 	padding: 2px;
 	outline: none;
 	width: 30px;
@@ -61,7 +72,7 @@ div.column {
 }
 
 .button:active {
-	fill: #707070;
+	fill: #606090;
 }
 
 #tON,
@@ -73,8 +84,8 @@ div.column {
 	0% {
 		fill: #ffffff;
 	}
-	50% {
-			fill: #50ff50;
+	20% {
+			fill: #5050f0;
 	}
 	100% {
 		fill: #ffffff;
