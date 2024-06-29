@@ -57,9 +57,9 @@ div.column {
 #buttons_container {
 	position: fixed;
 	bottom: 20px;
-	background-color: rgba(100, 100, 200, 0.5);
+	background-color: #6060cc80;
 	border-radius: 10px;
-	box-shadow: 0 3px 5px #11111a;
+	box-shadow: 0 3px 5px #00000050;
 }
 
 .button {
