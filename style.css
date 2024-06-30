@@ -4,12 +4,21 @@ body {
 	overflow: hidden;
 }
 
-#canvas {
-	background-color: #f02030;
-	background: linear-gradient(135deg, #202030, #303040);
+#canvas_bg {
+	background-color: #1c1c38;
+	background: linear-gradient(135deg, #181830, #202040);
 	position: fixed;
 	top: 0;
 	left: 0;
+	z-index:-1;
+}
+
+#canvas {
+	background: transparent;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index:0;
 }
 
 div.row {
