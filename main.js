@@ -122,6 +122,6 @@ function loop() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	fps.inLoop();
 	Rubik.loop();
-	//Vor.drawCells();
-	//Vor.movePoints();
+	Vor.drawCells();
+	Vor.movePoints();
 }
