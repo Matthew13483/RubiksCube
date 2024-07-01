@@ -27,11 +27,15 @@ class Voronoi {
 			}
 			return n;
 		});
+		this.gl = GL(canvas_bg);
 	}
 
 	resize(dw, dh) {
 		this.display.width = dw;
 		this.display.height = dh;
+		this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+		var resolutionUniformLocation = this.gl.getUniformLocation(this.gl.program, "u_resolution");
+		this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
 	}
 
 	movePoints() {
@@ -49,11 +53,11 @@ class Voronoi {
 		};
 		this.grid.cells.forEach(cell => {
 			randomWalk(cell);
-			/*if (!cell.vc) cell.vc = 0;
+			if (!cell.vc) cell.vc = 0;
 			cell.c += cell.vc;
 			if (cell.c < 0) cell.c = cell.vc *= -1;
 			if (cell.c >= 1) cell.c = 1 + (cell.vc *= -1);
-			cell.vc += 0.001 * (0.1 * (Math.random() - 0.5) - 0.01 * cell.vc);*/
+			cell.vc += 0.001 * (0.1 * (Math.random() - 0.5) - 0.01 * cell.vc);
 		});
 	}
 
@@ -173,28 +177,16 @@ class Voronoi {
 	}
 
 	drawCells() {
-		this.getCells().forEach((cell, i, a) => {
-			ctx_bg.beginPath();
-			cell.forEach((p, i) => ctx_bg[(i === 0) ? 'moveTo' : 'lineTo'](p.x, p.y));
-			ctx_bg.closePath();
+		this.getCells().forEach((cell, i) => {
 			let x = i % this.grid.width;
 			let y = Math.floor(i / this.grid.width);
-			let x1 = x % 2;
-			let y1 = y % 2;
 			let f = 3;
-			let s;
 			let [r, g, b] = [24, 24, 48];
 			let [r2, g2, b2] = [32, 32, 64];
-			if (!x1 && !y1) s = 0;
-			if (x1 && !y1) s = 1;
-			if (!x1 && y1) s = 2;
-			if (x1 && y1) s = 3;
-			s = 0;
-			let r3 = r + Math.floor((r2 - r) * (y / this.grid.height) + this.grid.cells[i].c * f + f * s);
-			let g3 = g + Math.floor((g2 - g) * (y / this.grid.height) + this.grid.cells[i].c * f + f * s);
-			let b3 = b + Math.floor((b2 - b) * (y / this.grid.height) + this.grid.cells[i].c * f + f * s);
-			ctx_bg.fillStyle = `rgb(${r3}, ${g3}, ${b3})`;
-			ctx_bg.fill();
+			let r3 = r + Math.floor((r2 - r) * (y / this.grid.height) + this.grid.cells[i].c * f);
+			let g3 = g + Math.floor((g2 - g) * (y / this.grid.height) + this.grid.cells[i].c * f);
+			let b3 = b + Math.floor((b2 - b) * (y / this.grid.height) + this.grid.cells[i].c * f);
+			drawPoly(this.gl, cell, [ r3 / 255, g3 / 255, b3 / 255, 1 ]);
 		});
 	}
 }

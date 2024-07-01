@@ -1,7 +1,6 @@
 // 3/7/22
 
 const ctx = canvas.getContext('2d');
-const ctx_bg = canvas_bg.getContext('2d');
 
 class Timer {
 	constructor() {
@@ -116,6 +115,8 @@ const fps = {
 };
 
 const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
+let Rubik = new RubiksCube();
+Rubik.rotateCube(200, -20, 0);
 
 function loop() {
 	requestAnimationFrame(loop);
