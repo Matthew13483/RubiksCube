@@ -1,7 +1,7 @@
 # RubiksCube
 
 <a href="https://matthew13483.github.io/RubiksCube/">
-  <img src="/Rubik's Cube Stickerless.png" alt="RubiksCube Image" width="50" height="50">
+	<img src="/Rubik's Cube Stickerless.png" alt="RubiksCube Image" width="50" height="50">
 </a>
 
 Welcome to the **RubiksCube** project!

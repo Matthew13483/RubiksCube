@@ -173,7 +173,7 @@ class RubiksCube {
 						cz += p.z / a.length;
 					});
 					let dist = Math.hypot(cx + this.pos.x, cy + this.pos.y, cz + this.pos.z);
-					drawFaces.push([dist, e, c, c.color[e.color]]);
+					if (c.color[e.color] !== 6) drawFaces.push([dist, e, c, c.color[e.color]]);
 				}
 			});
 		});
@@ -431,7 +431,7 @@ class RubiksCube {
 			
 			this.rotate.z = angle * 180 / Math.PI;
 			this.rotateCube(0, 0, this.rotate.z);
-			this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
+			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
 		}
 
 		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
@@ -439,15 +439,15 @@ class RubiksCube {
 		this.rotate.y *= 0.95;
 		this.rotate.z *= 0.95;
 
-		this.draw();
-		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
-		
 		if (this.isSolved() && timer.running) {
 			timer.stop();
 			timer.maystart = false;
 			this.undoCap = this.turns.length;
 		}
 		timerElement.innerHTML = timer.display();
+
+		this.draw();
+		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
 	}
 
 	touchStart(x, y, id) {
@@ -586,9 +586,9 @@ class RubiksCube {
 
 class Piece {
 	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
-		this.x = x * 2.02;
-		this.y = y * 2.02;
-		this.z = z * 2.02;
+		this.x = x * 2.03;
+		this.y = y * 2.03;
+		this.z = z * 2.03;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
 		this.geometry = JSON.parse(JSON.stringify(m3ds[pieceType])).map(e => {

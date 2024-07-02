@@ -108,6 +108,9 @@ const fps = {
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
 			if (fps.visible) fps_display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
+			//console.log(timeA / frames);
+			timeA = 0;
+			frames = 0;
 			fps.startTime = Date.now();
 			fps.frameCount = 0;
 		}
@@ -118,11 +121,19 @@ const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
 let Rubik = new RubiksCube();
 Rubik.rotateCube(200, -20, 0);
 
+let timeA = 0;
+let frames = 0;
+
 function loop() {
 	requestAnimationFrame(loop);
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	fps.inLoop();
+	{ let s = performance.now();
 	Rubik.loop();
+	
 	Vor.drawCells();
 	Vor.movePoints();
+	timeA += performance.now() - s}
+	
+	frames++;
 }
