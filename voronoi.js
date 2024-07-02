@@ -33,9 +33,7 @@ class Voronoi {
 	resize(dw, dh) {
 		this.display.width = dw;
 		this.display.height = dh;
-		this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-		var resolutionUniformLocation = this.gl.getUniformLocation(this.gl.program, "u_resolution");
-		this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+		GLresize(this.gl);
 	}
 
 	movePoints() {
@@ -167,13 +165,13 @@ class Voronoi {
 	}
 
 	draw() {
-		this.grid2display().forEach(e => {
+		/*this.grid2display().forEach(e => {
 			ctx_bg.beginPath();
 			ctx_bg.arc(e.x, e.y, 3, 0, 2 * Math.PI);
 			ctx_bg.lineWidth = 1;
 			ctx_bg.strokeStyle = '#d95252';
 			ctx_bg.stroke();
-		});
+		});*/
 	}
 
 	drawCells() {
@@ -186,7 +184,7 @@ class Voronoi {
 			let r3 = r + Math.floor((r2 - r) * (y / this.grid.height) + this.grid.cells[i].c * f);
 			let g3 = g + Math.floor((g2 - g) * (y / this.grid.height) + this.grid.cells[i].c * f);
 			let b3 = b + Math.floor((b2 - b) * (y / this.grid.height) + this.grid.cells[i].c * f);
-			drawPoly(this.gl, cell, [ r3 / 255, g3 / 255, b3 / 255, 1 ]);
+			GLdrawPoly(this.gl, cell, [ r3 / 255, g3 / 255, b3 / 255, 1 ]);
 		});
 	}
 }

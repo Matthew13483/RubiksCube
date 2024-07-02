@@ -97,7 +97,13 @@ function GL(canvas) {
 	return gl;
 }
 
-function drawPoly(gl, vertices, color) {
+function GLresize(gl) {
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	var resolutionUniformLocation = gl.getUniformLocation(gl.program, "u_resolution");
+	gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+}
+
+function GLdrawPoly(gl, vertices, color) {
 	if (vertices.length <= 2) return;
 
 	let mesh = [];
@@ -116,9 +122,9 @@ function drawPoly(gl, vertices, color) {
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh), gl.STATIC_DRAW);
 
 	var colorUniformLocation = gl.getUniformLocation(gl.program, "u_color");
-	gl.uniform4f(colorUniformLocation, ...color); //Math.random(), Math.random(), Math.random(), 1);
+	gl.uniform4f(colorUniformLocation, ...color);
 
-	// Draw the rectangle.
+	// Draw the polygon.
 	var primitiveType = gl.TRIANGLES;
 	var offset = 0;
 	var count = mesh.length / 2;
