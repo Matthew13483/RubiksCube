@@ -173,7 +173,7 @@ class RubiksCube {
 						cz += p.z / a.length;
 					});
 					let dist = Math.hypot(cx + this.pos.x, cy + this.pos.y, cz + this.pos.z);
-					if (c.color[e.color] !== 6) drawFaces.push([dist, e, c, c.color[e.color]]);
+					if (true || c.color[e.color] !== 6) drawFaces.push([dist, e, c, c.color[e.color]]);
 				}
 			});
 		});
