@@ -128,12 +128,16 @@ function loop() {
 	requestAnimationFrame(loop);
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	fps.inLoop();
-	{ let s = performance.now();
-	Rubik.loop();
-	
-	Vor.drawCells();
-	Vor.movePoints();
-	timeA += performance.now() - s}
-	
+	{
+		let s = performance.now();
+
+		Rubik.loop();
+
+		Vor.drawCells();
+		Vor.movePoints();
+
+		timeA += performance.now() - s
+	}
+
 	frames++;
 }

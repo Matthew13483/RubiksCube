@@ -15,7 +15,7 @@ class Voronoi {
 			let x = i % this.grid.width;
 			let y = Math.floor(i / this.grid.width);
 			let n = [];
-			let scope = +2;
+			let scope = +3;
 			for (let ny = -scope; ny <= scope; ny++) {
 				for (let nx = -scope; nx <= scope; nx++) {
 					if (!(nx === 0 && ny === 0)) {
