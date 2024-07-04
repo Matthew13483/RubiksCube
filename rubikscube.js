@@ -1,6 +1,10 @@
 class RubiksCube {
 
 	constructor() {
+		this.reset();
+	}
+
+	reset() {
 		this.pieces = [
 			new Piece(-1, +1, -1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
 			new Piece(+1, +1, -1, "UFR", "corner", [6, 2, 3, 0], [0, 0, 0]),
@@ -159,6 +163,97 @@ class RubiksCube {
 		];
 	}
 
+	loop() {
+		this.pieces.forEach(c => {
+			if (c.pieceId == c.turn.pieceId && c.turning) {
+				this.turnAngle(c.pieceId, this.turn.speed * (this.scrambling ? 2 : 1));
+				if (c.turn.angle > 90 * c.turn.times) {
+					this.turnAngle(c.pieceId, 90 * c.turn.times - c.turn.angle);
+					for (let i = 0; i < c.turn.times; i++) {
+						let C = this.cycles[c.turn.face];
+						let Cf = e => {
+							if (c.turn.clockwise) {
+								this.findPiece(e[0]).pieceIdN = e[1];
+								this.findPiece(e[1]).pieceIdN = e[2];
+								this.findPiece(e[2]).pieceIdN = e[3];
+								this.findPiece(e[3]).pieceIdN = e[0];
+							}
+							else {
+								this.findPiece(e[0]).pieceIdN = e[3];
+								this.findPiece(e[1]).pieceIdN = e[0];
+								this.findPiece(e[2]).pieceIdN = e[1];
+								this.findPiece(e[3]).pieceIdN = e[2];
+							}
+						};
+						C.forEach(e => Cf(e.split(",")));
+						this.pieces.forEach(e => {
+							if (e.turn.pieceId == c.turn.pieceId) {
+								e.turning = false;
+								e.turn.angle = 0;
+								e.pieceId = e.pieceIdN;
+							}
+						});
+					}
+				}
+			}
+		});
+		if (this.scrambling && !this.turn.turning()) {
+			if (this.scrambleIndex < this.scramble.length) {
+				this.turnCube(this.scramble[this.scrambleIndex]);
+				this.scrambleIndex++;
+			}
+			else {
+				this.scrambling = false;
+				if (timer.maystart) this.undoCap = this.turns.length;
+			}
+		}
+
+		let touchesR = this.touches.filter(e => !e.intng);
+		if (touchesR.length >= 2) {
+			let x = 0;
+			let y = 0;
+			let dist = 0;
+			let angle = 0;
+			touchesR.forEach(e => {
+				x += e.x / touchesR.length;
+				y += e.y / touchesR.length;
+			});
+			touchesR.forEach(e => {
+				if (e.ax !== undefined && e.ay !== undefined) {
+					let ax = e.x - x;
+					let ay = e.y - y;
+					let bx = e.ax - x;
+					let by = e.ay - y;
+					let ad = Math.hypot(ax, ay);
+					let bd = Math.hypot(bx, by);
+					dist += ad - bd;
+					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
+					e.ax = undefined;
+					e.ay = undefined;
+				}
+			});
+			
+			this.rotate.z = angle * 180 / Math.PI;
+			this.rotateCube(0, 0, this.rotate.z);
+			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
+		}
+
+		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
+		this.rotate.x *= 0.95;
+		this.rotate.y *= 0.95;
+		this.rotate.z *= 0.95;
+
+		if (this.isSolved() && timer.running) {
+			timer.stop();
+			timer.maystart = false;
+			this.undoCap = this.turns.length;
+		}
+		timerElement.innerHTML = timer.display();
+
+		this.draw();
+		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
+	}
+
 	draw() {
 		let drawFaces = [];
 		this.pieces.forEach(c => {
@@ -195,6 +290,31 @@ class RubiksCube {
 				ctx.fill();
 				ctx.globalAlpha = 1;
 			}
+		});
+	}
+
+	drawMap(x, y, w) {
+		let h = w * 3 / 4;
+		let siW = w / 4;
+		let sqW = siW / 3;
+		let faceCoords = [
+			[1 * siW, 0 * siW],
+			[0 * siW, 1 * siW],
+			[1 * siW, 1 * siW],
+			[2 * siW, 1 * siW],
+			[3 * siW, 1 * siW],
+			[1 * siW, 2 * siW]
+		];
+		this.map.forEach((si, i) => {
+			let siX = faceCoords[i][0];
+			let siY = faceCoords[i][1];
+			si.forEach((sq, j) => {
+				let sqX = (j % 3) * sqW;
+				let sqY = (Math.floor(j / 3)) * sqW;
+				let padding = 0.05;
+				ctx.fillStyle = colors[sq];
+				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
+			});
 		});
 	}
 
@@ -332,122 +452,6 @@ class RubiksCube {
 					swap(e[0][0], e[0][1], e[1][0], e[1][1]);
 				}
 		});
-	}
-
-	drawMap(x, y, w) {
-		let h = w * 3 / 4;
-		let siW = w / 4;
-		let sqW = siW / 3;
-		let faceCoords = [
-			[1 * siW, 0 * siW],
-			[0 * siW, 1 * siW],
-			[1 * siW, 1 * siW],
-			[2 * siW, 1 * siW],
-			[3 * siW, 1 * siW],
-			[1 * siW, 2 * siW]
-		];
-		this.map.forEach((si, i) => {
-			let siX = faceCoords[i][0];
-			let siY = faceCoords[i][1];
-			si.forEach((sq, j) => {
-				let sqX = (j % 3) * sqW;
-				let sqY = (Math.floor(j / 3)) * sqW;
-				let padding = 0.05;
-				ctx.fillStyle = colors[sq];
-				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
-			});
-		});
-	}
-
-	loop() {
-		this.pieces.forEach(c => {
-			if (c.pieceId == c.turn.pieceId && c.turning) {
-				this.turnAngle(c.pieceId, this.turn.speed * (this.scrambling ? 2 : 1));
-				if (c.turn.angle > 90 * c.turn.times) {
-					this.turnAngle(c.pieceId, 90 * c.turn.times - c.turn.angle);
-					for (let i = 0; i < c.turn.times; i++) {
-						let C = this.cycles[c.turn.face];
-						let Cf = e => {
-							if (c.turn.clockwise) {
-								this.findPiece(e[0]).pieceIdN = e[1];
-								this.findPiece(e[1]).pieceIdN = e[2];
-								this.findPiece(e[2]).pieceIdN = e[3];
-								this.findPiece(e[3]).pieceIdN = e[0];
-							}
-							else {
-								this.findPiece(e[0]).pieceIdN = e[3];
-								this.findPiece(e[1]).pieceIdN = e[0];
-								this.findPiece(e[2]).pieceIdN = e[1];
-								this.findPiece(e[3]).pieceIdN = e[2];
-							}
-						};
-						C.forEach(e => Cf(e.split(",")));
-						this.pieces.forEach(e => {
-							if (e.turn.pieceId == c.turn.pieceId) {
-								e.turning = false;
-								e.turn.angle = 0;
-								e.pieceId = e.pieceIdN;
-							}
-						});
-					}
-				}
-			}
-		});
-		if (this.scrambling && !this.turn.turning()) {
-			if (this.scrambleIndex < this.scramble.length) {
-				this.turnCube(this.scramble[this.scrambleIndex]);
-				this.scrambleIndex++;
-			}
-			else {
-				this.scrambling = false;
-				if (timer.maystart) this.undoCap = this.turns.length;
-			}
-		}
-
-		let touchesR = this.touches.filter(e => !e.intng);
-		if (touchesR.length >= 2) {
-			let x = 0;
-			let y = 0;
-			let dist = 0;
-			let angle = 0;
-			touchesR.forEach(e => {
-				x += e.x / touchesR.length;
-				y += e.y / touchesR.length;
-			});
-			touchesR.forEach(e => {
-				if (e.ax !== undefined && e.ay !== undefined) {
-					let ax = e.x - x;
-					let ay = e.y - y;
-					let bx = e.ax - x;
-					let by = e.ay - y;
-					let ad = Math.hypot(ax, ay);
-					let bd = Math.hypot(bx, by);
-					dist += ad - bd;
-					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
-					e.ax = undefined;
-					e.ay = undefined;
-				}
-			});
-			
-			this.rotate.z = angle * 180 / Math.PI;
-			this.rotateCube(0, 0, this.rotate.z);
-			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
-		}
-
-		if (!this.touching) this.rotateCube(this.rotate.x, this.rotate.y, this.rotate.z);
-		this.rotate.x *= 0.95;
-		this.rotate.y *= 0.95;
-		this.rotate.z *= 0.95;
-
-		if (this.isSolved() && timer.running) {
-			timer.stop();
-			timer.maystart = false;
-			this.undoCap = this.turns.length;
-		}
-		timerElement.innerHTML = timer.display();
-
-		this.draw();
-		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
 	}
 
 	touchStart(x, y, id) {

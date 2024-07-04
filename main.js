@@ -63,8 +63,7 @@ function toggleTimer() {
 
 function scrambleCube() {
 	if (timer.enabled) {
-		Rubik = new RubiksCube();
-		Rubik.rotateCube(20, -20, 0);
+		Rubik.reset();
 		Rubik.rotate = {
 			x: (Math.random() - 0.5) * 20,
 			y: (Math.random() - 0.5) * 20,
