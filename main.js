@@ -106,7 +106,7 @@ const fps = {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
 		if (time > 1000 / 5) {
-			if (fps.visible) fps_display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
+			if (fps.visible) fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
 			//console.log(timeA / frames);
 			timeA = 0;
 			frames = 0;

@@ -256,7 +256,7 @@ class RubiksCube {
 			timer.maystart = false;
 			this.undoCap = this.turns.length;
 		}
-		timerElement.innerHTML = timer.display();
+		timerElement.textContent = timer.display();
 
 		this.draw();
 		this.drawMap(this.display.width - this.display.width * 0.03 - Math.sqrt(this.display.width * this.display.height) * 0.2, this.display.width * 0.03, Math.sqrt(this.display.width * this.display.height) * 0.2);
