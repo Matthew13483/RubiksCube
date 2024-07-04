@@ -117,7 +117,7 @@ const fps = {
 };
 
 const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
-let Rubik = new RubiksCube();
+const Rubik = new RubiksCube();
 Rubik.rotateCube(200, -20, 0);
 
 let timeA = 0;

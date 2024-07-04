@@ -161,6 +161,14 @@ class RubiksCube {
 			[4, 4, 4, 4, 4, 4, 4, 4, 4],
 			[5, 5, 5, 5, 5, 5, 5, 5, 5]
 		];
+
+		this.display = {};
+		if (canvas) this.resize(canvas.width, canvas.height);
+	}
+
+	resize(width, height) {
+		this.display.width = width;
+		this.display.height = height;
 	}
 
 	loop() {
@@ -251,7 +259,7 @@ class RubiksCube {
 		timerElement.innerHTML = timer.display();
 
 		this.draw();
-		this.drawMap(canvas.width - canvas.width * 0.03 - Math.sqrt(canvas.width * canvas.height) * 0.2, canvas.width * 0.03, Math.sqrt(canvas.width * canvas.height) * 0.2);
+		this.drawMap(this.display.width - this.display.width * 0.03 - Math.sqrt(this.display.width * this.display.height) * 0.2, this.display.width * 0.03, Math.sqrt(this.display.width * this.display.height) * 0.2);
 	}
 
 	draw() {
@@ -276,8 +284,8 @@ class RubiksCube {
 		drawFaces.forEach(e => {
 			ctx.beginPath();
 			e[1].points.forEach((e1, i) => {
-				let p = c32(e1.x + this.pos.x, e1.y + this.pos.y, e1.z + this.pos.z, canvas.width, canvas.height);
-				ctx[i == 0 ? "moveTo" : "lineTo"](p.x + canvas.width / 2, -p.y + canvas.height / 2);
+				let p = c32(e1.x + this.pos.x, e1.y + this.pos.y, e1.z + this.pos.z, this.display.width, this.display.height);
+				ctx[i == 0 ? "moveTo" : "lineTo"](p.x + this.display.width / 2, -p.y + this.display.height / 2);
 			});
 			ctx.closePath();
 			ctx.fillStyle = colors[e[3]];
@@ -468,15 +476,15 @@ class RubiksCube {
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
 				if (!clockwise(...[e.p1, e.p2, e.p3].map(e => ({ x: e.x + Rubik.pos.x, y: e.y + Rubik.pos.y, z: e.z + Rubik.pos.z})))) return;
-				let p1 = c32(e.p1.x + this.pos.x, e.p1.y + this.pos.y, e.p1.z + this.pos.z, canvas.width, canvas.height);
-				let p2 = c32(e.p2.x + this.pos.x, e.p2.y + this.pos.y, e.p2.z + this.pos.z, canvas.width, canvas.height);
-				let p3 = c32(e.p3.x + this.pos.x, e.p3.y + this.pos.y, e.p3.z + this.pos.z, canvas.width, canvas.height);
-				let p4 = c32(e.p4.x + this.pos.x, e.p4.y + this.pos.y, e.p4.z + this.pos.z, canvas.width, canvas.height);
+				let p1 = c32(e.p1.x + this.pos.x, e.p1.y + this.pos.y, e.p1.z + this.pos.z, this.display.width, this.display.height);
+				let p2 = c32(e.p2.x + this.pos.x, e.p2.y + this.pos.y, e.p2.z + this.pos.z, this.display.width, this.display.height);
+				let p3 = c32(e.p3.x + this.pos.x, e.p3.y + this.pos.y, e.p3.z + this.pos.z, this.display.width, this.display.height);
+				let p4 = c32(e.p4.x + this.pos.x, e.p4.y + this.pos.y, e.p4.z + this.pos.z, this.display.width, this.display.height);
 				let Ply = new Polygon([
-					new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
-					new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),
-					new Point(p3.x + canvas.width / 2, -p3.y + canvas.height / 2),
-					new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
+					new Point(p1.x + this.display.width / 2, -p1.y + this.display.height / 2),
+					new Point(p2.x + this.display.width / 2, -p2.y + this.display.height / 2),
+					new Point(p3.x + this.display.width / 2, -p3.y + this.display.height / 2),
+					new Point(p4.x + this.display.width / 2, -p4.y + this.display.height / 2)
 				]);
 				if (c.acFaces[i] && cllnPolyPnt(Ply, this.touches[index])) {
 					intng = true;
@@ -500,15 +508,15 @@ class RubiksCube {
 		if (this.touches[index].intng && !this.touches[index].gotLine) {
 			let c = this.touches[index].cube;
 			let e = this.touches[index].face;
-			let p1 = c32(e.p1.x + this.pos.x, e.p1.y + this.pos.y, e.p1.z + this.pos.z, canvas.width, canvas.height);
-			let p2 = c32(e.p2.x + this.pos.x, e.p2.y + this.pos.y, e.p2.z + this.pos.z, canvas.width, canvas.height);
-			let p3 = c32(e.p3.x + this.pos.x, e.p3.y + this.pos.y, e.p3.z + this.pos.z, canvas.width, canvas.height);
-			let p4 = c32(e.p4.x + this.pos.x, e.p4.y + this.pos.y, e.p4.z + this.pos.z, canvas.width, canvas.height);
+			let p1 = c32(e.p1.x + this.pos.x, e.p1.y + this.pos.y, e.p1.z + this.pos.z, this.display.width, this.display.height);
+			let p2 = c32(e.p2.x + this.pos.x, e.p2.y + this.pos.y, e.p2.z + this.pos.z, this.display.width, this.display.height);
+			let p3 = c32(e.p3.x + this.pos.x, e.p3.y + this.pos.y, e.p3.z + this.pos.z, this.display.width, this.display.height);
+			let p4 = c32(e.p4.x + this.pos.x, e.p4.y + this.pos.y, e.p4.z + this.pos.z, this.display.width, this.display.height);
 			let Ply = new Polygon([
-				new Point(p1.x + canvas.width / 2, -p1.y + canvas.height / 2),
-				new Point(p2.x + canvas.width / 2, -p2.y + canvas.height / 2),
-				new Point(p3.x + canvas.width / 2, -p3.y + canvas.height / 2),
-				new Point(p4.x + canvas.width / 2, -p4.y + canvas.height / 2)
+				new Point(p1.x + this.display.width / 2, -p1.y + this.display.height / 2),
+				new Point(p2.x + this.display.width / 2, -p2.y + this.display.height / 2),
+				new Point(p3.x + this.display.width / 2, -p3.y + this.display.height / 2),
+				new Point(p4.x + this.display.width / 2, -p4.y + this.display.height / 2)
 			]);
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
 			lines.forEach((e, i) => {
@@ -527,8 +535,8 @@ class RubiksCube {
 		if (!this.touches[index].intng) {
 			this.touches[index].ax = this.touches[index].x;
 			this.touches[index].ay = this.touches[index].y;
-			this.rotate.x = -(this.touches[index].y - y) * 360 / Math.sqrt(canvas.width * canvas.height);
-			this.rotate.y = (this.touches[index].x - x) * 360 / Math.sqrt(canvas.width * canvas.height);
+			this.rotate.x = -(this.touches[index].y - y) * 360 / Math.sqrt(this.display.width * this.display.height);
+			this.rotate.y = (this.touches[index].x - x) * 360 / Math.sqrt(this.display.width * this.display.height);
 			this.rotateCube(this.rotate.x, this.rotate.y, 0);
 		}
 		this.touches[index].x = x;
