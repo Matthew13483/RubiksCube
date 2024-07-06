@@ -146,7 +146,7 @@ class RubiksCube {
 
 		this.turn = {
 			turning: () => this.pieces.map(e => e.turning).reduce((a, b) => a || b),
-			ms: 60
+			ms: [60, 30]
 		};
 		this.turns = [];
 		this.undoCap = 0;
@@ -177,7 +177,7 @@ class RubiksCube {
 		let s = performance.now();
 		this.pieces.forEach(c => {
 			if (c.turning && c.pieceId == c.turn.pieceId) {
-				if ((Date.now() - c.turn.startTime) / (this.turn.ms / (this.scrambling ? 2 : 1)) > c.turn.times) {
+				if ((Date.now() - c.turn.startTime) / this.turn.ms[Number(this.scrambling)] > c.turn.times) {
 					let angle = (c.turn.clockwise * 2 - 1) * (1 * 90 * Math.PI / 180);
 					let a1 = Math.atan2(c.turn.piece.z, c.turn.piece.y);
 					let tP2 = rotateX(a1, c.turn.piece);
@@ -272,7 +272,9 @@ class RubiksCube {
 		let s = performance.now();
 		let drawFaces = [];
 		this.pieces.forEach(c => {
-			let angle = (Date.now() - c.turn.startTime) / this.turn.ms;
+			let angle = (Date.now() - c.turn.startTime) / this.turn.ms[Number(this.scrambling)];
+			let curve = t => t ** (1/2)
+			angle = Math.floor(angle) + curve(angle - Math.floor(angle));
 			angle = (c.turn.clockwise * 2 - 1) * (angle * 90 * Math.PI / 180);
 			let a1, a2;
 			if (c.turning) {
@@ -294,7 +296,7 @@ class RubiksCube {
 						cz += p.z / a.length;
 					});
 					let dist = Math.hypot(cx + this.pos.x, cy + this.pos.y, cz + this.pos.z);
-					if (false || c.color[e.color] !== 6) drawFaces.push([dist, points, c.color[e.color]]);
+					if (true || c.color[e.color] !== 6) drawFaces.push([dist, points, c.color[e.color]]);
 				}
 			});
 		});
