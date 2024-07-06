@@ -35,7 +35,7 @@ function c32(x, y, z, w, h) {
 	}
 }
 
-function rotateX(p, rp, a) {
+function rotateX(a, p, rp = { x: 0, y: 0, z: 0 }) {
 	return {
 		x: p.x,
 		y: (p.y - rp.y) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.y,
@@ -43,7 +43,7 @@ function rotateX(p, rp, a) {
 	};
 }
 
-function rotateY(p, rp, a) {
+function rotateY(a, p, rp = { x: 0, y: 0, z: 0 }) {
 	return {
 		x: (p.x - rp.x) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.x,
 		y: p.y,
@@ -51,7 +51,7 @@ function rotateY(p, rp, a) {
 	};
 }
 
-function rotateZ(p, rp, a) {
+function rotateZ(a, p, rp = { x: 0, y: 0, z: 0 }) {
 	return {
 		x: (p.x - rp.x) * Math.cos(a) - (p.y - rp.y) * Math.sin(a) + rp.x,
 		y: (p.y - rp.y) * Math.cos(a) + (p.x - rp.x) * Math.sin(a) + rp.y,

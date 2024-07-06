@@ -105,10 +105,18 @@ const fps = {
 	inLoop: () => {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
-		if (time > 1000 / 5) {
+		if (time > 1000) {
 			if (fps.visible) fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
-			//console.log(timeA / frames);
+			if (false) console.table([
+				{ function: 'Rubik.loop()', avgTime: timeA / frames },
+				{ function: 'loop logic', avgTime: timeB / frames },
+				{ function: 'draw setup', avgTime: timeC / frames },
+				{ function: 'draw ctx', avgTime: timeD / frames },
+			]);
 			timeA = 0;
+			timeB = 0;
+			timeC = 0;
+			timeD = 0;
 			frames = 0;
 			fps.startTime = Date.now();
 			fps.frameCount = 0;
@@ -121,6 +129,9 @@ const Rubik = new RubiksCube();
 Rubik.rotateCube(200, -20, 0);
 
 let timeA = 0;
+let timeB = 0;
+let timeC = 0;
+let timeD = 0;
 let frames = 0;
 
 function loop() {
