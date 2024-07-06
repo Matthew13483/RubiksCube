@@ -26,6 +26,42 @@ function basicLighting(a, b, c, d) {
 	return getNormal(a, b, c).y;
 }
 
+function centroid(poly) {
+	let areaT = 0;
+	let centroidT = { x: 0, y: 0, z: 0 };
+	for (let i = 2; i < poly.length; i++) {
+		let tri = ([poly[0], poly[i - 1], poly[i]]);
+		let a = {
+			x: tri[1].x - tri[0].x,
+			y: tri[1].y - tri[0].y,
+			z: tri[1].z - tri[0].z,
+		};
+		let b = {
+			x: tri[2].x - tri[0].x,
+			y: tri[2].y - tri[0].y,
+			z: tri[2].z - tri[0].z,
+		};
+		let area = Math.hypot(
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x,
+		) / 2;
+		let centroid = {
+			x: (tri[0].x + tri[1].x + tri[2].x) / 3,
+			y: (tri[0].y + tri[1].y + tri[2].y) / 3,
+			z: (tri[0].z + tri[1].z + tri[2].z) / 3
+		};
+		areaT += area;
+		centroidT.x += centroid.x * area;
+		centroidT.y += centroid.y * area;
+		centroidT.z += centroid.z * area;
+	}
+	centroidT.x /= areaT;
+	centroidT.y /= areaT;
+	centroidT.z /= areaT;
+	return centroidT;
+}
+
 function c32(x, y, z, w, h) {
 	let FOV = 60 * Math.PI / 180;
 	let fl = Math.hypot(w, h) / (2 * Math.tan(FOV / 2));
