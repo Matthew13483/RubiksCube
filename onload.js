@@ -1,6 +1,8 @@
 window.onload = () => {
 	window.onresize();
 
+	content.style.display = 'block';
+
 	loop();
 };
 

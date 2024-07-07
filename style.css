@@ -2,6 +2,11 @@ body {
 	margin: 0;
 	user-select: none;
 	overflow: hidden;
+	background: #000000;
+}
+
+#content {
+	display: none;
 }
 
 #canvas_bg {
