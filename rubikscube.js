@@ -145,7 +145,6 @@ class RubiksCube {
 		this.touching = false;
 
 		this.turn = {
-			turning: () => this.pieces.map(e => e.turning).reduce((a, b) => a || b),
 			ms: [60, 30]
 		};
 		this.turns = [];
@@ -210,7 +209,7 @@ class RubiksCube {
 				}
 			}
 		});
-		if (this.scrambling && !this.turn.turning()) {
+		if (this.scrambling && !this.isTurning()) {
 			if (this.scrambleIndex < this.scramble.length) {
 				this.turnCube(this.scramble[this.scrambleIndex]);
 				this.scrambleIndex++;
@@ -265,7 +264,11 @@ class RubiksCube {
 		timeB += performance.now() - s;
 
 		this.draw();
-		this.drawMap(this.display.width - this.display.width * 0.03 - Math.sqrt(this.display.width * this.display.height) * 0.2, this.display.width * 0.03, Math.sqrt(this.display.width * this.display.height) * 0.2);
+
+		let width = Math.sqrt(this.display.width * this.display.height) * 0.2;
+		let y = this.display.width * 0.03;
+		let x = this.display.width - y - width;
+		this.drawMap(x, y, width);
 	}
 
 	draw() {
@@ -283,9 +286,8 @@ class RubiksCube {
 				a2 = Math.atan2(tP2.x, tP2.y);
 			}
 			c.geometry.forEach(e => {
-				let points;
+				let points = e.points;
 				if (c.turning) points = e.points.map(p => this.rotateAngle(a1, a2, angle, p));
-				else points = e.points;
 				if (clockwise(...points.map(e => ({ x: e.x + this.pos.x, y: e.y + this.pos.y, z: e.z + this.pos.z })))) {
 					let cen = centroid(points);
 					let dist = Math.hypot(cen.x + this.pos.x, cen.y + this.pos.y, cen.z + this.pos.z);
@@ -335,7 +337,7 @@ class RubiksCube {
 			si.forEach((sq, j) => {
 				let sqX = (j % 3) * sqW;
 				let sqY = (Math.floor(j / 3)) * sqW;
-				let padding = 0.05;
+				let padding = 0.07;
 				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
@@ -371,7 +373,6 @@ class RubiksCube {
 			if ((e.pieceId + "xyz").split("").find(e => e == side[0])) {
 				e.turning = true;
 				turning = true;
-				//e.turn.angle = 0;
 				e.turn.startTime = Date.now();
 				e.turn.face = side[0];
 				e.turn.clockwise = side[side.length - 1] !== "'";
@@ -415,14 +416,9 @@ class RubiksCube {
 
 	turnUndo() {
 		if (this.turns.length <= this.undoCap) return;
-		let side = this.turns.pop();
+		let side = this.turns[this.turns.length - 1];
 		let side2 = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
-		if (this.turnCube(side2)) {
-			this.turns.pop();
-		}
-		else {
-			this.turns.push(side);
-		}
+		if (this.turnCube(side2)) this.turns.splice(this.turns.length - 2, 2);
 	}
 
 	turnAbsolute(side) {
@@ -449,30 +445,6 @@ class RubiksCube {
 		return p;
 	}
 
-	turnAngle(f, a) {
-		//console.log(a)
-		/*let angle = a//**3/3//**2//Math.min(Math.max(Math.sqrt(a), 0), 1);
-		this.pieces.forEach(c => {
-			if (f == c.turn.pieceId && c.turning) {
-				c.turn.angle += a;
-				c.turn.startTime = 0
-				let a1 = Math.atan2(c.turn.piece.z, c.turn.piece.y);
-				let tP2 = rotateX(c.turn.piece, { x: 0, y: 0, z: 0 }, a1);
-				let a2 = Math.atan2(tP2.x, tP2.y);
-				let rf = (p) => {
-					p = rotateX(p, { x: 0, y: 0, z: 0 }, a1);
-					p = rotateZ(p, { x: 0, y: 0, z: 0 }, a2);
-					p = rotateY(p, { x: 0, y: 0, z: 0 }, (c.turn.clockwise * 2 - 1) * (angle * 90 * Math.PI / 180));
-					p = rotateZ(p, { x: 0, y: 0, z: 0 }, -a2);
-					p = rotateX(p, { x: 0, y: 0, z: 0 }, -a1);
-					return p;
-				};
-				//Object.assign(c, rf(c));
-				//c.geometry.forEach(e => e.points.forEach(p => Object.assign(p, rf(p))));
-			}
-		});*/
-	}
-
 	turnMap(side) {
 		let swap = (si1, sq1, si2, sq2) => [this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
 		this.cyclesMap[side[0]].forEach(e => {
@@ -490,25 +462,19 @@ class RubiksCube {
 
 	touchStart(x, y, id) {
 		this.touching = true;
-		this.touches.push({ id });
-		let index = this.touches.length - 1;
+		let touch = { id };
+		this.touches.push(touch);
 		let intng = false,
 			cube, face, faceI, gotLine = false;
 		this.rotate.x = this.rotate.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
 				if (!clockwise(...[e.p1, e.p2, e.p3].map(e => ({ x: e.x + this.pos.x, y: e.y + this.pos.y, z: e.z + this.pos.z })))) return;
-				let p1 = c32(e.p1.x + this.pos.x, e.p1.y + this.pos.y, e.p1.z + this.pos.z, this.display.width, this.display.height);
-				let p2 = c32(e.p2.x + this.pos.x, e.p2.y + this.pos.y, e.p2.z + this.pos.z, this.display.width, this.display.height);
-				let p3 = c32(e.p3.x + this.pos.x, e.p3.y + this.pos.y, e.p3.z + this.pos.z, this.display.width, this.display.height);
-				let p4 = c32(e.p4.x + this.pos.x, e.p4.y + this.pos.y, e.p4.z + this.pos.z, this.display.width, this.display.height);
 				let Ply = {
-					points: [
-						{ x: p1.x + this.display.width / 2, y: -p1.y + this.display.height / 2 },
-						{ x: p2.x + this.display.width / 2, y: -p2.y + this.display.height / 2 },
-						{ x: p3.x + this.display.width / 2, y: -p3.y + this.display.height / 2 },
-						{ x: p4.x + this.display.width / 2, y: -p4.y + this.display.height / 2 }
-					]
+					points: [e.p1, e.p2, e.p3, e.p4].map(p => {
+						let p2 = c32(p.x + this.pos.x, p.y + this.pos.y, p.z + this.pos.z, this.display.width, this.display.height);
+						return { x: p2.x + this.display.width / 2, y: -p2.y + this.display.height / 2 };
+					})
 				};
 				if (c.acFaces[i] && cllnPolyPnt(Ply, { x, y })) {
 					intng = true;
@@ -518,49 +484,43 @@ class RubiksCube {
 				}
 			});
 		});
-		Object.assign(this.touches[index], { x, y, intng, cube, face, faceI, gotLine });
+		Object.assign(touch, { x, y, intng, cube, face, faceI, gotLine });
 	}
 
 	touchMove(x, y, id) {
 		this.touching = true;
-		let index = this.touches.findIndex(e => e.id === id);
-		if (index === -1) return;
-		if (this.touches[index].intng && !this.touches[index].gotLine) {
-			let { cube, face } = this.touches[index];
-			let p1 = c32(face.p1.x + this.pos.x, face.p1.y + this.pos.y, face.p1.z + this.pos.z, this.display.width, this.display.height);
-			let p2 = c32(face.p2.x + this.pos.x, face.p2.y + this.pos.y, face.p2.z + this.pos.z, this.display.width, this.display.height);
-			let p3 = c32(face.p3.x + this.pos.x, face.p3.y + this.pos.y, face.p3.z + this.pos.z, this.display.width, this.display.height);
-			let p4 = c32(face.p4.x + this.pos.x, face.p4.y + this.pos.y, face.p4.z + this.pos.z, this.display.width, this.display.height);
+		let touch = this.touches.find(e => e.id === id);
+		if (!touch) return;
+		if (touch.intng && !touch.gotLine) {
+			let { cube, face } = touch;
 			let Ply = {
-				points: [
-					{ x: p1.x + this.display.width / 2, y: -p1.y + this.display.height / 2 },
-					{ x: p2.x + this.display.width / 2, y: -p2.y + this.display.height / 2 },
-					{ x: p3.x + this.display.width / 2, y: -p3.y + this.display.height / 2 },
-					{ x: p4.x + this.display.width / 2, y: -p4.y + this.display.height / 2 }
-				]
+				points: [face.p1, face.p2, face.p3, face.p4].map(p => {
+					let p2 = c32(p.x + this.pos.x, p.y + this.pos.y, p.z + this.pos.z, this.display.width, this.display.height);
+					return { x: p2.x + this.display.width / 2, y: -p2.y + this.display.height / 2 };
+				})
 			};
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
 			lines.forEach((e, i) => {
-				let a = Math.atan2(y - this.touches[index].y, x - this.touches[index].x);
-				let d = Math.hypot(this.touches[index].y - y, this.touches[index].x - x) * 10;
-				let p = new Point(this.touches[index].x + Math.cos(a) * d, this.touches[index].y + Math.sin(a) * d);
-				if (cllnLineLine(e, new Line(this.touches[index], p))) {
+				let a = Math.atan2(y - touch.y, x - touch.x);
+				let d = Math.hypot(touch.y - y, touch.x - x) * 10;
+				let p = new Point(touch.x + Math.cos(a) * d, touch.y + Math.sin(a) * d);
+				if (cllnLineLine(e, new Line(touch, p))) {
 					if (!this.scrambling) {
-						this.turnCube(this.turnAtlas[cube.pieceId][this.touches[index].faceI].split(",")[i]);
+						this.turnCube(this.turnAtlas[cube.pieceId][touch.faceI].split(",")[i]);
 						if (timer.maystart && !timer.running) timer.start();
 					}
-					this.touches[index].gotLine = true;
+					touch.gotLine = true;
 				}
 			});
 		}
-		if (!this.touches[index].intng) {
-			this.touches[index].ax = this.touches[index].x;
-			this.touches[index].ay = this.touches[index].y;
-			this.rotate.x = -(this.touches[index].y - y) * 360 / Math.sqrt(this.display.width * this.display.height);
-			this.rotate.y = (this.touches[index].x - x) * 360 / Math.sqrt(this.display.width * this.display.height);
+		if (!touch.intng) {
+			touch.ax = touch.x;
+			touch.ay = touch.y;
+			this.rotate.x = -(touch.y - y) * 360 / Math.sqrt(this.display.width * this.display.height);
+			this.rotate.y = (touch.x - x) * 360 / Math.sqrt(this.display.width * this.display.height);
 			this.rotateCube(this.rotate.x, this.rotate.y, 0);
 		}
-		Object.assign(this.touches[index], { x, y });
+		Object.assign(touch, { x, y });
 	}
 
 	touchEnd(id) {
@@ -609,6 +569,10 @@ class RubiksCube {
 
 	findPiece(id) {
 		return this.pieces.find(e => e.pieceId === id);
+	}
+
+	isTurning() {
+		return this.pieces.map(e => e.turning).reduce((a, b) => a || b);
 	}
 
 	isSolved() {

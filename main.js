@@ -43,15 +43,15 @@ timer.maystart = false;
 function toggleTimer() {
 	timer.enabled = !timer.enabled;
 	if (timer.enabled) {
-		tON.style.display = 'block'
-		tOFF.style.display = 'none';
+		timerON.style.display = 'block'
+		timerOFF.style.display = 'none';
 		timer_container.style.opacity = 1;
 		button_scramble.style.animation = 'highlight 1.5s';
 		timerElement.style.color = '#565670';
 	}
 	else {
-		tON.style.display = 'none';
-		tOFF.style.display = 'block';
+		timerON.style.display = 'none';
+		timerOFF.style.display = 'block';
 		timer_container.style.opacity = 0;
 		button_scramble.style.animation = 'none';
 		timerElement.style.color = '#565670';
@@ -94,20 +94,22 @@ const sound = new Sound('assets/turn1.mp3');
 
 function toggleSound() {
 	sound.toggle();
-	sON.style.display = sound.enabled ? 'block' : 'none';
-	sOFF.style.display = !sound.enabled ? 'block' : 'none';
+	soundON.style.display = sound.enabled ? 'block' : 'none';
+	soundOFF.style.display = !sound.enabled ? 'block' : 'none';
 }
 
 const fps = {
-	visible: true,
 	startTime: Date.now(),
 	frameCount: 0,
 	inLoop: () => {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
-			if (fps.visible) fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
-			if (false) console.table([
+			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
+			fps.startTime = Date.now();
+			fps.frameCount = 0;
+			
+			if (debug_performance) console.table([
 				{ function: 'Rubik.loop()', avgTime: timeA / frames },
 				{ function: 'loop logic', avgTime: timeB / frames },
 				{ function: 'draw setup', avgTime: timeC / frames },
@@ -118,8 +120,6 @@ const fps = {
 			timeC = 0;
 			timeD = 0;
 			frames = 0;
-			fps.startTime = Date.now();
-			fps.frameCount = 0;
 		}
 	}
 };
@@ -128,6 +128,7 @@ const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
 const Rubik = new RubiksCube();
 Rubik.rotateCube(200, -20, 0);
 
+let debug_performance = false;
 let timeA = 0;
 let timeB = 0;
 let timeC = 0;
