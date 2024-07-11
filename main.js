@@ -64,7 +64,7 @@ function toggleTimer() {
 function scrambleCube() {
 	if (timer.enabled) {
 		Rubik.reset();
-		Rubik.rotate = {
+		Rubik.rotateVel = {
 			x: (Math.random() - 0.5) * 20,
 			y: (Math.random() - 0.5) * 20,
 			z: (Math.random() - 0.5) * 20
@@ -125,6 +125,7 @@ const fps = {
 };
 
 const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
+
 const Rubik = new RubiksCube();
 Rubik.rotateCube(200, -20, 0);
 

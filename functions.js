@@ -2,24 +2,74 @@ function map(x, x1, x2, y1, y2) {
 	return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
 }
 
+function dist(a, b) {
+	return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+function Vlength(v) {
+	return Math.sqrt(Vdot(v, v));
+}
+
+function Vneg(v) {
+	return { x: -v.x, y: -v.y, z: -v.z };
+}
+
+function Vadd(...vec) {
+	let func = (a, b) => ({
+		x: a.x + b.x,
+		y: a.y + b.y,
+		z: a.z + b.z
+	});
+	return vec.reduce((a, b) => func(a, b));
+}
+
+function Vsub(...vec) {
+	let func = (a, b) => ({
+		x: a.x - b.x,
+		y: a.y - b.y,
+		z: a.z - b.z
+	});
+	return vec.reduce((a, b) => func(a, b));
+}
+
+function Vscale(v, s) {
+	return {
+		x: v.x * s,
+		y: v.y * s,
+		z: v.z * s
+	};
+}
+
+function Vnormalize(v) {
+	return Vscale(v, 1 / Vlength(v));
+}
+
+function Vdot(a, b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+function Vcross(a, b) {
+	return {
+		x: a.y * b.z - a.z * b.y,
+		y: a.z * b.x - a.x * b.z,
+		z: a.x * b.y - a.y * b.x
+	};
+}
+
+function Vmatrix(mat, v) {
+	return {
+		x: mat[0].x * v.x + mat[1].x * v.y + mat[2].x * v.z,
+		y: mat[0].y * v.x + mat[1].y * v.y + mat[2].y * v.z,
+		z: mat[0].z * v.x + mat[1].z * v.y + mat[2].z * v.z
+	};
+}
+
 function getNormal(a, b, c) {
-	let l1 = new Point(a.x - b.x, a.y - b.y, a.z - b.z);
-	let l2 = new Point(c.x - b.x, c.y - b.y, c.z - b.z);
-	let normal = new Point(
-		l1.y * l2.z - l1.z * l2.y,
-		l1.z * l2.x - l1.x * l2.z,
-		l1.x * l2.y - l1.y * l2.x
-	);
-	let l = Math.hypot(normal.x, normal.y, normal.z);
-	normal.x /= l;
-	normal.y /= l;
-	normal.z /= l;
-	return normal;
+	return Vnormalize(Vcross(Vsub(a, b), Vsub(c, b)));
 }
 
 function clockwise(a, b, c) {
-	let normal = getNormal(a, b, c);
-	return (normal.x * b.x + normal.y * b.y + normal.z * b.z) > 0;
+	return Vdot(getNormal(a, b, c), b) > 0;
 }
 
 function basicLighting(a, b, c, d) {
@@ -30,44 +80,26 @@ function centroid(poly) {
 	let areaT = 0;
 	let centroidT = { x: 0, y: 0, z: 0 };
 	for (let i = 2; i < poly.length; i++) {
-		let tri = ([poly[0], poly[i - 1], poly[i]]);
-		let a = {
-			x: tri[1].x - tri[0].x,
-			y: tri[1].y - tri[0].y,
-			z: tri[1].z - tri[0].z,
-		};
-		let b = {
-			x: tri[2].x - tri[0].x,
-			y: tri[2].y - tri[0].y,
-			z: tri[2].z - tri[0].z,
-		};
-		let area = Math.hypot(
-			a.y * b.z - a.z * b.y,
-			a.z * b.x - a.x * b.z,
-			a.x * b.y - a.y * b.x,
-		) / 2;
-		let centroid = {
-			x: (tri[0].x + tri[1].x + tri[2].x) / 3,
-			y: (tri[0].y + tri[1].y + tri[2].y) / 3,
-			z: (tri[0].z + tri[1].z + tri[2].z) / 3
-		};
+		let v1 = poly[0];
+		let v2 = poly[i - 1];
+		let v3 = poly[i];
+		let a = Vsub(v2, v1);
+		let b = Vsub(v3, v1);
+		let area = Vlength(Vcross(a, b)) / 2;
+		let centroid = Vscale(Vadd(v1, v2, v3), 1 / 3);
 		areaT += area;
-		centroidT.x += centroid.x * area;
-		centroidT.y += centroid.y * area;
-		centroidT.z += centroid.z * area;
+		centroidT = Vadd(centroidT, Vscale(centroid, area));
 	}
-	centroidT.x /= areaT;
-	centroidT.y /= areaT;
-	centroidT.z /= areaT;
+	centroidT = Vscale(centroidT, 1 / areaT);
 	return centroidT;
 }
 
-function c32(x, y, z, w, h) {
+function c32(p, w, h) {
 	let FOV = 60 * Math.PI / 180;
 	let fl = Math.hypot(w, h) / (2 * Math.tan(FOV / 2));
 	return {
-		x: x * fl / z,
-		y: y * fl / z
+		x: p.x * fl / p.z,
+		y: p.y * fl / p.z
 	}
 }
 
@@ -140,6 +172,9 @@ function cllnLineLine(l1, l2) {
 function cllnPolyPnt(poly, pnt) {
 	let maxX = poly.points.map(e => e.x).reduce((a, b) => a > b ? a : b);
 	return poly.points.map((e, i, a) => {
-		return cllnLineLine(new Line(e, a[(i + 1) % a.length]), new Line(pnt, new Point(Math.abs(maxX) * 2, pnt.y))) ? 1 : 0;
+		return cllnLineLine(
+			new Line(e, a[(i + 1) % a.length]),
+			new Line(pnt, new Point(Math.abs(maxX) * 2, pnt.y))
+		) ? 1 : 0;
 	}).reduce((a, b) => a + b) % 2 == 1;
 }
