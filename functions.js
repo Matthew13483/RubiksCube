@@ -72,7 +72,7 @@ function clockwise(a, b, c) {
 	return Vdot(getNormal(a, b, c), b) > 0;
 }
 
-function basicLighting(a, b, c, d) {
+function basicLighting(a, b, c) {
 	return getNormal(a, b, c).y;
 }
 
