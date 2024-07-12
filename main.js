@@ -65,9 +65,9 @@ function scrambleCube() {
 	if (timer.enabled) {
 		Rubik.reset();
 		Rubik.rotateVel = {
-			x: (Math.random() - 0.5) * 20,
-			y: (Math.random() - 0.5) * 20,
-			z: (Math.random() - 0.5) * 20
+			x: (Math.random() - 0.5) * 0.5,
+			y: (Math.random() - 0.5) * 0.5,
+			z: (Math.random() - 0.5) * 0.5
 		};
 	}
 	Rubik.scrambleCube();
@@ -113,7 +113,7 @@ const fps = {
 				{ function: 'Rubik.loop()', avgTime: timeA / frames },
 				{ function: 'loop logic', avgTime: timeB / frames },
 				{ function: 'draw setup', avgTime: timeC / frames },
-				{ function: 'draw ctx', avgTime: timeD / frames },
+				{ function: 'draw ctx', avgTime: timeD / frames }
 			]);
 			timeA = 0;
 			timeB = 0;
@@ -127,7 +127,7 @@ const fps = {
 const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
 
 const Rubik = new RubiksCube();
-Rubik.rotateCube(200, -20, 0);
+Rubik.rotateCube(3.5, -0.35, 0);
 
 let debug_performance = false;
 let timeA = 0;
