@@ -94,15 +94,6 @@ function centroid(poly) {
 	return centroidT;
 }
 
-function c32(p, w, h) {
-	let FOV = 60 * Math.PI / 180;
-	let fl = Math.hypot(w, h) / (2 * Math.tan(FOV / 2));
-	return {
-		x: p.x * fl / p.z,
-		y: p.y * fl / p.z
-	}
-}
-
 function rotateX(a, p, rp = { x: 0, y: 0, z: 0 }) {
 	return {
 		x: p.x,

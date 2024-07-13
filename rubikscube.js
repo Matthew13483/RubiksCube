@@ -291,9 +291,9 @@ class RubiksCube {
 			c.geometry.forEach(e => {
 				let points = e.points;
 				if (c.turning) points = e.points.map(p => this.rotateAngle(a1, a2, angle, p));
-				if (clockwise(...points.map(point => Vadd(Vmatrix(this.rotationMat, point), this.pos)))) {
+				if (clockwise(...points.map(point => this.transformP(point)))) {
 					let cen = centroid(points);
-					let dist = Vlength(Vadd(Vmatrix(this.rotationMat, cen), this.pos));
+					let dist = Vlength(this.transformP(cen));
 					let colorI = c.color[e.color];
 					if (true || colorI !== 6) drawPolys.push({ dist, points, colorI });
 				}
@@ -305,7 +305,7 @@ class RubiksCube {
 		drawPolys.forEach(poly => {
 			ctx.beginPath();
 			poly.points.forEach((point, i) => {
-				let { x, y } = this.render(point);
+				let { x, y } = this.renderP(point);
 				ctx[i == 0 ? "moveTo" : "lineTo"](x, y);
 			});
 			ctx.closePath();
@@ -313,7 +313,7 @@ class RubiksCube {
 			ctx.fill();
 			let value = (poly.colorI !== 6) ? shading.surface : shading.internals;
 			if (value > 0) {
-				let light = basicLighting(...poly.points.map(point => Vmatrix(this.rotationMat, point)));
+				let light = basicLighting(...poly.points.map(point => this.transformP(point)));
 				ctx.fillStyle = (light > 0) ? "black" : "white";
 				ctx.globalAlpha = Math.abs(light) * value;
 				ctx.fill();
@@ -439,9 +439,19 @@ class RubiksCube {
 		return p;
 	}
 
-	render(point) {
-		let p = Vmatrix(this.rotationMat, point);
-		let { x, y } = c32(Vadd(p, this.pos), this.display.width, this.display.height);
+	renderP(point) {
+		return this.projectP(this.transformP(point));
+	}
+
+	transformP(point) {
+		return Vadd(Vmatrix(this.rotationMat, point), this.pos);
+	}
+
+	projectP(point) {
+		let FOV = 60 * Math.PI / 180;
+		let fl = Math.hypot(this.display.width, this.display.height) / (2 * Math.tan(FOV / 2));
+		let x = point.x * fl / point.z;
+		let y = point.y * fl / point.z;
 		return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
 	}
 
@@ -469,8 +479,8 @@ class RubiksCube {
 		this.rotateVel.x = this.rotateVel.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
-				if (!clockwise(...[e.p1, e.p2, e.p3].map(point => Vadd(Vmatrix(this.rotationMat, point), this.pos)))) return;
-				let Ply = { points: [e.p1, e.p2, e.p3, e.p4].map(p => this.render(p)) };
+				if (!clockwise(...[e.p1, e.p2, e.p3].map(point => this.transformP(point)))) return;
+				let Ply = { points: [e.p1, e.p2, e.p3, e.p4].map(p => this.renderP(p)) };
 				if (c.acFaces[i] && cllnPolyPnt(Ply, { x, y })) {
 					touchingCube = true;
 					cube = this.Gpieces[i1];
@@ -488,7 +498,7 @@ class RubiksCube {
 		if (!touch) return;
 		if (touch.touchingCube && !touch.gotLine) {
 			let { cube, face } = touch;
-			let Ply = { points: [face.p1, face.p2, face.p3, face.p4].map(p => this.render(p)) };
+			let Ply = { points: [face.p1, face.p2, face.p3, face.p4].map(p => this.renderP(p)) };
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
 			lines.forEach((e, i) => {
 				let a = Math.atan2(y - touch.y, x - touch.x);
