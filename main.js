@@ -64,11 +64,11 @@ function toggleTimer() {
 function scrambleCube() {
 	if (timer.enabled) {
 		Rubik.reset();
-		Rubik.rotateVel = {
-			x: (Math.random() - 0.5) * 0.5,
-			y: (Math.random() - 0.5) * 0.5,
-			z: (Math.random() - 0.5) * 0.5
-		};
+		Rubik.rotateCube(
+			Math.random() * 2 * Math.PI,
+			Math.random() * 2 * Math.PI,
+			Math.random() * 2 * Math.PI
+		);
 	}
 	Rubik.scrambleCube();
 }
