@@ -138,7 +138,7 @@ class RubiksCube {
 			]
 		};
 
-		this.pos = { x: 0, y: 0, z: 21 };
+		this.pos = { x: 0, y: 0, z: 10 };
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
@@ -289,14 +289,12 @@ class RubiksCube {
 				a2 = Math.atan2(tP2.x, tP2.y);
 			}
 			c.geometry.forEach(e => {
-				let points = e.points;
-				if (c.turning) points = e.points.map(p => this.rotateAngle(a1, a2, angle, p));
-				if (clockwise(...points.map(point => this.transformP(point)))) {
-					let cen = centroid(points);
-					let dist = Vlength(this.transformP(cen));
-					let colorI = c.color[e.color];
-					if (true || colorI !== 6) drawPolys.push({ dist, points, colorI });
-				}
+				let points = !c.turning ? e.points : e.points.map(p => this.rotateAngle(a1, a2, angle, p));
+				if (!clockwise(...points.map(point => this.transformP(point)))) return;
+				let cen = centroid(points);
+				let dist = Vlength(this.transformP(cen));
+				let colorI = c.color[e.color];
+				if (true || colorI !== 6) drawPolys.push({ dist, points, colorI });
 			});
 		});
 		drawPolys.sort((a, b) => (b.dist + 1 * (b.colorI == 6)) - (a.dist + 1 * (a.colorI == 6)));
@@ -340,7 +338,7 @@ class RubiksCube {
 			let siY = faceCoords[i][1];
 			si.forEach((sq, j) => {
 				let sqX = (j % 3) * sqW;
-				let sqY = (Math.floor(j / 3)) * sqW;
+				let sqY = Math.floor(j / 3) * sqW;
 				let padding = 0.07;
 				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
@@ -365,8 +363,8 @@ class RubiksCube {
 		if (this.pieces.map(e => e.turning && (e.pieceId + "xyz").split("").find(e => e == side[0])).reduce((a, b) => a || b)) return false;
 		this.pieces.forEach(e => {
 			if ((e.pieceId + "xyz").split("").find(e => e == side[0])) {
-				e.turning = true;
 				turning = true;
+				e.turning = true;
 				e.turn.startTime = Date.now();
 				e.turn.face = side[0];
 				e.turn.clockwise = side[side.length - 1] !== "'";
@@ -458,15 +456,13 @@ class RubiksCube {
 	turnMap(side) {
 		let swap = (si1, sq1, si2, sq2) => [this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
 		this.cyclesMap[side[0]].forEach(e => {
-			for (let i = 0; i < (Number(side[1]) || 1); i++) {
-				let swaps = [
-					[e[0][0], e[0][1], e[1][0], e[1][1]],
-					[e[0][0], e[0][1], e[2][0], e[2][1]],
-					[e[0][0], e[0][1], e[3][0], e[3][1]]
-				];
-				if (side[side.length - 1] === "'") swaps.reverse();
-				swaps.forEach(s => swap(...s));
-			}
+			let swaps = [
+				[e[0][0], e[0][1], e[1][0], e[1][1]],
+				[e[0][0], e[0][1], e[2][0], e[2][1]],
+				[e[0][0], e[0][1], e[3][0], e[3][1]]
+			];
+			if (side[side.length - 1] === "'") swaps.reverse();
+			for (let i = 0; i < (Number(side[1]) || 1); i++) swaps.forEach(s => swap(...s));
 		});
 	}
 
@@ -479,8 +475,8 @@ class RubiksCube {
 		this.rotateVel.x = this.rotateVel.y = 0;
 		this.Gpieces.forEach((c, i1) => {
 			c.faces.forEach((e, i) => {
-				if (!clockwise(...[e.p1, e.p2, e.p3].map(point => this.transformP(point)))) return;
-				let Ply = { points: [e.p1, e.p2, e.p3, e.p4].map(p => this.renderP(p)) };
+				if (!clockwise(...e.map(point => this.transformP(point)))) return;
+				let Ply = { points: e.map(p => this.renderP(p)) };
 				if (c.acFaces[i] && cllnPolyPnt(Ply, { x, y })) {
 					touchingCube = true;
 					cube = this.Gpieces[i1];
@@ -498,7 +494,7 @@ class RubiksCube {
 		if (!touch) return;
 		if (touch.touchingCube && !touch.gotLine) {
 			let { cube, face } = touch;
-			let Ply = { points: [face.p1, face.p2, face.p3, face.p4].map(p => this.renderP(p)) };
+			let Ply = { points: face.map(p => this.renderP(p)) };
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
 			lines.forEach((e, i) => {
 				let a = Math.atan2(y - touch.y, x - touch.x);
@@ -572,37 +568,35 @@ class RubiksCube {
 	}
 
 	isTurning() {
-		return this.pieces.map(e => e.turning).reduce((a, b) => a || b);
+		return this.pieces.some(e => e.turning);
 	}
 
 	isSolved() {
-		return this.map.map(e => e.reduce((a, b) => a && b === e[0], true)).reduce((a, b) => a && b);
+		return this.map.every(e => e.reduce((a, b) => a && b === e[0], true));
 	}
 }
 
 class Piece {
 	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
-		this.x = x * 2.03;
-		this.y = y * 2.03;
-		this.z = z * 2.03;
+		this.x = x * 1.02;
+		this.y = y * 1.02;
+		this.z = z * 1.02;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
-		this.geometry = JSON.parse(JSON.stringify(m3ds[pieceType])).map(e => {
-			return {
-				color: e.color,
-				points: e.points.map(f => {
-					let p = {
-						x: f[0] + this.x,
-						y: f[1] + this.y,
-						z: f[2] + this.z
-					}
-					p = rotateX(rot[0] * Math.PI / 180, p, this);
-					p = rotateY(rot[1] * Math.PI / 180, p, this);
-					p = rotateZ(rot[2] * Math.PI / 180, p, this);
-					return p;
-				})
-			}
-		});
+		this.geometry = m3ds[pieceType].map(e => ({
+			color: e.color,
+			points: e.points.map(f => {
+				let p = {
+					x: (f[0] / 2) + this.x,
+					y: (f[1] / 2) + this.y,
+					z: (f[2] / 2) + this.z
+				}
+				p = rotateX(rot[0] * Math.PI / 180, p, this);
+				p = rotateY(rot[1] * Math.PI / 180, p, this);
+				p = rotateZ(rot[2] * Math.PI / 180, p, this);
+				return p;
+			})
+		}));
 		this.color = color;
 		this.turn = {};
 	}
@@ -610,9 +604,9 @@ class Piece {
 
 class Gpiece {
 	constructor(x, y, z, pieceId, acFaces) {
-		this.x = x * 2;
-		this.y = y * 2;
-		this.z = z * 2;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.pieceId = this.pieceIdN = pieceId;
 		this.acFaces = acFaces;
 		this.faces = [
@@ -622,22 +616,10 @@ class Gpiece {
 			[[+1, +1, +1], [-1, +1, +1], [-1, -1, +1], [+1, -1, +1]],
 			[[-1, +1, +1], [-1, +1, -1], [-1, -1, -1], [-1, -1, +1]],
 			[[+1, +1, -1], [+1, +1, +1], [+1, -1, +1], [+1, -1, -1]]
-		].map((e, i) => {
-			return new Sticker(
-				new Point(e[0][0] + this.x, e[0][1] + this.y, e[0][2] + this.z),
-				new Point(e[1][0] + this.x, e[1][1] + this.y, e[1][2] + this.z),
-				new Point(e[2][0] + this.x, e[2][1] + this.y, e[2][2] + this.z),
-				new Point(e[3][0] + this.x, e[3][1] + this.y, e[3][2] + this.z)
-			);
-		});
-	}
-}
-
-class Sticker {
-	constructor(p1, p2, p3, p4) {
-		this.p1 = p1;
-		this.p2 = p2;
-		this.p3 = p3;
-		this.p4 = p4;
+		].map((e, i) => e.map(f => ({
+			x: (f[0] / 2) + this.x,
+			y: (f[1] / 2) + this.y,
+			z: (f[2] / 2) + this.z
+		})));
 	}
 }
