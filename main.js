@@ -101,7 +101,7 @@ function toggleSound() {
 const fps = {
 	startTime: Date.now(),
 	frameCount: 0,
-	inLoop: () => {
+	inLoop() {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
@@ -124,17 +124,18 @@ const fps = {
 	}
 };
 
-const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
-
-const Rubik = new RubiksCube();
-Rubik.rotateCube(3.5, -0.35, 0);
-
 let debug_performance = false;
 let timeA = 0;
 let timeB = 0;
 let timeC = 0;
 let timeD = 0;
 let frames = 0;
+
+const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
+
+const Rubik = new RubiksCube();
+Rubik.rotateCube(0, -0.35, 0);
+Rubik.rotateCube(-3.5, 0, 0);
 
 function loop() {
 	requestAnimationFrame(loop);

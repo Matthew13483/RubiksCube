@@ -8,111 +8,37 @@ class RubiksCube {
 
 	reset() {
 		this.pieces = [
-			new Piece(-1, +1, -1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
-			new Piece(+1, +1, -1, "UFR", "corner", [6, 2, 3, 0], [0, 0, 0]),
-			new Piece(-1, -1, -1, "DFL", "corner", [6, 2, 1, 5], [180, 180, 0]),
-			new Piece(+1, -1, -1, "DFR", "corner", [6, 3, 2, 5], [180, 90, 0]),
-			new Piece(-1, +1, +1, "UBL", "corner", [6, 4, 1, 0], [0, 180, 0]),
-			new Piece(+1, +1, +1, "UBR", "corner", [6, 3, 4, 0], [0, -90, 0]),
-			new Piece(-1, -1, +1, "DBL", "corner", [6, 1, 4, 5], [180, -90, 0]),
-			new Piece(+1, -1, +1, "DBR", "corner", [6, 4, 3, 5], [180, 0, 0]),
+			new Piece(-1, +1, +1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
+			new Piece(+1, +1, +1, "UFR", "corner", [6, 2, 3, 0], [0, 0, 0]),
+			new Piece(-1, -1, +1, "DFL", "corner", [6, 2, 1, 5], [180, 180, 0]),
+			new Piece(+1, -1, +1, "DFR", "corner", [6, 3, 2, 5], [180, 90, 0]),
+			new Piece(-1, +1, -1, "UBL", "corner", [6, 4, 1, 0], [0, 180, 0]),
+			new Piece(+1, +1, -1, "UBR", "corner", [6, 3, 4, 0], [0, -90, 0]),
+			new Piece(-1, -1, -1, "DBL", "corner", [6, 1, 4, 5], [180, -90, 0]),
+			new Piece(+1, -1, -1, "DBR", "corner", [6, 4, 3, 5], [180, 0, 0]),
 
-			new Piece(0, +1, -1, "UFM", "edge", [6, 2, 0], [0, 0, 0]),
-			new Piece(0, +1, +1, "UBM", "edge", [6, 4, 0], [0, 180, 0]),
-			new Piece(0, -1, -1, "DFM", "edge", [6, 2, 5], [180, 180, 0]),
-			new Piece(0, -1, +1, "DBM", "edge", [6, 4, 5], [180, 0, 0]),
+			new Piece(0, +1, +1, "UFM", "edge", [6, 2, 0], [0, 0, 0]),
+			new Piece(0, +1, -1, "UBM", "edge", [6, 4, 0], [0, 180, 0]),
+			new Piece(0, -1, +1, "DFM", "edge", [6, 2, 5], [180, 180, 0]),
+			new Piece(0, -1, -1, "DBM", "edge", [6, 4, 5], [180, 0, 0]),
 			new Piece(-1, +1, 0, "ULS", "edge", [6, 1, 0], [0, 90, 0]),
 			new Piece(+1, +1, 0, "URS", "edge", [6, 3, 0], [0, -90, 0]),
 			new Piece(-1, -1, 0, "DLS", "edge", [6, 1, 5], [180, -90, 0]),
 			new Piece(+1, -1, 0, "DRS", "edge", [6, 3, 5], [180, 90, 0]),
-			new Piece(-1, 0, -1, "FLE", "edge", [6, 2, 1], [0, 0, 90]),
-			new Piece(+1, 0, -1, "FRE", "edge", [6, 2, 3], [0, 0, -90]),
-			new Piece(-1, 0, +1, "BLE", "edge", [6, 4, 1], [0, 180, 90]),
-			new Piece(+1, 0, +1, "BRE", "edge", [6, 4, 3], [0, 180, -90]),
+			new Piece(-1, 0, +1, "FLE", "edge", [6, 2, 1], [0, 0, -90]),
+			new Piece(+1, 0, +1, "FRE", "edge", [6, 2, 3], [0, 0, 90]),
+			new Piece(-1, 0, -1, "BLE", "edge", [6, 4, 1], [0, 180, -90]),
+			new Piece(+1, 0, -1, "BRE", "edge", [6, 4, 3], [0, 180, 90]),
 
-			new Piece(0, 0, +1, "BME", "center", [6, 4], [-90, 0, 0]),
-			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, 0, -90]),
-			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 0, 90]),
-			new Piece(0, 0, -1, "FME", "center", [6, 2], [90, 0, 0]),
+			new Piece(0, 0, -1, "BME", "center", [6, 4], [-90, 180, 0]),
+			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, 0, 90]),
+			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 0, -90]),
+			new Piece(0, 0, +1, "FME", "center", [6, 2], [90, 180, 0]),
 			new Piece(0, +1, 0, "UMS", "center", [6, 0], [0, 0, 0]),
 			new Piece(0, -1, 0, "DMS", "center", [6, 5], [180, 0, 0]),
 
 			new Piece(0, 0, 0, "MES", "core", [6], [0, 0, 0]),
 		];
-		this.Gpieces = [
-			new Gpiece(-1, +1, -1, "UFL", [1, 0, 1, 0, 1, 0]),
-			new Gpiece(+1, +1, -1, "UFR", [1, 0, 1, 0, 0, 1]),
-			new Gpiece(-1, -1, -1, "DFL", [0, 1, 1, 0, 1, 0]),
-			new Gpiece(+1, -1, -1, "DFR", [0, 1, 1, 0, 0, 1]),
-			new Gpiece(-1, +1, +1, "UBL", [1, 0, 0, 1, 1, 0]),
-			new Gpiece(+1, +1, +1, "UBR", [1, 0, 0, 1, 0, 1]),
-			new Gpiece(-1, -1, +1, "DBL", [0, 1, 0, 1, 1, 0]),
-			new Gpiece(+1, -1, +1, "DBR", [0, 1, 0, 1, 0, 1]),
-
-			new Gpiece(0, +1, -1, "UFM", [1, 0, 1, 0, 0, 0]),
-			new Gpiece(0, +1, +1, "UBM", [1, 0, 0, 1, 0, 0]),
-			new Gpiece(0, -1, -1, "DFM", [0, 1, 1, 0, 0, 0]),
-			new Gpiece(0, -1, +1, "DBM", [0, 1, 0, 1, 0, 0]),
-			new Gpiece(-1, +1, 0, "ULS", [1, 0, 0, 0, 1, 0]),
-			new Gpiece(+1, +1, 0, "URS", [1, 0, 0, 0, 0, 1]),
-			new Gpiece(-1, -1, 0, "DLS", [0, 1, 0, 0, 1, 0]),
-			new Gpiece(+1, -1, 0, "DRS", [0, 1, 0, 0, 0, 1]),
-			new Gpiece(-1, 0, -1, "FLE", [0, 0, 1, 0, 1, 0]),
-			new Gpiece(+1, 0, -1, "FRE", [0, 0, 1, 0, 0, 1]),
-			new Gpiece(-1, 0, +1, "BLE", [0, 0, 0, 1, 1, 0]),
-			new Gpiece(+1, 0, +1, "BRE", [0, 0, 0, 1, 0, 1]),
-
-			new Gpiece(0, 0, +1, "BME", [0, 0, 0, 1, 0, 0]),
-			new Gpiece(+1, 0, 0, "RSE", [0, 0, 0, 0, 0, 1]),
-			new Gpiece(-1, 0, 0, "LSE", [0, 0, 0, 0, 1, 0]),
-			new Gpiece(0, 0, -1, "FME", [0, 0, 1, 0, 0, 0]),
-			new Gpiece(0, +1, 0, "UMS", [1, 0, 0, 0, 0, 0]),
-			new Gpiece(0, -1, 0, "DMS", [0, 1, 0, 0, 0, 0])
-		];
-
-		this.cycles = {
-			U: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS"],
-			D: ["DFL,DFR,DBR,DBL", "DFM,DRS,DBM,DLS"],
-			F: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE"],
-			B: ["UBR,UBL,DBL,DBR", "UBM,BLE,DBM,BRE"],
-			L: ["UBL,UFL,DFL,DBL", "ULS,FLE,DLS,BLE"],
-			R: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE"],
-			M: ["UFM,DFM,DBM,UBM", "UMS,FME,DMS,BME"],
-			E: ["FLE,FRE,BRE,BLE", "FME,RSE,BME,LSE"],
-			S: ["URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE"],
-			x: ["UFR,UBR,DBR,DFR", "URS,BRE,DRS,FRE", "DBM,DFM,UFM,UBM", "DMS,FME,UMS,BME", "DFL,UFL,UBL,DBL", "DLS,FLE,ULS,BLE"],
-			y: ["UFR,UFL,UBL,UBR", "UFM,ULS,UBM,URS", "BRE,FRE,FLE,BLE", "BME,RSE,FME,LSE", "DBR,DFR,DFL,DBL", "DBM,DRS,DFM,DLS"],
-			z: ["UFL,UFR,DFR,DFL", "UFM,FRE,DFM,FLE", "URS,DRS,DLS,ULS", "UMS,RSE,DMS,LSE", "DBL,UBL,UBR,DBR", "DBM,BLE,UBM,BRE"],
-		};
-
-		this.turnAtlas = {
-			UFL: ["L',F,L,F'", "", "L',U',L,U", "", "F,U',F',U", ""],
-			UFR: ["R,F,R',F'", "", "R,U',R',U", "", "", "F',U',F,U"],
-			DFL: ["", "L',F',L,F", "L',D,L,D'", "", "F,D,F',D'", ""],
-			DFR: ["", "R,F',R',F", "R,D,R',D'", "", "", "F',D,F,D'"],
-			UBL: ["L',B',L,B", "", "", "L,U',L',U", "B',U',B,U", ""],
-			UBR: ["R,B',R',B", "", "", "R',U',R,U", "", "B,U',B',U"],
-			DBL: ["", "L',B,L,B'", "", "L,D,L',D'", "B',D,B,D'", ""],
-			DBR: ["", "R,B,R',B'", "", "R',D,R,D'", "", "B,D,B',D'"],
-			UFM: ["M',F,M,F'", "", "M',U',M,U", "", "", ""],
-			UBM: ["M',B',M,B", "", "", "M,U',M',U", "", ""],
-			DFM: ["", "M',F',M,F", "M',D,M,D'", "", "", ""],
-			DBM: ["", "M',B,M,B'", "", "M,D,M',D'", "", ""],
-			ULS: ["L',S,L,S'", "", "", "", "S,U',S',U", ""],
-			URS: ["R,S,R',S'", "", "", "", "", "S',U',S,U"],
-			DLS: ["", "L',S',L,S", "", "", "S,D,S',D'", ""],
-			DRS: ["", "R,S',R',S", "", "", "", "S',D,S,D'"],
-			FLE: ["", "", "L',E,L,E'", "", "F,E,F',E'", ""],
-			FRE: ["", "", "R,E,R',E'", "", "", "F',E,F,E'"],
-			BLE: ["", "", "", "L,E,L',E'", "B',E,B,E'", ""],
-			BRE: ["", "", "", "R',E,R,E'", "", "B,E,B',E'"],
-			UMS: ["M',S,M,S'", "", "", "", "", ""],
-			DMS: ["", "M',S',M,S", "", "", "", ""],
-			FME: ["", "", "M',E,M,E'", "", "", ""],
-			BME: ["", "", "", "M,E,M',E'", "", ""],
-			LSE: ["", "", "", "", "S,E,S',E'", ""],
-			RSE: ["", "", "", "", "", "S',E,S,E'"]
-		};
 
 		this.cyclesMap = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
@@ -138,11 +64,11 @@ class RubiksCube {
 			]
 		};
 
-		this.pos = { x: 0, y: 0, z: 10 };
+		this.pos = { x: 0, y: 0, z: -10 };
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
-			{ x: 0, y: 0, z: 1 },
+			{ x: 0, y: 0, z: 1 }
 		];
 		this.rotateVel = { x: 0, y: 0, z: 0 };
 
@@ -156,7 +82,6 @@ class RubiksCube {
 		];
 
 		this.touches = [];
-		this.touching = false;
 
 		this.turn = { ms: [60, 30] };
 		this.turns = [];
@@ -177,44 +102,37 @@ class RubiksCube {
 
 	loop() {
 		let s = performance.now();
+
+		let time = Date.now();
 		this.pieces.forEach(piece => {
-			let turn_progress = (Date.now() - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
-			if (piece.turning && piece.pieceId == piece.turn.pieceId && turn_progress > piece.turn.times) {
-				let angle = (piece.turn.clockwise * 2 - 1) * (1 * 90 * Math.PI / 180);
-				let a1 = Math.atan2(piece.turn.piece.z, piece.turn.piece.y);
-				let tP2 = rotateX(a1, piece.turn.piece);
-				let a2 = Math.atan2(tP2.x, tP2.y);
-				let piecesToTurn = this.pieces.filter(e => e.turning && e.turn.pieceId == piece.turn.pieceId);
-				for (let i = 0; i < piece.turn.times; i++) {
-					let cyclePieceIds = e => {
-						if (piece.turn.clockwise) {
-							this.findPiece(e[0]).pieceIdN = e[1];
-							this.findPiece(e[1]).pieceIdN = e[2];
-							this.findPiece(e[2]).pieceIdN = e[3];
-							this.findPiece(e[3]).pieceIdN = e[0];
-						}
-						else {
-							this.findPiece(e[0]).pieceIdN = e[3];
-							this.findPiece(e[1]).pieceIdN = e[0];
-							this.findPiece(e[2]).pieceIdN = e[1];
-							this.findPiece(e[3]).pieceIdN = e[2];
-						}
-					};
-					let cycles = this.cycles[piece.turn.face];
-					cycles.forEach(e => cyclePieceIds(e.split(",")));
-					piecesToTurn.forEach(e => {
-						e.turning = false;
-						e.pieceId = e.pieceIdN;
-						Object.assign(e, this.rotateAngle(a1, a2, angle, e));
-						e.geometry.forEach(e => e.points.forEach(p => Object.assign(p, this.rotateAngle(a1, a2, angle, p))));
-					});
-				}
+			if (!piece.turning) return;
+			let turn_progress = (time - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
+			if (turn_progress < piece.turn.times) {
+				let curve = t => t ** (1 / 2);
+				let angle = turn_progress;
+				angle = Math.floor(angle) + curve(angle - Math.floor(angle));
+				angle *= Math.PI / 2;
+				piece.rotationMatD = [
+					{ x: 1, y: 0, z: 0 },
+					{ x: 0, y: 1, z: 0 },
+					{ x: 0, y: 0, z: 1 }
+				].map(v => rotateAxis(v, angle, piece.turn.axis));
+			}
+			else {
+				piece.rotationMat = piece.rotationMat.map(v => rotateAxis(v, piece.turn.times * Math.PI / 2, piece.turn.axis));
+				piece.rotationMatD = [
+					{ x: 1, y: 0, z: 0 },
+					{ x: 0, y: 1, z: 0 },
+					{ x: 0, y: 0, z: 1 }
+				];
+				piece.turning = false;
+				piece.turn = {};
 			}
 		});
 
 		if (this.scrambling && !this.isTurning()) {
 			if (this.scrambleIndex < this.scramble.length) {
-				this.turnCube(this.scramble[this.scrambleIndex]);
+				this.turnCubeNotation(this.scramble[this.scrambleIndex]);
 				this.scrambleIndex++;
 			}
 			else {
@@ -248,12 +166,12 @@ class RubiksCube {
 				}
 			});
 
-			this.rotateVel.z = angle;
+			this.rotateVel.z = -angle;
 			this.rotateCube(0, 0, this.rotateVel.z);
 			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
 		}
 
-		if (!this.touching) this.rotateCube(this.rotateVel.x, this.rotateVel.y, this.rotateVel.z);
+		if (this.touches.length == 0) this.rotateCube(this.rotateVel.x, this.rotateVel.y, this.rotateVel.z);
 		this.rotateVel.x *= 0.95;
 		this.rotateVel.y *= 0.95;
 		this.rotateVel.z *= 0.95;
@@ -276,47 +194,52 @@ class RubiksCube {
 
 	draw() {
 		let s = performance.now();
+		/*let polys = [];
+		this.pieces.forEach(piece => {
+			piece.box.forEach((face, i) => {
+				if (!isPolyVis(face.map(point => this.transformP(piece.transform(point))))) return;
+				let dist = Vlength(this.transformP(centroid(face.map(p => piece.transform(p)))));
+				polys.push({ dist, face, piece, i });
+			});
+		});
+		polys.sort((a, b) => (b.dist + 1 * (!b.piece.boxFaces[b.i])) - (a.dist + 1 * (!a.piece.boxFaces[a.i])));
+		polys.forEach(poly => {
+			let { face, piece, i } = poly;
+			ctx.beginPath();
+			face.forEach((point, i) => {
+				let { x, y } = this.renderP(piece.transform(point));
+				ctx[i == 0 ? "moveTo" : "lineTo"](x, y);
+			});
+			ctx.closePath();
+			ctx.fillStyle = piece.boxColors[i];
+			ctx.fill();
+		});*/
+		
 		let drawPolys = [];
-		this.pieces.forEach(c => {
-			let angle, a1, a2;
-			if (c.turning) {
-				angle = Math.min((Date.now() - c.turn.startTime) / this.turn.ms[Number(this.scrambling)], c.turn.times);
-				let curve = t => t ** (1 / 2)
-				angle = Math.floor(angle) + curve(angle - Math.floor(angle));
-				angle = (c.turn.clockwise * 2 - 1) * (angle * 90 * Math.PI / 180);
-				a1 = Math.atan2(c.turn.piece.z, c.turn.piece.y);
-				let tP2 = rotateX(a1, c.turn.piece);
-				a2 = Math.atan2(tP2.x, tP2.y);
-			}
-			c.geometry.forEach(e => {
-				let points = !c.turning ? e.points : e.points.map(p => this.rotateAngle(a1, a2, angle, p));
-				if (!clockwise(...points.map(point => this.transformP(point)))) return;
-				let cen = centroid(points);
+		this.pieces.forEach((piece, i) => {
+			piece.geometry.forEach((poly, i) => {
+				let face = poly.points.map(point => piece.transform(point));
+				if (!isPolyVis(face.map(point => this.transformP(point)))) return;
+				let cen = centroid(face);
 				let dist = Vlength(this.transformP(cen));
-				let colorI = c.color[e.color];
-				if (true || colorI !== 6) drawPolys.push({ dist, points, colorI });
+				let colorI = piece.color[poly.color];
+				drawPolys.push({ dist, face, piece, colorI });
 			});
 		});
 		drawPolys.sort((a, b) => (b.dist + 1 * (b.colorI == 6)) - (a.dist + 1 * (a.colorI == 6)));
+		
 		timeC += performance.now() - s;
 		let s1 = performance.now();
 		drawPolys.forEach(poly => {
+			let { face, piece, colorI } = poly;
 			ctx.beginPath();
-			poly.points.forEach((point, i) => {
+			face.forEach((point, i) => {
 				let { x, y } = this.renderP(point);
 				ctx[i == 0 ? "moveTo" : "lineTo"](x, y);
 			});
 			ctx.closePath();
-			ctx.fillStyle = colors[poly.colorI];
+			ctx.fillStyle = colors[colorI];
 			ctx.fill();
-			let value = (poly.colorI !== 6) ? shading.surface : shading.internals;
-			if (value > 0) {
-				let light = basicLighting(...poly.points.map(point => this.transformP(point)));
-				ctx.fillStyle = (light > 0) ? "black" : "white";
-				ctx.globalAlpha = Math.abs(light) * value;
-				ctx.fill();
-				ctx.globalAlpha = 1;
-			}
 		});
 		timeD += performance.now() - s1;
 	}
@@ -349,91 +272,88 @@ class RubiksCube {
 	rotateCube(ax, ay, az) {
 		this.rotationMat.forEach(v => {
 			let p = v;
-			p = rotateY(ay, p);
-			p = rotateX(ax, p);
-			p = rotateZ(az, p);
+			p = rotateX(p, ax);
+			p = rotateY(p, ay);
+			p = rotateZ(p, az);
 			v.x = p.x;
 			v.y = p.y;
 			v.z = p.z;
 		});
 	}
 
-	turnCube(side) {
-		let turning = false;
-		if (this.pieces.map(e => e.turning && (e.pieceId + "xyz").split("").find(e => e == side[0])).reduce((a, b) => a || b)) return false;
-		this.pieces.forEach(e => {
-			if ((e.pieceId + "xyz").split("").find(e => e == side[0])) {
-				turning = true;
-				e.turning = true;
-				e.turn.startTime = Date.now();
-				e.turn.face = side[0];
-				e.turn.clockwise = side[side.length - 1] !== "'";
-				e.turn.piece = this.findPiece({
-					U: "UMS",
-					D: "DMS",
-					F: "FME",
-					B: "BME",
-					L: "LSE",
-					R: "RSE",
-					M: "LSE",
-					E: "DMS",
-					S: "FME",
-					x: "RSE",
-					y: "UMS",
-					z: "FME"
-				} [side[0]]);
-				e.turn.pieceId = {
-					U: "UMS",
-					D: "DMS",
-					F: "FME",
-					B: "BME",
-					L: "LSE",
-					R: "RSE",
-					M: "MES",
-					E: "MES",
-					S: "MES",
-					x: "MES",
-					y: "MES",
-					z: "MES"
-				} [side[0]];
-				e.turn.times = Number(side[1]) || 1;
-			}
+	turnCube1(pieces, axis, times) {
+		if (pieces.some(p => p.turning)) return;
+		let startTime = Date.now();
+		pieces.forEach(piece => {
+			piece.turning = true;
+			piece.turn.startTime = startTime;
+			piece.turn.axis = axis;
+			piece.turn.times = times;
 		});
 
-		this.turnMap(side);
-		this.turns.push(side);
+		let turns = [];
+		let U = this.findPiece('UMS');
+		let L = this.findPiece('LSE');
+		let F = this.findPiece('FME');
+		let R = this.findPiece('RSE');
+		let B = this.findPiece('BME');
+		let D = this.findPiece('DMS');
+		let test = (A, Z) => {
+			if (pieces.includes(A)) turns.push({ face: A.pieceId[0], clockwise: false });
+			else if (pieces.includes(Z)) turns.push({ face: Z.pieceId[0], clockwise: true });
+			else turns.push({ face: A.pieceId[0], clockwise: true }, { face: Z.pieceId[0], clockwise: false });
+		};
+		if (Vdot(Vnormalize(U.transform(U)), axis) == 1) test(U, D);
+		if (Vdot(Vnormalize(L.transform(L)), axis) == 1) test(L, R);
+		if (Vdot(Vnormalize(F.transform(F)), axis) == 1) test(F, B);
+		if (Vdot(Vnormalize(R.transform(R)), axis) == 1) test(R, L);
+		if (Vdot(Vnormalize(B.transform(B)), axis) == 1) test(B, F);
+		if (Vdot(Vnormalize(D.transform(D)), axis) == 1) test(D, U);
+		turns.forEach((turn) => this.turnMap(turn.face + (times == 1 ? '' : times) + (turn.clockwise ? '' : "'")));
+
+		this.turns.push({ pieces, axis, times });
 		sound.play();
-		return turning;
+
+		return true;
+	}
+
+	turnCubeNotation(side) {
+		let face = side[0];
+		let times = Number(side[1]) || 1;
+		let clockwise = side[side.length - 1] !== "'";
+		let piece = this.findPiece({
+			U: "UMS",
+			L: "LSE",
+			F: "FME",
+			R: "RSE",
+			B: "BME",
+			D: "DMS",
+		} [face]);
+		let pieceN = Vnormalize(piece.transform(piece));
+		let axis = clockwise ? Vneg(pieceN) : pieceN;
+		for (let a in axis) axis[a] = Math.round(axis[a]);
+		let pieces;
+		if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).x - piece.transform(piece).x) < 0.1);
+		if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
+		if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
+
+		return this.turnCube1(pieces, axis, times);
 	}
 
 	turnUndo() {
 		if (this.turns.length <= this.undoCap) return;
-		let side = this.turns[this.turns.length - 1];
-		let side2 = (side[side.length - 1] !== "'") ? side + "'" : side.slice(0, -1);
-		if (this.turnCube(side2)) this.turns.splice(this.turns.length - 2, 2);
-	}
-
-	turnAbsolute(side) {
-		this.turnCube(this.pieces.find(e => e.pieceIdO == {
-			U: "UMS",
-			D: "DMS",
-			F: "FME",
-			B: "BME",
-			L: "LSE",
-			R: "RSE",
-			M: "LSE",
-			E: "DMS",
-			S: "FME"
-		} [side[0]]).pieceId[0]);
+		let turn = this.turns[this.turns.length - 1];
+		let axis = Vneg(turn.axis);
+		if (this.turnCube1(turn.pieces, axis, turn.times)) this.turns.splice(this.turns.length - 2, 2);
 	}
 
 	rotateAngle(a1, a2, angle, p0) {
 		let p = { x: p0.x, y: p0.y, z: p0.z };
-		p = rotateX(a1, p);
-		p = rotateZ(a2, p);
-		p = rotateY(angle, p);
-		p = rotateZ(-a2, p);
-		p = rotateX(-a1, p);
+		p = rotateX(p, a1);
+		p = rotateZ(p, a2);
+		p = rotateY(p, angle);
+		p = rotateZ(p, -a2);
+		p = rotateX(p, -a1);
 		return p;
 	}
 
@@ -448,8 +368,8 @@ class RubiksCube {
 	projectP(point) {
 		let FOV = 60 * Math.PI / 180;
 		let fl = Math.hypot(this.display.width, this.display.height) / (2 * Math.tan(FOV / 2));
-		let x = point.x * fl / point.z;
-		let y = point.y * fl / point.z;
+		let x = point.x * fl / -point.z;
+		let y = point.y * fl / -point.z;
 		return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
 	}
 
@@ -467,34 +387,35 @@ class RubiksCube {
 	}
 
 	touchStart(x, y, id) {
-		this.touching = true;
 		let touch = { id };
 		this.touches.push(touch);
 		let touchingCube = false,
-			cube, face, faceI, gotLine = false;
+			cube, face, faceI, pieceI, gotLine = false;
 		this.rotateVel.x = this.rotateVel.y = 0;
-		this.Gpieces.forEach((c, i1) => {
-			c.faces.forEach((e, i) => {
-				if (!clockwise(...e.map(point => this.transformP(point)))) return;
-				let Ply = { points: e.map(p => this.renderP(p)) };
-				if (c.acFaces[i] && cllnPolyPnt(Ply, { x, y })) {
+		this.pieces.some((piece, I) => {
+			return piece.box.some((e, i) => {
+				if (!isPolyVis(e.map(point => this.transformP(piece.transform(point))))) return false;
+				let Ply = { points: e.map(p => this.renderP(piece.transform(p))) };
+				if (piece.boxFaces[i] && cllnPolyPnt(Ply, { x, y })) {
 					touchingCube = true;
-					cube = this.Gpieces[i1];
-					face = cube.faces[i];
+					cube = piece.box;
+					face = cube[i];
 					faceI = i;
+					pieceI = I;
 				}
+				return touchingCube;
 			});
 		});
-		Object.assign(touch, { x, y, touchingCube, cube, face, faceI, gotLine });
+		Object.assign(touch, { x, y, touchingCube, cube, face, faceI, pieceI, gotLine });
 	}
 
 	touchMove(x, y, id) {
-		this.touching = true;
 		let touch = this.touches.find(e => e.id === id);
 		if (!touch) return;
 		if (touch.touchingCube && !touch.gotLine) {
-			let { cube, face } = touch;
-			let Ply = { points: face.map(p => this.renderP(p)) };
+			let { cube, face, pieceI } = touch;
+			let piece = this.pieces[pieceI];
+			let Ply = { points: face.map(p => this.renderP(piece.transform(p))) };
 			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
 			lines.forEach((e, i) => {
 				let a = Math.atan2(y - touch.y, x - touch.x);
@@ -502,7 +423,14 @@ class RubiksCube {
 				let p = new Point(touch.x + Math.cos(a) * d, touch.y + Math.sin(a) * d);
 				if (cllnLineLine(e, new Line(touch, p))) {
 					if (!this.scrambling) {
-						this.turnCube(this.turnAtlas[cube.pieceId][touch.faceI].split(",")[i]);
+						let axis = Vsub(piece.transform(face[i]), piece.transform(face[(i + 1) % face.length]));
+						for (let a in axis) axis[a] = Math.round(axis[a]);
+						let pieces;
+						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).x - piece.transform(piece).x) < 0.1);
+						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
+						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
+						let times = 1;
+						if (pieces.length == 9) this.turnCube1(pieces, axis, times);
 						if (timer.maystart && !timer.running) timer.start();
 					}
 					touch.gotLine = true;
@@ -512,7 +440,7 @@ class RubiksCube {
 		if (!touch.touchingCube) {
 			touch.ax = touch.x;
 			touch.ay = touch.y;
-			this.rotateVel.x = -(touch.y - y) * (2 * Math.PI) / Math.sqrt(this.display.width * this.display.height);
+			this.rotateVel.x = (touch.y - y) * (2 * Math.PI) / Math.sqrt(this.display.width * this.display.height);
 			this.rotateVel.y = (touch.x - x) * (2 * Math.PI) / Math.sqrt(this.display.width * this.display.height);
 			this.rotateCube(this.rotateVel.x, this.rotateVel.y, 0);
 		}
@@ -520,12 +448,10 @@ class RubiksCube {
 	}
 
 	touchEnd(id) {
-		this.touching = false;
 		this.touches.splice(this.touches.findIndex(e => e.id === id), 1);
 	}
 
 	touchCancel() {
-		this.touching = false;
 		this.touches.length = 0;
 	}
 
@@ -578,48 +504,68 @@ class RubiksCube {
 
 class Piece {
 	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
-		this.x = x * 1.02;
-		this.y = y * 1.02;
-		this.z = z * 1.02;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
 		this.geometry = m3ds[pieceType].map(e => ({
 			color: e.color,
 			points: e.points.map(f => {
 				let p = {
-					x: (f[0] / 2) + this.x,
-					y: (f[1] / 2) + this.y,
-					z: (f[2] / 2) + this.z
+					x: (f[0] / 2),
+					y: (f[1] / 2),
+					z: (f[2] /-2)
 				}
-				p = rotateX(rot[0] * Math.PI / 180, p, this);
-				p = rotateY(rot[1] * Math.PI / 180, p, this);
-				p = rotateZ(rot[2] * Math.PI / 180, p, this);
-				return p;
+				p = rotateX(p, rot[0] * Math.PI / 180);
+				p = rotateY(p, rot[1] * Math.PI / 180);
+				p = rotateZ(p, rot[2] * Math.PI / 180);
+				
+				return Vadd(p, Vscale(this, 1.02));
 			})
 		}));
+		this.box = [
+			[[-1, +1, -1], [+1, +1, -1], [+1, +1, +1], [-1, +1, +1]],
+			[[-1, +1, -1], [-1, +1, +1], [-1, -1, +1], [-1, -1, -1]],
+			[[-1, +1, +1], [+1, +1, +1], [+1, -1, +1], [-1, -1, +1]],
+			[[+1, +1, +1], [+1, +1, -1], [+1, -1, -1], [+1, -1, +1]],
+			[[+1, +1, -1], [-1, +1, -1], [-1, -1, -1], [+1, -1, -1]],
+			[[-1, -1, +1], [+1, -1, +1], [+1, -1, -1], [-1, -1, -1]]
+		].map((e, i) => e.map(f => ({
+			x: (f[0] / 2) + x * 1,
+			y: (f[1] / 2) + y * 1,
+			z: (f[2] / 2) + z * 1
+		})));
+		this.boxFaces = this.box.map(face => {
+			let faceNormal = getNormal(face);
+			return Vdot(faceNormal, this) > 0;
+		});
+		this.boxColors = this.box.map((face, i) => {
+			let faceNormal = getNormal(face);
+			if (!this.boxFaces[i]) return colors[6];
+			if (Vdot(faceNormal, { x: 0, y: +1, z: 0 }) == 1) return colors[0];
+			if (Vdot(faceNormal, { x: -1, y: 0, z: 0 }) == 1) return colors[1];
+			if (Vdot(faceNormal, { x: 0, y: 0, z: +1 }) == 1) return colors[2];
+			if (Vdot(faceNormal, { x: +1, y: 0, z: 0 }) == 1) return colors[3];
+			if (Vdot(faceNormal, { x: 0, y: 0, z: -1 }) == 1) return colors[4];
+			if (Vdot(faceNormal, { x: 0, y: -1, z: 0 }) == 1) return colors[5];
+		});
+
+		this.rotationMat = [
+			{ x: 1, y: 0, z: 0 },
+			{ x: 0, y: 1, z: 0 },
+			{ x: 0, y: 0, z: 1 }
+		];
+		this.rotationMatD = [
+			{ x: 1, y: 0, z: 0 },
+			{ x: 0, y: 1, z: 0 },
+			{ x: 0, y: 0, z: 1 }
+		];
+		this.transform = p => {
+			return Vmatrix(this.rotationMatD, Vmatrix(this.rotationMat, p));
+		};
+
 		this.color = color;
 		this.turn = {};
-	}
-}
-
-class Gpiece {
-	constructor(x, y, z, pieceId, acFaces) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.pieceId = this.pieceIdN = pieceId;
-		this.acFaces = acFaces;
-		this.faces = [
-			[[-1, +1, +1], [+1, +1, +1], [+1, +1, -1], [-1, +1, -1]],
-			[[-1, -1, -1], [+1, -1, -1], [+1, -1, +1], [-1, -1, +1]],
-			[[-1, +1, -1], [+1, +1, -1], [+1, -1, -1], [-1, -1, -1]],
-			[[+1, +1, +1], [-1, +1, +1], [-1, -1, +1], [+1, -1, +1]],
-			[[-1, +1, +1], [-1, +1, -1], [-1, -1, -1], [-1, -1, +1]],
-			[[+1, +1, -1], [+1, +1, +1], [+1, -1, +1], [+1, -1, -1]]
-		].map((e, i) => e.map(f => ({
-			x: (f[0] / 2) + this.x,
-			y: (f[1] / 2) + this.y,
-			z: (f[2] / 2) + this.z
-		})));
 	}
 }

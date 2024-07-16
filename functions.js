@@ -15,21 +15,19 @@ function Vneg(v) {
 }
 
 function Vadd(...vec) {
-	let func = (a, b) => ({
+	return vec.reduce((a, b) => ({
 		x: a.x + b.x,
 		y: a.y + b.y,
 		z: a.z + b.z
-	});
-	return vec.reduce((a, b) => func(a, b));
+	}));
 }
 
-function Vsub(...vec) {
-	let func = (a, b) => ({
+function Vsub(a, b) {
+	return {
 		x: a.x - b.x,
 		y: a.y - b.y,
 		z: a.z - b.z
-	});
-	return vec.reduce((a, b) => func(a, b));
+	};
 }
 
 function Vscale(v, s) {
@@ -57,6 +55,7 @@ function Vcross(a, b) {
 }
 
 function Vmatrix(mat, v) {
+	//return Vadd(Vscale(mat[0], v.x), Vscale(mat[1], v.y), Vscale(mat[2], v.z));
 	return {
 		x: mat[0].x * v.x + mat[1].x * v.y + mat[2].x * v.z,
 		y: mat[0].y * v.x + mat[1].y * v.y + mat[2].y * v.z,
@@ -64,16 +63,16 @@ function Vmatrix(mat, v) {
 	};
 }
 
-function getNormal(a, b, c) {
-	return Vnormalize(Vcross(Vsub(a, b), Vsub(c, b)));
+function getNormal(poly) {
+	return Vnormalize(Vcross(Vsub(poly[0], poly[1]), Vsub(poly[2], poly[1])));
 }
 
-function clockwise(a, b, c) {
-	return Vdot(getNormal(a, b, c), b) > 0;
+function isPolyVis(poly) {
+	return Vdot(getNormal(poly), poly[1]) < 0;
 }
 
-function basicLighting(a, b, c) {
-	return getNormal(a, b, c).y;
+function basicLighting(poly) {
+	return getNormal(poly).y;
 }
 
 function centroid(poly) {
@@ -94,28 +93,50 @@ function centroid(poly) {
 	return centroidT;
 }
 
-function rotateX(a, p, rp = { x: 0, y: 0, z: 0 }) {
-	return {
+function rotateX(point, angle) {
+	return Vmatrix([
+		{ x: 1, y: 0, z: 0 },
+		{ x: 0, y: Math.cos(angle), z: -Math.sin(angle) },
+		{ x: 0, y: Math.sin(angle), z: Math.cos(angle) }
+	], point);
+	/*{
 		x: p.x,
 		y: (p.y - rp.y) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.y,
 		z: (p.z - rp.z) * Math.cos(a) - (p.y - rp.y) * Math.sin(a) + rp.z
-	};
+	};*/
 }
 
-function rotateY(a, p, rp = { x: 0, y: 0, z: 0 }) {
-	return {
+function rotateY(point, angle) {
+	return Vmatrix([
+		{ x: Math.cos(angle), y: 0, z: Math.sin(angle) },
+		{ x: 0, y: 1, z: 0 },
+		{ x: -Math.sin(angle), y: 0, z: Math.cos(angle) }
+	], point);
+	/*{
 		x: (p.x - rp.x) * Math.cos(a) + (p.z - rp.z) * Math.sin(a) + rp.x,
 		y: p.y,
 		z: (p.z - rp.z) * Math.cos(a) - (p.x - rp.x) * Math.sin(a) + rp.z
-	};
+	};*/
 }
 
-function rotateZ(a, p, rp = { x: 0, y: 0, z: 0 }) {
-	return {
+function rotateZ(point, angle) {
+	return Vmatrix([
+		{ x: Math.cos(angle), y: -Math.sin(angle), z: 0 },
+		{ x: Math.sin(angle), y: Math.cos(angle), z: 0 },
+		{ x: 0, y: 0, z: 1 }
+	], point);
+	/*{
 		x: (p.x - rp.x) * Math.cos(a) - (p.y - rp.y) * Math.sin(a) + rp.x,
 		y: (p.y - rp.y) * Math.cos(a) + (p.x - rp.x) * Math.sin(a) + rp.y,
 		z: p.z
-	};
+	};*/
+}
+
+function rotateAxis(point, angle, axis) {
+	let v = point;
+	let k = axis;
+	//vrot = vcosθ + (k×v)sinθ + k(k•v)(1-cosθ)
+	return Vadd(Vscale(v, Math.cos(angle)), Vscale(Vcross(k, v), Math.sin(angle)), Vscale(k, Vdot(k, v) * (1 - Math.cos(angle))));
 }
 
 class Point {
