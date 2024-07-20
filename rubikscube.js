@@ -240,6 +240,12 @@ class RubiksCube {
 			ctx.closePath();
 			ctx.fillStyle = colors[colorI];
 			ctx.fill();
+			let value = (colorI !== 6) ? shading.surface : shading.internals;
+			let light = basicLighting(face.map(point => this.transformP(point)));
+			ctx.fillStyle = (light < 0) ? "black" : "white";
+			ctx.globalAlpha = Math.abs(light) * value;
+			ctx.fill();
+			ctx.globalAlpha = 1;
 		});
 		timeD += performance.now() - s1;
 	}
