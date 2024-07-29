@@ -112,19 +112,11 @@ class RubiksCube {
 				let angle = turn_progress;
 				angle = Math.floor(angle) + curve(angle - Math.floor(angle));
 				angle *= Math.PI / 2;
-				piece.rotationMatD = [
-					{ x: 1, y: 0, z: 0 },
-					{ x: 0, y: 1, z: 0 },
-					{ x: 0, y: 0, z: 1 }
-				].map(v => rotateAxis(v, angle, piece.turn.axis));
+				piece.rotationMat = piece.rotationMatO.map(v => rotateAxis(v, angle, piece.turn.axis));
 			}
 			else {
-				piece.rotationMat = piece.rotationMat.map(v => rotateAxis(v, piece.turn.times * Math.PI / 2, piece.turn.axis));
-				piece.rotationMatD = [
-					{ x: 1, y: 0, z: 0 },
-					{ x: 0, y: 1, z: 0 },
-					{ x: 0, y: 0, z: 1 }
-				];
+				piece.rotationMat = piece.rotationMatO.map(v => rotateAxis(v, piece.turn.times * Math.PI / 2, piece.turn.axis));
+				piece.rotationMatO = piece.rotationMat;
 				piece.turning = false;
 				piece.turn = {};
 			}
@@ -168,7 +160,7 @@ class RubiksCube {
 
 			this.rotateVel.z = -angle;
 			this.rotateCube(0, 0, this.rotateVel.z);
-			//this.pos.z = Math.min(Math.max(this.pos.z - dist * 0.01, 15), 40);
+			//this.pos.z = Math.min(Math.max(this.pos.z + dist * 0.01, -13), -8);
 		}
 
 		if (this.touches.length == 0) this.rotateCube(this.rotateVel.x, this.rotateVel.y, this.rotateVel.z);
@@ -218,12 +210,25 @@ class RubiksCube {
 		let drawPolys = [];
 		this.pieces.forEach((piece, i) => {
 			piece.geometry.forEach((poly, i) => {
-				let face = poly.points.map(point => piece.transform(point));
-				if (!isPolyVis(face.map(point => this.transformP(point)))) return;
-				let cen = centroid(face);
-				let dist = Vlength(this.transformP(cen));
-				let colorI = piece.color[poly.color];
-				drawPolys.push({ dist, face, piece, colorI });
+				let face = [];
+				let face_tP = [];
+				let face_rP = [];
+				poly.points.forEach(point => {
+					let point1 = piece.transform(point);
+					let point2 = this.transformP(point1);
+					let point3 = this.projectP(point2);
+					face.push(point1);
+					face_tP.push(point2);
+					face_rP.push(point3);
+				});
+				
+				if (isPolyVis(face_tP)) {
+					let cen = centroid(face);
+					let dist = Vlength(this.transformP(cen));
+					let colorI = piece.color[poly.color];
+					let light = basicLighting(face_tP);
+					drawPolys.push({ dist, face_rP, piece, colorI, light });
+				}
 			});
 		});
 		drawPolys.sort((a, b) => (b.dist + 1 * (b.colorI == 6)) - (a.dist + 1 * (a.colorI == 6)));
@@ -231,19 +236,14 @@ class RubiksCube {
 		timeC += performance.now() - s;
 		let s1 = performance.now();
 		drawPolys.forEach(poly => {
-			let { face, piece, colorI } = poly;
+			let { face_rP, piece, colorI, light } = poly;
 			ctx.beginPath();
-			face.forEach((point, i) => {
-				let { x, y } = this.renderP(point);
-				ctx[i == 0 ? "moveTo" : "lineTo"](x, y);
-			});
+			face_rP.forEach((point, i) => ctx[i == 0 ? "moveTo" : "lineTo"](point.x, point.y));
 			ctx.closePath();
 			ctx.fillStyle = colors[colorI];
 			ctx.fill();
-			let value = (colorI !== 6) ? shading.surface : shading.internals;
-			let light = basicLighting(face.map(point => this.transformP(point)));
 			ctx.fillStyle = (light < 0) ? "black" : "white";
-			ctx.globalAlpha = Math.abs(light) * value;
+			ctx.globalAlpha = Math.abs(light) * ((colorI !== 6) ? shading.surface : shading.internals);
 			ctx.fill();
 			ctx.globalAlpha = 1;
 		});
@@ -287,7 +287,7 @@ class RubiksCube {
 		});
 	}
 
-	turnCube1(pieces, axis, times) {
+	turnCube(pieces, axis, times) {
 		if (pieces.some(p => p.turning)) return;
 		let startTime = Date.now();
 		pieces.forEach(piece => {
@@ -343,14 +343,14 @@ class RubiksCube {
 		if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
 		if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
 
-		return this.turnCube1(pieces, axis, times);
+		return this.turnCube(pieces, axis, times);
 	}
 
 	turnUndo() {
 		if (this.turns.length <= this.undoCap) return;
 		let turn = this.turns[this.turns.length - 1];
 		let axis = Vneg(turn.axis);
-		if (this.turnCube1(turn.pieces, axis, turn.times)) this.turns.splice(this.turns.length - 2, 2);
+		if (this.turnCube(turn.pieces, axis, turn.times)) this.turns.splice(this.turns.length - 2, 2);
 	}
 
 	rotateAngle(a1, a2, angle, p0) {
@@ -436,7 +436,7 @@ class RubiksCube {
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
 						let times = 1;
-						if (pieces.length == 9) this.turnCube1(pieces, axis, times);
+						if (pieces.length == 9) this.turnCube(pieces, axis, times);
 						if (timer.maystart && !timer.running) timer.start();
 					}
 					touch.gotLine = true;
@@ -562,13 +562,10 @@ class Piece {
 			{ x: 0, y: 1, z: 0 },
 			{ x: 0, y: 0, z: 1 }
 		];
-		this.rotationMatD = [
-			{ x: 1, y: 0, z: 0 },
-			{ x: 0, y: 1, z: 0 },
-			{ x: 0, y: 0, z: 1 }
-		];
+		this.rotationMatO = this.rotationMat;
 		this.transform = p => {
-			return Vmatrix(this.rotationMatD, Vmatrix(this.rotationMat, p));
+			//return Vmatrix(this.rotationMatD, Vmatrix(this.rotationMat, p));
+			return Vmatrix(this.rotationMat, p);
 		};
 
 		this.color = color;
