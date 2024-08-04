@@ -13,11 +13,11 @@
 	<div id="content">
 		<canvas id="canvas_bg"></canvas>
 		<canvas id="canvas"></canvas>
-		<div id="timer_container">
-			<p id="timerElement"></p>
-		</div>
 		<span id="fps_display"></span>
-		<div class="column">
+		<div class="column" id="bottom">
+			<div id="timer_container">
+				<p id="timer_display"></p>
+			</div>
 			<div class="row" id="buttons_container">
 				<svg class="button" id="button_toggleTimer" onclick="toggleTimer()" fill="white" viewBox="0 0 24 24">
 					<path id="timerON" d="M12 20.016c3.891 0 6.984-3.141 6.984-7.031S15.89 6.001 12 6.001s-6.984 3.094-6.984 6.984S8.11 20.016 12 20.016zm7.031-12.61C20.25 8.953 21 10.875 21 12.984c0 4.969-4.031 9-9 9s-9-4.031-9-9 4.031-9 9-9c2.109 0 4.078.797 5.625 2.016l1.406-1.453c.516.422.984.891 1.406 1.406zm-8.015 6.61v-6h1.969v6h-1.969zM15 .984V3H9V.984h6z" />

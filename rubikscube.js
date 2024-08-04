@@ -173,7 +173,7 @@ class RubiksCube {
 			timer.maystart = false;
 			this.undoCap = this.turns.length;
 		}
-		timerElement.textContent = timer.display();
+		timer_display.textContent = timer.display();
 		timeB += performance.now() - s;
 
 		this.draw();
@@ -491,7 +491,7 @@ class RubiksCube {
 		if (timer.enabled) {
 			timer.reset();
 			timer.maystart = true;
-			timerElement.style.color = '#ffffff';
+			timer_display.style.color = '#ffffff';
 		}
 	}
 

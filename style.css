@@ -51,27 +51,32 @@ div.column {
 	display: none;
 }
 
-#timer_container {
-	position: fixed;
-	left: 50%;
-	bottom: 60px;
-	transform: translate(-50%, 0%);
+#bottom {
 	pointer-events: none;
-	opacity: 0;
-	transition: opacity 200ms;
+	position: fixed;
+	bottom: 20px;
+	left: 50vw;
+	transform: translateX(-50%);
 }
 
-#timerElement {
+#timer_container {
 	margin: 10px;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+#timer_display {
+	margin: 0;
 	font-family: monospace;
 	font-size: 35px;
 	color: #565670;
-	transition: color 0.2s;
+	opacity: 0;
+	transform: translateY(100%);
+	transition: all 0.2s;
 }
 
 #buttons_container {
-	position: fixed;
-	bottom: 20px;
+	pointer-events: auto;
 	background-color: #6060cc80;
 	border-radius: 10px;
 	box-shadow: 0 3px 5px #00000050;

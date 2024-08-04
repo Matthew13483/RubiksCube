@@ -45,16 +45,18 @@ function toggleTimer() {
 	if (timer.enabled) {
 		timerON.style.display = 'block'
 		timerOFF.style.display = 'none';
-		timer_container.style.opacity = 1;
 		button_scramble.style.animation = 'highlight 1.5s';
-		timerElement.style.color = '#565670';
+		timer_display.style.color = '#565670';
+		timer_display.style.opacity = 1;
+		timer_display.style.transform = 'translateY(0%)';
 	}
 	else {
 		timerON.style.display = 'none';
 		timerOFF.style.display = 'block';
-		timer_container.style.opacity = 0;
 		button_scramble.style.animation = 'none';
-		timerElement.style.color = '#565670';
+		timer_display.style.color = '#565670';
+		timer_display.style.opacity = 0;
+		timer_display.style.transform = 'translateY(100%)';
 		timer.reset();
 		timer.maystart = false;
 		Rubik.undoCap = 0;
