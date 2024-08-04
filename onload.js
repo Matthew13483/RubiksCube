@@ -12,6 +12,6 @@ window.onresize = () => {
 
 	Rubik.resize(canvas.width, canvas.height);
 
-	Vor.resize(canvas_bg.width, canvas_bg.height);
-	Vor.drawCells();
+	Vor.resize();
+	Vor.draw();
 };

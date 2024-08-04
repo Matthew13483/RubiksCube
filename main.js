@@ -131,7 +131,7 @@ let timeC = 0;
 let timeD = 0;
 let frames = 0;
 
-const Vor = new Voronoi(canvas.width, canvas.height, 8, 8);
+const Vor = new Voronoi(canvas_bg);
 
 const Rubik = new RubiksCube();
 Rubik.rotateCube(0, -0.35, 0);
@@ -141,16 +141,10 @@ function loop() {
 	requestAnimationFrame(loop);
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	fps.inLoop();
-	{
-		let s = performance.now();
 
-		Rubik.loop();
-
-		//Vor.drawCells();
-		//Vor.movePoints();
-
-		timeA += performance.now() - s
-	}
+	let s = performance.now();
+	Rubik.loop();
+	timeA += performance.now() - s
 
 	frames++;
 }
