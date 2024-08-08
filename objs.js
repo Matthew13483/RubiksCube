@@ -10,7 +10,7 @@ const objs = {
 	]
 };
 
-msg_display.textContent += './';
+msg_display.textContent += ': ./';
 
 async function fetchOBJ(filePath) {
 	try {
@@ -54,17 +54,16 @@ function parseOBJ(text) {
 
 [
 	['./obj_files/cube_core.obj', 'core'],
-	['obj_files/cube_center.obj', 'center'],
-	['obj_files/cube_edge.obj', 'edge'],
-	['obj_files/cube_corner.obj', 'corner']
+	['./obj_files/cube_center.obj', 'center'],
+	['./obj_files/cube_edge.obj', 'edge'],
+	['./obj_files/cube_corner.obj', 'corner']
 ].forEach(link => {
 	fetchOBJ(link[0]).then(obj_txt => {
-		if (obj_txt) {
-			objs[link[1]] = parseOBJ(obj_txt);
-		}
+		if (obj_txt) objs[link[1]] = parseOBJ(obj_txt);
 	});
 });
 
+/*
 [
 	[
 		'core',
@@ -486,3 +485,4 @@ function parseOBJ(text) {
 ].forEach(o => {
 	objs[o[0]] = parseOBJ(o[1]);
 });
+*/
