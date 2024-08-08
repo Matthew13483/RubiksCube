@@ -109,7 +109,3 @@ function GLresize(gl) {
 	let resolutionUniformLocation = gl.getUniformLocation(gl.program, "u_resolution");
 	gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 }
-
-function gl_setup() { }
-
-function gl_loop() { }
