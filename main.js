@@ -1,7 +1,5 @@
 // 3/7/22
 
-const ctx = canvas.getContext('2d');
-
 class Timer {
 	constructor() {
 		this.running = false;
@@ -135,17 +133,15 @@ let frames = 0;
 
 const Vor = new Voronoi(canvas_bg);
 
-const Rubik = new RubiksCube();
-Rubik.rotateCube(0, -0.35, 0);
-Rubik.rotateCube(-3.5, 0, 0);
+let Rubik;
 
 function loop() {
 	requestAnimationFrame(loop);
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	fps.inLoop();
 
 	let s = performance.now();
 	Rubik.loop();
+	Rubik.draw_loop();
 	timeA += performance.now() - s
 
 	frames++;

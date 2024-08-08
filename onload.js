@@ -1,4 +1,8 @@
 window.onload = () => {
+	Rubik = new RubiksCube();
+	Rubik.rotateCube(0, -0.35, 0);
+	Rubik.rotateCube(-3.5, 0, 0);
+	
 	window.onresize();
 
 	content.style.display = 'block';

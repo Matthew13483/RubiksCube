@@ -3,6 +3,7 @@
 class RubiksCube {
 
 	constructor() {
+		this.gl = GL(canvas);
 		this.reset();
 	}
 
@@ -64,7 +65,7 @@ class RubiksCube {
 			]
 		};
 
-		this.pos = { x: 0, y: 0, z: -10 };
+		this.pos = { x: 0, y: 0, z: 9 };
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
@@ -93,11 +94,16 @@ class RubiksCube {
 
 		this.display = {};
 		if (canvas) this.resize(canvas.width, canvas.height);
+
+		this.vertices_data = [];
+		
+		this.draw_setup();
 	}
 
 	resize(width, height) {
 		this.display.width = width;
 		this.display.height = height;
+		GLresize(this.gl);
 	}
 
 	loop() {
@@ -133,36 +139,6 @@ class RubiksCube {
 			}
 		}
 
-		let touchesR = this.touches.filter(e => !e.touchingCube);
-		if (touchesR.length >= 2) {
-			let x = 0;
-			let y = 0;
-			let dist = 0;
-			let angle = 0;
-			touchesR.forEach(touch => {
-				x += touch.x / touchesR.length;
-				y += touch.y / touchesR.length;
-			});
-			touchesR.forEach(touch => {
-				if (touch.ax !== undefined && touch.ay !== undefined) {
-					let ax = touch.x - x;
-					let ay = touch.y - y;
-					let bx = touch.ax - x;
-					let by = touch.ay - y;
-					let ad = Math.hypot(ax, ay);
-					let bd = Math.hypot(bx, by);
-					dist += ad - bd;
-					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
-					touch.ax = undefined;
-					touch.ay = undefined;
-				}
-			});
-
-			this.rotateVel.z = -angle;
-			this.rotateCube(0, 0, this.rotateVel.z);
-			//this.pos.z = Math.min(Math.max(this.pos.z + dist * 0.01, -13), -8);
-		}
-
 		if (this.touches.length == 0) this.rotateCube(this.rotateVel.x, this.rotateVel.y, this.rotateVel.z);
 		this.rotateVel.x *= 0.95;
 		this.rotateVel.y *= 0.95;
@@ -185,6 +161,7 @@ class RubiksCube {
 	}
 
 	draw() {
+		return;
 		let s = performance.now();
 		/*let polys = [];
 		this.pieces.forEach(piece => {
@@ -206,7 +183,7 @@ class RubiksCube {
 			ctx.fillStyle = piece.boxColors[i];
 			ctx.fill();
 		});*/
-		
+
 		let drawPolys = [];
 		this.pieces.forEach((piece, i) => {
 			piece.geometry.forEach((poly, i) => {
@@ -247,7 +224,7 @@ class RubiksCube {
 			ctx.fill();
 			ctx.globalAlpha = 1;
 		});
-		timeD += performance.now() - s1;
+		//timeD += performance.now() - s1;
 	}
 
 	drawMap(x, y, w) {
@@ -262,7 +239,7 @@ class RubiksCube {
 			[3 * siW, 1 * siW],
 			[1 * siW, 2 * siW]
 		];
-		this.map.forEach((si, i) => {
+		/*this.map.forEach((si, i) => {
 			let siX = faceCoords[i][0];
 			let siY = faceCoords[i][1];
 			si.forEach((sq, j) => {
@@ -272,7 +249,7 @@ class RubiksCube {
 				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
-		});
+		});*/
 	}
 
 	rotateCube(ax, ay, az) {
@@ -368,15 +345,165 @@ class RubiksCube {
 	}
 
 	transformP(point) {
-		return Vadd(Vmatrix(this.rotationMat, point), this.pos);
+		return Vsub(Vmatrix(this.rotationMat, point), this.pos);
 	}
 
 	projectP(point) {
-		let FOV = 60 * Math.PI / 180;
+		/*let FOV = 60 * Math.PI / 180;
 		let fl = Math.hypot(this.display.width, this.display.height) / (2 * Math.tan(FOV / 2));
 		let x = point.x * fl / -point.z;
-		let y = point.y * fl / -point.z;
-		return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
+		let y = point.y * fl / -point.z;*/
+		//return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
+		
+		let p = [point.x, point.y, point.z, 1];
+		let pMat = this.pMat();
+		
+		let mul_mat_vec = (mat, vec) => {
+			return [
+				vec[0] * mat[0] + vec[1] * mat[4] + vec[2] * mat[8] + vec[3] * mat[12],
+				vec[0] * mat[1] + vec[1] * mat[5] + vec[2] * mat[9] + vec[3] * mat[13],
+				vec[0] * mat[2] + vec[1] * mat[6] + vec[2] * mat[10] + vec[3] * mat[14],
+				vec[0] * mat[3] + vec[1] * mat[7] + vec[2] * mat[11] + vec[3] * mat[15]
+			];
+		}
+		let result = mul_mat_vec(pMat, p);
+		return { x: this.display.width * (result[0] / result [3] + 1) / 2, y: this.display.height * (-result[1] / result[3] + 1) / 2};
+	}
+
+	pMat() {
+		let fov = 60 * Math.PI / 180;
+		let aspect = this.display.width / this.display.height;
+		let near = 1;
+		let far = 50;
+		let f = 1.0 / Math.tan(fov / 2);
+		let nf = 1 / (near - far);
+		return [
+			f / aspect, 0, 0, 0,
+			0, f, 0, 0,
+			0, 0, (far + near) * nf, -1,
+			0, 0, (2 * far * near) * nf, 0
+		];
+	}
+
+	vMat() {
+		return [
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			-this.pos.x, -this.pos.y, -this.pos.z, 1
+		];
+	}
+
+	mMat() {
+		return [
+			this.rotationMat[0].x, this.rotationMat[0].y, this.rotationMat[0].z, 0,
+			this.rotationMat[1].x, this.rotationMat[1].y, this.rotationMat[1].z, 0,
+			this.rotationMat[2].x, this.rotationMat[2].y, this.rotationMat[2].z, 0,
+			0, 0, 0, 1
+		];
+	}
+
+	draw_setup() {
+		let gl = this.gl;
+		let program = gl.program;
+
+		this.vertices_data = [];
+		this.pieces.forEach((piece, pi) => {
+			for (let gi in piece.obj.groups) {
+				piece.obj.groups[gi].forEach(face => {
+					let v0 = piece.obj.vertices[face[0]];
+					let v1 = piece.obj.vertices[face[1]];
+					let v2 = piece.obj.vertices[face[2]];
+					if (!(v0 && v1 && v2)) return;
+					let cross = [
+						(v0[1] - v2[1]) * (v1[2] - v2[2]) - (v0[2] - v2[2]) * (v1[1] - v2[1]),
+						(v0[2] - v2[2]) * (v1[0] - v2[0]) - (v0[0] - v2[0]) * (v1[2] - v2[2]),
+						(v0[0] - v2[0]) * (v1[1] - v2[1]) - (v0[1] - v2[1]) * (v1[0] - v2[0])
+					];
+					let len = Math.hypot(...cross);
+					let n = [cross[0] / len, cross[1] / len, cross[2] / len];
+					let c = piece.obj.colors[piece.color[Number(gi)]];
+					this.vertices_data.push(...v0, ...n, ...c, pi);
+					this.vertices_data.push(...v1, ...n, ...c, pi);
+					this.vertices_data.push(...v2, ...n, ...c, pi);
+				});
+			}
+		});
+
+		let vertices_data = new Float32Array(this.vertices_data);
+
+		let positionBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, vertices_data, gl.STATIC_DRAW);
+
+		let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+		gl.enableVertexAttribArray(positionAttributeLocation);
+		gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 0);
+
+		let normalAttributeLocation = gl.getAttribLocation(program, 'a_normal');
+		gl.enableVertexAttribArray(normalAttributeLocation);
+		gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+		let colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
+		gl.enableVertexAttribArray(colorAttributeLocation);
+		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+
+		let idAttributeLocation = gl.getAttribLocation(program, 'a_id');
+		gl.enableVertexAttribArray(idAttributeLocation);
+		gl.vertexAttribPointer(idAttributeLocation, 1, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+	}
+
+	draw_loop() {
+		let gl = this.gl;
+		let program = gl.program;
+
+		gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), gl.canvas.width, gl.canvas.height);
+
+		let iMat = [];
+		this.pieces.forEach((piece, i) => {
+			let mat = [
+				piece.rotationMat[0].x, piece.rotationMat[0].y, piece.rotationMat[0].z, 0,
+				piece.rotationMat[1].x, piece.rotationMat[1].y, piece.rotationMat[1].z, 0,
+				piece.rotationMat[2].x, piece.rotationMat[2].y, piece.rotationMat[2].z, 0,
+				0, 0, 0, 1
+			];
+			iMat.push(...mat);
+		});
+
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_iMat'), false, new Float32Array(iMat));
+
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_pMat'), false, new Float32Array(this.pMat()));
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_vMat'), false, new Float32Array(this.vMat()));
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_mMat'), false, new Float32Array(this.mMat()));
+
+		gl.uniform3f(gl.getUniformLocation(program, "camPos"), this.pos.x, this.pos.y, this.pos.z);
+
+		let lightSources = [
+			0, 10, 0,
+			5, 0, 10,
+			-20, 0, 10,
+			0, -20, -10,
+			+20, 0, 10
+		];
+		let lightColors = [
+			0.7, 0.7, 0.7,
+			0.5, 0.5, 0.5,
+			0.5, 0.5, 0.5,
+			0.5, 0.5, 0.5,
+			0.5, 0.5, 0.5,
+			/*0.5, 0.5, 0.5,
+			0.7, 0.5, 0.5,
+			0.5, 0.7, 0.5,
+			0.5, 0.5, 0.7*/
+		];
+		gl.uniform3fv(gl.getUniformLocation(program, "lightSources"), new Float32Array(lightSources));
+		gl.uniform3fv(gl.getUniformLocation(program, "lightColors"), new Float32Array(lightColors));
+
+		gl.clearColor(0, 0, 0, 0);
+		gl.enable(gl.DEPTH_TEST);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		gl.drawArrays(gl.TRIANGLES, 0, this.vertices_data.length / 10);
 	}
 
 	turnMap(side) {
@@ -436,7 +563,7 @@ class RubiksCube {
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
 						let times = 1;
-						if (pieces.length == 9) this.turnCube(pieces, axis, times);
+						if (pieces.length > 0 && pieces.length % 9 == 0) this.turnCube(pieces, axis, times);
 						if (timer.maystart && !timer.running) timer.start();
 					}
 					touch.gotLine = true;
@@ -451,6 +578,36 @@ class RubiksCube {
 			this.rotateCube(this.rotateVel.x, this.rotateVel.y, 0);
 		}
 		Object.assign(touch, { x, y });
+		let touchesR = this.touches.filter(e => !e.touchingCube);
+		if (touchesR.length >= 2) {
+			let x = 0;
+			let y = 0;
+			let dist = 0;
+			let angle = 0;
+			touchesR.forEach(touch => {
+				x += touch.x / touchesR.length;
+				y += touch.y / touchesR.length;
+			});
+			touchesR.forEach(touch => {
+				if (touch.ax !== undefined && touch.ay !== undefined) {
+					let ax = touch.x - x;
+					let ay = touch.y - y;
+					let bx = touch.ax - x;
+					let by = touch.ay - y;
+					let ad = Math.hypot(ax, ay);
+					let bd = Math.hypot(bx, by);
+					dist += ad - bd;
+					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
+					touch.ax = undefined;
+					touch.ay = undefined;
+				}
+			});
+
+			this.rotateVel.z = -angle;
+			this.rotateCube(0, 0, this.rotateVel.z);
+			//this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 5), 13);
+			//this.pos.z = this.pos.z + -dist * 0.01;
+		}
 	}
 
 	touchEnd(id) {
@@ -515,21 +672,42 @@ class Piece {
 		this.z = z;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
-		this.geometry = m3ds[pieceType].map(e => ({
+		this.obj = {};
+		let obj = objs[pieceType];
+		this.obj.colors = objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]);
+		this.obj.vertices = obj.vertices.map(vertex => {
+			let p = {
+				x: vertex[0] / 2,
+				y: vertex[1] / 2,
+				z: vertex[2] / 2
+			};
+			p = rotateX(p, rot[0] * Math.PI / 180);
+			p = rotateY(p, rot[1] * Math.PI / 180);
+			p = rotateZ(p, rot[2] * Math.PI / 180);
+			let s = 1;
+			return [
+				p.x + this.x * s,
+				p.y + this.y * s,
+				p.z + this.z * s
+			];
+		});
+		this.obj.groups = obj.groups;
+
+		/*this.geometry = m3ds[pieceType].map(e => ({
 			color: e.color,
 			points: e.points.map(f => {
 				let p = {
 					x: (f[0] / 2),
 					y: (f[1] / 2),
-					z: (f[2] /-2)
+					z: (f[2] / -2)
 				}
 				p = rotateX(p, rot[0] * Math.PI / 180);
 				p = rotateY(p, rot[1] * Math.PI / 180);
 				p = rotateZ(p, rot[2] * Math.PI / 180);
-				
+
 				return Vadd(p, Vscale(this, 1.02));
 			})
-		}));
+		}));*/
 		this.box = [
 			[[-1, +1, -1], [+1, +1, -1], [+1, +1, +1], [-1, +1, +1]],
 			[[-1, +1, -1], [-1, +1, +1], [-1, -1, +1], [-1, -1, -1]],
@@ -546,7 +724,7 @@ class Piece {
 			let faceNormal = getNormal(face);
 			return Vdot(faceNormal, this) > 0;
 		});
-		this.boxColors = this.box.map((face, i) => {
+		/*this.boxColors = this.box.map((face, i) => {
 			let faceNormal = getNormal(face);
 			if (!this.boxFaces[i]) return colors[6];
 			if (Vdot(faceNormal, { x: 0, y: +1, z: 0 }) == 1) return colors[0];
@@ -555,7 +733,7 @@ class Piece {
 			if (Vdot(faceNormal, { x: +1, y: 0, z: 0 }) == 1) return colors[3];
 			if (Vdot(faceNormal, { x: 0, y: 0, z: -1 }) == 1) return colors[4];
 			if (Vdot(faceNormal, { x: 0, y: -1, z: 0 }) == 1) return colors[5];
-		});
+		});*/
 
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
