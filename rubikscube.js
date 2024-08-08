@@ -96,7 +96,7 @@ class RubiksCube {
 		if (canvas) this.resize(canvas.width, canvas.height);
 
 		this.vertices_data = [];
-		
+
 		this.draw_setup();
 	}
 
@@ -198,7 +198,7 @@ class RubiksCube {
 					face_tP.push(point2);
 					face_rP.push(point3);
 				});
-				
+
 				if (isPolyVis(face_tP)) {
 					let cen = centroid(face);
 					let dist = Vlength(this.transformP(cen));
@@ -209,7 +209,7 @@ class RubiksCube {
 			});
 		});
 		drawPolys.sort((a, b) => (b.dist + 1 * (b.colorI == 6)) - (a.dist + 1 * (a.colorI == 6)));
-		
+
 		timeC += performance.now() - s;
 		let s1 = performance.now();
 		drawPolys.forEach(poly => {
@@ -354,10 +354,10 @@ class RubiksCube {
 		let x = point.x * fl / -point.z;
 		let y = point.y * fl / -point.z;*/
 		//return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
-		
+
 		let p = [point.x, point.y, point.z, 1];
 		let pMat = this.pMat();
-		
+
 		let mul_mat_vec = (mat, vec) => {
 			return [
 				vec[0] * mat[0] + vec[1] * mat[4] + vec[2] * mat[8] + vec[3] * mat[12],
@@ -367,7 +367,7 @@ class RubiksCube {
 			];
 		}
 		let result = mul_mat_vec(pMat, p);
-		return { x: this.display.width * (result[0] / result [3] + 1) / 2, y: this.display.height * (-result[1] / result[3] + 1) / 2};
+		return { x: this.display.width * (result[0] / result[3] + 1) / 2, y: this.display.height * (-result[1] / result[3] + 1) / 2 };
 	}
 
 	pMat() {
@@ -501,8 +501,10 @@ class RubiksCube {
 		gl.uniform3fv(gl.getUniformLocation(program, "lightSources"), new Float32Array(lightSources));
 		gl.uniform3fv(gl.getUniformLocation(program, "lightColors"), new Float32Array(lightColors));
 
-		gl.clearColor(0, 0, 0, 0);
 		gl.enable(gl.DEPTH_TEST);
+		gl.enable(gl.CULL_FACE);
+
+		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertices_data.length / 10);

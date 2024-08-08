@@ -108,7 +108,7 @@ const fps = {
 			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
 			fps.startTime = Date.now();
 			fps.frameCount = 0;
-			
+
 			if (debug_performance) console.table([
 				{ function: 'Rubik.loop()', avgTime: timeA / frames },
 				{ function: 'loop logic', avgTime: timeB / frames },
