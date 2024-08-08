@@ -45,7 +45,7 @@ function parseOBJ(text) {
 	return { vertices, groups };
 }
 
-[['/cube_core.obj', 'core'], ['/cube_center.obj', 'center'], ['/cube_edge.obj', 'edge'], ['/cube_corner.obj', 'corner']].forEach(link => {
+[['/obj_files/cube_core.obj', 'core'], ['/obj_files/cube_center.obj', 'center'], ['/obj_files/cube_edge.obj', 'edge'], ['/obj_files/cube_corner.obj', 'corner']].forEach(link => {
 	fetchOBJ(link[0]).then(obj_txt => {
 		objs[link[1]] = parseOBJ(obj_txt);
 	});
