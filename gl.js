@@ -1,6 +1,9 @@
 function GL(canvas) {
 	let gl = canvas.getContext("webgl", { alpha: true });
-	if (!gl) console.error('WebGL is not supported');
+	if (!gl) {
+		console.error('WebGL is not supported');
+		return;
+	}
 
 	let createShader = (gl, type, source) => {
 		let shader = gl.createShader(type);
@@ -105,6 +108,7 @@ function GL(canvas) {
 }
 
 function GLresize(gl) {
+	if (!gl) return;
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	let resolutionUniformLocation = gl.getUniformLocation(gl.program, "u_resolution");
 	gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);

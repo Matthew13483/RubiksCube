@@ -405,6 +405,7 @@ class RubiksCube {
 
 	draw_setup() {
 		let gl = this.gl;
+		if (!gl) return;
 		let program = gl.program;
 
 		this.vertices_data = [];
@@ -455,6 +456,7 @@ class RubiksCube {
 
 	draw_loop() {
 		let gl = this.gl;
+		if (!gl) return;
 		let program = gl.program;
 
 		gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), gl.canvas.width, gl.canvas.height);
