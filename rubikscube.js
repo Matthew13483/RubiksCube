@@ -688,7 +688,7 @@ class Piece {
 			p = rotateX(p, rot[0] * Math.PI / 180);
 			p = rotateY(p, rot[1] * Math.PI / 180);
 			p = rotateZ(p, rot[2] * Math.PI / 180);
-			let s = 1;
+			let s = 1.01;
 			return [
 				p.x + this.x * s,
 				p.y + this.y * s,
