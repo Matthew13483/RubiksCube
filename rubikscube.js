@@ -9,36 +9,36 @@ class RubiksCube {
 
 	reset() {
 		this.pieces = [
-			new Piece(-1, +1, +1, "UFL", "corner", [6, 1, 2, 0], [0, 90, 0]),
-			new Piece(+1, +1, +1, "UFR", "corner", [6, 2, 3, 0], [0, 0, 0]),
-			new Piece(-1, -1, +1, "DFL", "corner", [6, 2, 1, 5], [180, 180, 0]),
-			new Piece(+1, -1, +1, "DFR", "corner", [6, 3, 2, 5], [180, 90, 0]),
-			new Piece(-1, +1, -1, "UBL", "corner", [6, 4, 1, 0], [0, 180, 0]),
-			new Piece(+1, +1, -1, "UBR", "corner", [6, 3, 4, 0], [0, -90, 0]),
-			new Piece(-1, -1, -1, "DBL", "corner", [6, 1, 4, 5], [180, -90, 0]),
-			new Piece(+1, -1, -1, "DBR", "corner", [6, 4, 3, 5], [180, 0, 0]),
+			new Piece(-1, +1, +1, "UFL", "corner", [6, 1, 2, 0], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+			new Piece(+1, +1, +1, "UFR", "corner", [6, 2, 3, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(-1, -1, +1, "DFL", "corner", [6, 2, 1, 5], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+			new Piece(+1, -1, +1, "DFR", "corner", [6, 3, 2, 5], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+			new Piece(-1, +1, -1, "UBL", "corner", [6, 4, 1, 0], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+			new Piece(+1, +1, -1, "UBR", "corner", [6, 3, 4, 0], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+			new Piece(-1, -1, -1, "DBL", "corner", [6, 1, 4, 5], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+			new Piece(+1, -1, -1, "DBR", "corner", [6, 4, 3, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
 
-			new Piece(0, +1, +1, "UFM", "edge", [6, 2, 0], [0, 0, 0]),
-			new Piece(0, +1, -1, "UBM", "edge", [6, 4, 0], [0, 180, 0]),
-			new Piece(0, -1, +1, "DFM", "edge", [6, 2, 5], [180, 180, 0]),
-			new Piece(0, -1, -1, "DBM", "edge", [6, 4, 5], [180, 0, 0]),
-			new Piece(-1, +1, 0, "ULS", "edge", [6, 1, 0], [0, 90, 0]),
-			new Piece(+1, +1, 0, "URS", "edge", [6, 3, 0], [0, -90, 0]),
-			new Piece(-1, -1, 0, "DLS", "edge", [6, 1, 5], [180, -90, 0]),
-			new Piece(+1, -1, 0, "DRS", "edge", [6, 3, 5], [180, 90, 0]),
-			new Piece(-1, 0, +1, "FLE", "edge", [6, 2, 1], [0, 0, -90]),
-			new Piece(+1, 0, +1, "FRE", "edge", [6, 2, 3], [0, 0, 90]),
-			new Piece(-1, 0, -1, "BLE", "edge", [6, 4, 1], [0, 180, -90]),
-			new Piece(+1, 0, -1, "BRE", "edge", [6, 4, 3], [0, 180, 90]),
+			new Piece(0, +1, +1, "UFM", "edge", [6, 2, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(0, +1, -1, "UBM", "edge", [6, 4, 0], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+			new Piece(0, -1, +1, "DFM", "edge", [6, 2, 5], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+			new Piece(0, -1, -1, "DBM", "edge", [6, 4, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+			new Piece(-1, +1, 0, "ULS", "edge", [6, 1, 0], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+			new Piece(+1, +1, 0, "URS", "edge", [6, 3, 0], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+			new Piece(-1, -1, 0, "DLS", "edge", [6, 1, 5], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+			new Piece(+1, -1, 0, "DRS", "edge", [6, 3, 5], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+			new Piece(-1, 0, +1, "FLE", "edge", [6, 2, 1], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+			new Piece(+1, 0, +1, "FRE", "edge", [6, 2, 3], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+			new Piece(-1, 0, -1, "BLE", "edge", [6, 4, 1], [0, -1, 0, -1, 0, 0, 0, 0, -1]),
+			new Piece(+1, 0, -1, "BRE", "edge", [6, 4, 3], [0, 1, 0, 1, 0, 0, 0, 0, -1]),
 
-			new Piece(0, 0, -1, "BME", "center", [6, 4], [-90, 180, 0]),
-			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, 0, 90]),
-			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 0, -90]),
-			new Piece(0, 0, +1, "FME", "center", [6, 2], [90, 180, 0]),
-			new Piece(0, +1, 0, "UMS", "center", [6, 0], [0, 0, 0]),
-			new Piece(0, -1, 0, "DMS", "center", [6, 5], [180, 0, 0]),
+			new Piece(0, 0, -1, "BME", "center", [6, 4], [-1, 0, 0, 0, 0, -1, 0, -1, 0]),
+			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+			new Piece(0, 0, +1, "FME", "center", [6, 2], [-1, 0, 0, 0, 0, 1, 0, 1, 0]),
+			new Piece(0, +1, 0, "UMS", "center", [6, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(0, -1, 0, "DMS", "center", [6, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
 
-			new Piece(0, 0, 0, "MES", "core", [6], [0, 0, 0]),
+			new Piece(0, 0, 0, "MES", "core", [6], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
 		];
 
 		this.cyclesMap = {
@@ -107,8 +107,6 @@ class RubiksCube {
 	}
 
 	loop() {
-		let s = performance.now();
-
 		let time = Date.now();
 		this.pieces.forEach(piece => {
 			if (!piece.turning) return;
@@ -150,19 +148,16 @@ class RubiksCube {
 			this.undoCap = this.turns.length;
 		}
 		timer_display.textContent = timer.display();
-		timeB += performance.now() - s;
 
-		this.draw();
+		/*this.draw();
 
 		let width = Math.sqrt(this.display.width * this.display.height) * 0.2;
 		let y = this.display.width * 0.03;
 		let x = this.display.width - y - width;
-		this.drawMap(x, y, width);
+		this.drawMap(x, y, width);*/
 	}
 
 	draw() {
-		return;
-		let s = performance.now();
 		/*let polys = [];
 		this.pieces.forEach(piece => {
 			piece.box.forEach((face, i) => {
@@ -224,7 +219,6 @@ class RubiksCube {
 			ctx.fill();
 			ctx.globalAlpha = 1;
 		});
-		//timeD += performance.now() - s1;
 	}
 
 	drawMap(x, y, w) {
@@ -239,7 +233,7 @@ class RubiksCube {
 			[3 * siW, 1 * siW],
 			[1 * siW, 2 * siW]
 		];
-		/*this.map.forEach((si, i) => {
+		this.map.forEach((si, i) => {
 			let siX = faceCoords[i][0];
 			let siY = faceCoords[i][1];
 			si.forEach((sq, j) => {
@@ -249,7 +243,7 @@ class RubiksCube {
 				ctx.fillStyle = colors[sq];
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
-		});*/
+		});
 	}
 
 	rotateCube(ax, ay, az) {
@@ -452,6 +446,9 @@ class RubiksCube {
 		let idAttributeLocation = gl.getAttribLocation(program, 'a_id');
 		gl.enableVertexAttribArray(idAttributeLocation);
 		gl.vertexAttribPointer(idAttributeLocation, 1, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+
+		gl.enable(gl.DEPTH_TEST);
+		gl.enable(gl.CULL_FACE);
 	}
 
 	draw_loop() {
@@ -500,9 +497,6 @@ class RubiksCube {
 		];
 		gl.uniform3fv(gl.getUniformLocation(program, "lightSources"), new Float32Array(lightSources));
 		gl.uniform3fv(gl.getUniformLocation(program, "lightColors"), new Float32Array(lightColors));
-
-		gl.enable(gl.DEPTH_TEST);
-		gl.enable(gl.CULL_FACE);
 
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -670,32 +664,24 @@ class RubiksCube {
 }
 
 class Piece {
-	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], rot = [0, 0, 0]) {
+	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], mat = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
-		this.obj = {};
-		let obj = objs[pieceType];
-		this.obj.colors = objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]);
-		this.obj.vertices = obj.vertices.map(vertex => {
-			let p = {
-				x: vertex[0] / 2,
-				y: vertex[1] / 2,
-				z: vertex[2] / 2
-			};
-			p = rotateX(p, rot[0] * Math.PI / 180);
-			p = rotateY(p, rot[1] * Math.PI / 180);
-			p = rotateZ(p, rot[2] * Math.PI / 180);
-			let s = 1.01;
-			return [
-				p.x + this.x * s,
-				p.y + this.y * s,
-				p.z + this.z * s
-			];
-		});
-		this.obj.groups = obj.groups;
+		this.obj = {
+			colors: objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]),
+			vertices: objs[pieceType].vertices.map(vec => {
+				let s = 1.01;
+				return [
+					(vec[0] * mat[0] + vec[1] * mat[3] + vec[2] * mat[6]) / 2 + this.x * s,
+					(vec[0] * mat[1] + vec[1] * mat[4] + vec[2] * mat[7]) / 2 + this.y * s,
+					(vec[0] * mat[2] + vec[1] * mat[5] + vec[2] * mat[8]) / 2 + this.z * s
+				];
+			}),
+			groups: objs[pieceType].groups
+		};
 
 		/*this.geometry = m3ds[pieceType].map(e => ({
 			color: e.color,
@@ -745,12 +731,12 @@ class Piece {
 			{ x: 0, y: 0, z: 1 }
 		];
 		this.rotationMatO = this.rotationMat;
-		this.transform = p => {
-			//return Vmatrix(this.rotationMatD, Vmatrix(this.rotationMat, p));
-			return Vmatrix(this.rotationMat, p);
-		};
 
 		this.color = color;
 		this.turn = {};
+	}
+
+	transform(p) {
+		return Vmatrix(this.rotationMat, p);
 	}
 }

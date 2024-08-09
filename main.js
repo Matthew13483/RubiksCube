@@ -110,10 +110,10 @@ const fps = {
 			fps.frameCount = 0;
 
 			if (debug_performance) console.table([
-				{ function: 'Rubik.loop()', avgTime: timeA / frames },
-				{ function: 'loop logic', avgTime: timeB / frames },
-				{ function: 'draw setup', avgTime: timeC / frames },
-				{ function: 'draw ctx', avgTime: timeD / frames }
+				{ function: 'Rubik: loop & draw loop', avgTime: timeA / frames },
+				{ function: '', avgTime: timeB / frames },
+				{ function: 'loop', avgTime: timeC / frames },
+				{ function: 'draw loop', avgTime: timeD / frames }
 			]);
 			timeA = 0;
 			timeB = 0;
@@ -140,8 +140,12 @@ function loop() {
 	fps.inLoop();
 
 	let s = performance.now();
+	let s1 = performance.now();
 	Rubik.loop();
+	timeC += performance.now() - s1;
+	let s2 = performance.now();
 	Rubik.draw_loop();
+	timeD += performance.now() - s2;
 	timeA += performance.now() - s
 
 	frames++;
