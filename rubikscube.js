@@ -108,23 +108,7 @@ class RubiksCube {
 
 	loop() {
 		let time = Date.now();
-		this.pieces.forEach(piece => {
-			if (!piece.turning) return;
-			let turn_progress = (time - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
-			if (turn_progress < piece.turn.times) {
-				let curve = t => t ** (1 / 2);
-				let angle = turn_progress;
-				angle = Math.floor(angle) + curve(angle - Math.floor(angle));
-				angle *= Math.PI / 2;
-				piece.rotationMat = piece.rotationMatO.map(v => rotateAxis(v, angle, piece.turn.axis));
-			}
-			else {
-				piece.rotationMat = piece.rotationMatO.map(v => rotateAxis(v, piece.turn.times * Math.PI / 2, piece.turn.axis));
-				piece.rotationMatO = piece.rotationMat;
-				piece.turning = false;
-				piece.turn = {};
-			}
-		});
+		this.pieces.forEach(piece => piece.turnPiece(time));
 
 		if (this.scrambling && !this.isTurning()) {
 			if (this.scrambleIndex < this.scramble.length) {
@@ -259,6 +243,8 @@ class RubiksCube {
 	}
 
 	turnCube(pieces, axis, times) {
+		if (pieces.some(p => p.turning && (p.turn.progress / p.turn.times < 0.5))) return;
+		this.pieces.forEach(p => (p.turning && (Math.abs(Vdot(p.turn.axis, axis)) < 0.9)) && p.turnDone());
 		if (pieces.some(p => p.turning)) return;
 		let startTime = Date.now();
 		pieces.forEach(piece => {
@@ -557,9 +543,9 @@ class RubiksCube {
 						let axis = Vsub(piece.transform(face[i]), piece.transform(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
 						let pieces;
-						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).x - piece.transform(piece).x) < 0.1);
-						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
-						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
+						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
+						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
+						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
 						let times = 1;
 						if (pieces.length > 0 && pieces.length % 9 == 0) this.turnCube(pieces, axis, times);
 						if (timer.maystart && !timer.running) timer.start();
@@ -733,10 +719,43 @@ class Piece {
 		this.rotationMatO = this.rotationMat;
 
 		this.color = color;
-		this.turn = {};
+		this.turning = false;
+		this.turn = { progress: 0 };
 	}
 
 	transform(p) {
 		return Vmatrix(this.rotationMat, p);
+	}
+
+	transformDone(p) {
+		let mat = this.turning ? this.rotationMatO.map(v => rotateAxis(v, this.turn.times * Math.PI / 2, this.turn.axis)) : this.rotationMat;
+		return Vmatrix(mat, p);
+	}
+
+	turnPiece(time) {
+		if (!this.turning) return;
+			let turn_progress = (time - this.turn.startTime) / Rubik.turn.ms[Number(Rubik.scrambling)];
+			if (turn_progress < this.turn.times) {
+				this.turnStep(turn_progress);
+			}
+			else {
+				this.turnDone();
+			}
+	}
+
+	turnStep(turn_progress) {
+		this.turn.progress = turn_progress;
+		let curve = t => t ** (1 / 2);
+		let angle = turn_progress;
+		angle = Math.floor(angle) + curve(angle - Math.floor(angle));
+		angle *= Math.PI / 2;
+		this.rotationMat = this.rotationMatO.map(v => rotateAxis(v, angle, this.turn.axis));
+	}
+
+	turnDone() {
+		this.rotationMat = this.rotationMatO.map(v => rotateAxis(v, this.turn.times * Math.PI / 2, this.turn.axis));
+		this.rotationMatO = this.rotationMat;
+		this.turning = false;
+		this.turn = { progress: 0 };
 	}
 }
