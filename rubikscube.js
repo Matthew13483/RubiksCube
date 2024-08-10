@@ -108,7 +108,16 @@ class RubiksCube {
 
 	loop() {
 		let time = Date.now();
-		this.pieces.forEach(piece => piece.turnPiece(time));
+		this.pieces.forEach(piece => {
+			if (!piece.turning) return;
+			let turn_progress = (time - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
+			if (turn_progress < piece.turn.times) {
+				piece.turnStep(turn_progress);
+			}
+			else {
+				piece.turnDone();
+			}
+		});
 
 		if (this.scrambling && !this.isTurning()) {
 			if (this.scrambleIndex < this.scramble.length) {
@@ -390,6 +399,7 @@ class RubiksCube {
 
 		this.vertices_data = [];
 		this.pieces.forEach((piece, pi) => {
+			if (!piece.obj) return;
 			for (let gi in piece.obj.groups) {
 				piece.obj.groups[gi].forEach(face => {
 					let v0 = piece.obj.vertices[face[0]];
@@ -656,7 +666,7 @@ class Piece {
 		this.z = z;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
-		this.obj = {
+		if (objs[pieceType]) this.obj = {
 			colors: objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]),
 			vertices: objs[pieceType].vertices.map(vec => {
 				let s = 1.01;
@@ -730,17 +740,6 @@ class Piece {
 	transformDone(p) {
 		let mat = this.turning ? this.rotationMatO.map(v => rotateAxis(v, this.turn.times * Math.PI / 2, this.turn.axis)) : this.rotationMat;
 		return Vmatrix(mat, p);
-	}
-
-	turnPiece(time) {
-		if (!this.turning) return;
-			let turn_progress = (time - this.turn.startTime) / Rubik.turn.ms[Number(Rubik.scrambling)];
-			if (turn_progress < this.turn.times) {
-				this.turnStep(turn_progress);
-			}
-			else {
-				this.turnDone();
-			}
 	}
 
 	turnStep(turn_progress) {
