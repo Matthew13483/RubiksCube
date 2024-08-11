@@ -95,7 +95,7 @@ class RubiksCube {
 		this.display = {};
 		if (canvas) this.resize(canvas.width, canvas.height);
 
-		this.vertices_data = [];
+		this.vertex_data_length = 0;
 
 		this.draw_setup();
 	}
@@ -397,7 +397,7 @@ class RubiksCube {
 		if (!gl) return;
 		let program = gl.program;
 
-		this.vertices_data = [];
+		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
 			if (!objs[piece.pieceType]) return;
 			let mat = piece.objmat;
@@ -425,18 +425,30 @@ class RubiksCube {
 					let len = Math.hypot(...cross);
 					let n = [cross[0] / len, cross[1] / len, cross[2] / len];
 					let c = colors[piece.color[Number(gi)]];
-					this.vertices_data.push(...v0, ...n, ...c, pi);
-					this.vertices_data.push(...v1, ...n, ...c, pi);
-					this.vertices_data.push(...v2, ...n, ...c, pi);
+					vertex_data.push(
+						...v0, ...n, ...c, pi,
+						...v1, ...n, ...c, pi,
+						...v2, ...n, ...c, pi
+					);
 				});
 			}
 		});
 
-		let vertices_data = new Float32Array(this.vertices_data);
+		let size = 0.7;
+		vertex_data.push(
+			-0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 0, 0, -1, 24,
+			-0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 0, 1, -1, 24,
+			+0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 1, 1, -1, 24,
+			-0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 0, 0, -1, 24,
+			+0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 1, 1, -1, 24,
+			+0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 1, 0, -1, 24
+		);
+
+		this.vertex_data_length = vertex_data.length;
 
 		let positionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, vertices_data, gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex_data), gl.STATIC_DRAW);
 
 		let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
 		gl.enableVertexAttribArray(positionAttributeLocation);
@@ -456,6 +468,19 @@ class RubiksCube {
 
 		gl.enable(gl.DEPTH_TEST);
 		gl.enable(gl.CULL_FACE);
+
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+		let texture = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, logo);
 	}
 
 	draw_loop() {
@@ -508,7 +533,7 @@ class RubiksCube {
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		gl.drawArrays(gl.TRIANGLES, 0, this.vertices_data.length / 10);
+		gl.drawArrays(gl.TRIANGLES, 0, this.vertex_data_length / 10);
 	}
 
 	turnMap(side) {

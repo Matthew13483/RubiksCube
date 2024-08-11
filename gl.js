@@ -47,6 +47,8 @@ function GL(canvas) {
 		uniform vec3 lightSources[5];
 		uniform vec3 lightColors[5];
 		
+		uniform sampler2D u_image;
+		
 		varying vec3 v_color;
 		varying vec3 v_normal;
 		varying vec3 v_position;
@@ -54,7 +56,14 @@ function GL(canvas) {
 		void main() {
 			vec2 pos = gl_FragCoord.xy;
 			
-			vec3 ambient = 0.1 * v_color + 0.3 * vec3(24.0, 24.0, 48.0) / 255.0;
+			vec3 color = v_color;
+			float alpha = 1.0;
+			if (abs(v_color.z - (-1.0)) < 0.1) {
+				color = texture2D(u_image, v_color.xy).xyz;
+				alpha = texture2D(u_image, v_color.xy).a;
+			}
+			
+			vec3 ambient = 0.1 * color + 0.3 * vec3(24.0, 24.0, 48.0) / 255.0;
 			vec3 diffuse = vec3(0.0);
 			vec3 specular = vec3(0.0);
 			
@@ -64,7 +73,7 @@ function GL(canvas) {
 				vec3 norm = normalize(v_normal);
 				vec3 lightDir = normalize(lightPos - v_position);
 				float diff = max(dot(norm, lightDir), 0.0);
-				diffuse += lightColors[i] * diff * v_color;
+				diffuse += lightColors[i] * diff * color;
 				
 				vec3 viewDir = normalize(camPos - v_position);
 				vec3 reflectDir = reflect(-lightDir, norm);
@@ -80,7 +89,7 @@ function GL(canvas) {
 			vec3 shade1 = v_color * vec3(dot(v_normal, normalize(lightSources[0] - v_position))) * 0.3;
 			vec3 result2 = shade0 + shade1;
 			
-			gl_FragColor = vec4(result, 1.0);
+			gl_FragColor = vec4(result, alpha);
 		}
 	`;
 

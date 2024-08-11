@@ -98,6 +98,9 @@ function toggleSound() {
 	soundOFF.style.display = !sound.enabled ? 'block' : 'none';
 }
 
+let logo = new Image();
+logo.src = 'logo.svg';
+
 const fps = {
 	startTime: Date.now(),
 	frameCount: 0,
