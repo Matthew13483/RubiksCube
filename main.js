@@ -133,7 +133,9 @@ let frames = 0;
 
 const Vor = new Voronoi(canvas_bg);
 
-let Rubik;
+const Rubik = new RubiksCube();
+Rubik.rotateCube(0, -0.35, 0);
+Rubik.rotateCube(-3.5, 0, 0);
 
 function loop() {
 	requestAnimationFrame(loop);

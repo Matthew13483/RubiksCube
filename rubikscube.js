@@ -399,12 +399,23 @@ class RubiksCube {
 
 		this.vertices_data = [];
 		this.pieces.forEach((piece, pi) => {
-			if (!piece.obj) return;
-			for (let gi in piece.obj.groups) {
-				piece.obj.groups[gi].forEach(face => {
-					let v0 = piece.obj.vertices[face[0]];
-					let v1 = piece.obj.vertices[face[1]];
-					let v2 = piece.obj.vertices[face[2]];
+			if (!objs[piece.pieceType]) return;
+			let mat = piece.objmat;
+			let colors = objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]);
+			let vertices = objs[piece.pieceType].vertices.map(vec => {
+				let s = 1.01;
+				return [
+					(vec[0] * mat[0] + vec[1] * mat[3] + vec[2] * mat[6]) / 2 + piece.x * s,
+					(vec[0] * mat[1] + vec[1] * mat[4] + vec[2] * mat[7]) / 2 + piece.y * s,
+					(vec[0] * mat[2] + vec[1] * mat[5] + vec[2] * mat[8]) / 2 + piece.z * s
+				];
+			});
+			let groups = objs[piece.pieceType].groups;
+			for (let gi in groups) {
+				groups[gi].forEach(face => {
+					let v0 = vertices[face[0]];
+					let v1 = vertices[face[1]];
+					let v2 = vertices[face[2]];
 					if (!(v0 && v1 && v2)) return;
 					let cross = [
 						(v0[1] - v2[1]) * (v1[2] - v2[2]) - (v0[2] - v2[2]) * (v1[1] - v2[1]),
@@ -413,7 +424,7 @@ class RubiksCube {
 					];
 					let len = Math.hypot(...cross);
 					let n = [cross[0] / len, cross[1] / len, cross[2] / len];
-					let c = piece.obj.colors[piece.color[Number(gi)]];
+					let c = colors[piece.color[Number(gi)]];
 					this.vertices_data.push(...v0, ...n, ...c, pi);
 					this.vertices_data.push(...v1, ...n, ...c, pi);
 					this.vertices_data.push(...v2, ...n, ...c, pi);
@@ -666,19 +677,7 @@ class Piece {
 		this.z = z;
 		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
 		this.pieceType = pieceType;
-		if (objs[pieceType]) this.obj = {
-			colors: objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]),
-			vertices: objs[pieceType].vertices.map(vec => {
-				let s = 1.01;
-				return [
-					(vec[0] * mat[0] + vec[1] * mat[3] + vec[2] * mat[6]) / 2 + this.x * s,
-					(vec[0] * mat[1] + vec[1] * mat[4] + vec[2] * mat[7]) / 2 + this.y * s,
-					(vec[0] * mat[2] + vec[1] * mat[5] + vec[2] * mat[8]) / 2 + this.z * s
-				];
-			}),
-			groups: objs[pieceType].groups
-		};
-
+		this.objmat = mat;
 		/*this.geometry = m3ds[pieceType].map(e => ({
 			color: e.color,
 			points: e.points.map(f => {
