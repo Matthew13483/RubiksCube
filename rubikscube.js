@@ -249,6 +249,7 @@ class RubiksCube {
 			v.y = p.y;
 			v.z = p.z;
 		});
+		this.set_mMat();
 	}
 
 	turnCube(pieces, axis, times) {
@@ -345,7 +346,7 @@ class RubiksCube {
 		//return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
 
 		let p = [point.x, point.y, point.z, 1];
-		let pMat = this.pMat();
+		let pMat = this.pMat;
 
 		let mul_mat_vec = (mat, vec) => {
 			return [
@@ -359,14 +360,14 @@ class RubiksCube {
 		return { x: this.display.width * (result[0] / result[3] + 1) / 2, y: this.display.height * (-result[1] / result[3] + 1) / 2 };
 	}
 
-	pMat() {
+	set_pMat() {
 		let fov = 60 * Math.PI / 180;
 		let aspect = this.display.width / this.display.height;
 		let near = 1;
 		let far = 50;
 		let f = 1.0 / Math.tan(fov / 2);
 		let nf = 1 / (near - far);
-		return [
+		this.pMat = [
 			f / aspect, 0, 0, 0,
 			0, f, 0, 0,
 			0, 0, (far + near) * nf, -1,
@@ -374,8 +375,8 @@ class RubiksCube {
 		];
 	}
 
-	vMat() {
-		return [
+	set_vMat() {
+		this.vMat = [
 			1, 0, 0, 0,
 			0, 1, 0, 0,
 			0, 0, 1, 0,
@@ -383,8 +384,8 @@ class RubiksCube {
 		];
 	}
 
-	mMat() {
-		return [
+	set_mMat() {
+		this.mMat = [
 			this.rotationMat[0].x, this.rotationMat[0].y, this.rotationMat[0].z, 0,
 			this.rotationMat[1].x, this.rotationMat[1].y, this.rotationMat[1].z, 0,
 			this.rotationMat[2].x, this.rotationMat[2].y, this.rotationMat[2].z, 0,
@@ -396,6 +397,10 @@ class RubiksCube {
 		let gl = this.gl;
 		if (!gl) return;
 		let program = gl.program;
+
+		this.set_pMat();
+		this.set_vMat();
+		this.set_mMat();
 
 		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
@@ -488,8 +493,6 @@ class RubiksCube {
 		if (!gl) return;
 		let program = gl.program;
 
-		gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), gl.canvas.width, gl.canvas.height);
-
 		let iMat = [];
 		this.pieces.forEach((piece, i) => {
 			let mat = [
@@ -503,9 +506,9 @@ class RubiksCube {
 
 		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_iMat'), false, new Float32Array(iMat));
 
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_pMat'), false, new Float32Array(this.pMat()));
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_vMat'), false, new Float32Array(this.vMat()));
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_mMat'), false, new Float32Array(this.mMat()));
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_pMat'), false, new Float32Array(this.pMat));
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_vMat'), false, new Float32Array(this.vMat));
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, 'u_mMat'), false, new Float32Array(this.mMat));
 
 		gl.uniform3f(gl.getUniformLocation(program, "camPos"), this.pos.x, this.pos.y, this.pos.z);
 

@@ -118,7 +118,6 @@ function GL(canvas) {
 
 function GLresize(gl) {
 	if (!gl) return;
-	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	let resolutionUniformLocation = gl.getUniformLocation(gl.program, "u_resolution");
-	gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+	gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+	gl.uniform2f(gl.getUniformLocation(gl.program, "u_resolution"), gl.drawingBufferWidth, gl.drawingBufferHeight);
 }
