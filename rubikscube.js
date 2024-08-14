@@ -404,10 +404,11 @@ class RubiksCube {
 
 		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
-			if (!objs[piece.pieceType]) return;
+			let obj = objs[piece.pieceType];
+			if (!obj) return;
 			let mat = piece.objmat;
 			let colors = objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]);
-			let vertices = objs[piece.pieceType].vertices.map(vec => {
+			let vertices = obj.vertices.map(vec => {
 				let s = 1.01;
 				return [
 					(vec[0] * mat[0] + vec[1] * mat[3] + vec[2] * mat[6]) / 2 + piece.x * s,
@@ -415,9 +416,13 @@ class RubiksCube {
 					(vec[0] * mat[2] + vec[1] * mat[5] + vec[2] * mat[8]) / 2 + piece.z * s
 				];
 			});
-			let groups = objs[piece.pieceType].groups;
-			for (let gi in groups) {
-				groups[gi].forEach(face => {
+			let vertex_normals = [];
+			let groups_normals = {};
+			let normals = [];
+			for (let i = 0; i < obj.vertices.length; i++) normals.push([]);
+
+			for (let group in obj.groups) {
+				groups_normals[group] = obj.groups[group].map((face, i) => {
 					let v0 = vertices[face[0]];
 					let v1 = vertices[face[1]];
 					let v2 = vertices[face[2]];
@@ -429,11 +434,59 @@ class RubiksCube {
 					];
 					let len = Math.hypot(...cross);
 					let n = [cross[0] / len, cross[1] / len, cross[2] / len];
-					let c = colors[piece.color[Number(gi)]];
+					face.forEach(vi => {
+						if (!normals[vi].some(ns => Math.hypot(ns[0] - n[0], ns[1] - n[1], ns[2] - n[2]) < 1)) {
+							normals[vi].push(n);
+						}
+					});
+					return n;
+				});
+			}
+
+			normals.forEach((nss, i) => {
+				let n = [0, 0, 0];
+				nss.forEach(ns => {
+					n[0] += ns[0];
+					n[1] += ns[1];
+					n[2] += ns[2];
+				});
+				n[0] /= nss.length;
+				n[1] /= nss.length;
+				n[2] /= nss.length;
+				let len = Math.hypot(...n);
+				n[0] /= len;
+				n[1] /= len;
+				n[2] /= len;
+				vertex_normals[i] = n;
+			});
+
+			for (let group in obj.groups) {
+				obj.groups[group].forEach((face, i) => {
+					let v0 = vertices[face[0]];
+					let v1 = vertices[face[1]];
+					let v2 = vertices[face[2]];
+					if (!(v0 && v1 && v2)) return;
+					/*let cross = [
+						(v0[1] - v2[1]) * (v1[2] - v2[2]) - (v0[2] - v2[2]) * (v1[1] - v2[1]),
+						(v0[2] - v2[2]) * (v1[0] - v2[0]) - (v0[0] - v2[0]) * (v1[2] - v2[2]),
+						(v0[0] - v2[0]) * (v1[1] - v2[1]) - (v0[1] - v2[1]) * (v1[0] - v2[0])
+					];
+					let len = Math.hypot(...cross);
+					let n = [cross[0] / len, cross[1] / len, cross[2] / len];*/
+					let n = groups_normals[group][i];
+					let n0 = n;
+					let n1 = n;
+					let n2 = n;
+					if (true) {
+						n0 = vertex_normals[face[0]];
+						n1 = vertex_normals[face[1]];
+						n2 = vertex_normals[face[2]];
+					}
+					let c = colors[piece.color[Number(group)]];
 					vertex_data.push(
-						...v0, ...n, ...c, pi,
-						...v1, ...n, ...c, pi,
-						...v2, ...n, ...c, pi
+						...v0, ...n0, ...c, pi,
+						...v1, ...n1, ...c, pi,
+						...v2, ...n2, ...c, pi
 					);
 				});
 			}
