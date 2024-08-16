@@ -422,7 +422,7 @@ class RubiksCube {
 			for (let i = 0; i < obj.vertices.length; i++) normals.push([]);
 
 			for (let group in obj.groups) {
-				groups_normals[group] = obj.groups[group].map((face, i) => {
+				groups_normals[group] = obj.groups[group].map(face => {
 					let v0 = vertices[face[0]];
 					let v1 = vertices[face[1]];
 					let v2 = vertices[face[2]];
@@ -466,22 +466,9 @@ class RubiksCube {
 					let v1 = vertices[face[1]];
 					let v2 = vertices[face[2]];
 					if (!(v0 && v1 && v2)) return;
-					/*let cross = [
-						(v0[1] - v2[1]) * (v1[2] - v2[2]) - (v0[2] - v2[2]) * (v1[1] - v2[1]),
-						(v0[2] - v2[2]) * (v1[0] - v2[0]) - (v0[0] - v2[0]) * (v1[2] - v2[2]),
-						(v0[0] - v2[0]) * (v1[1] - v2[1]) - (v0[1] - v2[1]) * (v1[0] - v2[0])
-					];
-					let len = Math.hypot(...cross);
-					let n = [cross[0] / len, cross[1] / len, cross[2] / len];*/
-					let n = groups_normals[group][i];
-					let n0 = n;
-					let n1 = n;
-					let n2 = n;
-					if (true) {
-						n0 = vertex_normals[face[0]];
-						n1 = vertex_normals[face[1]];
-						n2 = vertex_normals[face[2]];
-					}
+					let n0 = vertex_normals[face[0]];
+					let n1 = vertex_normals[face[1]];
+					let n2 = vertex_normals[face[2]];
 					let c = colors[piece.color[Number(group)]];
 					vertex_data.push(
 						...v0, ...n0, ...c, pi,
@@ -493,13 +480,15 @@ class RubiksCube {
 		});
 
 		let size = 0.7;
+		let xz = 0.5 * size;
+		let y = 1.1000 / 2 + 1.01 + 0.0001;
 		vertex_data.push(
-			-0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 0, 0, -1, 24,
-			-0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 0, 1, -1, 24,
-			+0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 1, 1, -1, 24,
-			-0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 0, 0, -1, 24,
-			+0.5 * size, 1.56, +0.5 * size, 0, 1, 0, 1, 1, -1, 24,
-			+0.5 * size, 1.56, -0.5 * size, 0, 1, 0, 1, 0, -1, 24
+			-xz, y, -xz, 0, 1, 0, 0, 0, -1, 24,
+			-xz, y, +xz, 0, 1, 0, 0, 1, -1, 24,
+			+xz, y, +xz, 0, 1, 0, 1, 1, -1, 24,
+			-xz, y, -xz, 0, 1, 0, 0, 0, -1, 24,
+			+xz, y, +xz, 0, 1, 0, 1, 1, -1, 24,
+			+xz, y, -xz, 0, 1, 0, 1, 0, -1, 24
 		);
 
 		this.vertex_data_length = vertex_data.length;
