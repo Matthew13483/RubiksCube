@@ -139,7 +139,7 @@ function rotateAxis(point, angle, axis) {
 	return Vadd(Vscale(v, Math.cos(angle)), Vscale(Vcross(k, v), Math.sin(angle)), Vscale(k, Vdot(k, v) * (1 - Math.cos(angle))));
 }
 
-class Point {
+/*class Point {
 	constructor(x, y, z) {
 		this.x = x;
 		this.y = y;
@@ -158,7 +158,7 @@ class Polygon {
 	constructor(points) {
 		this.points = points;
 	}
-}
+}*/
 
 function cllnLineLine(l1, l2) {
 	let x1 = l1.p1.x;
@@ -185,8 +185,17 @@ function cllnPolyPnt(poly, pnt) {
 	let maxX = poly.points.map(e => e.x).reduce((a, b) => a > b ? a : b);
 	return poly.points.map((e, i, a) => {
 		return cllnLineLine(
-			new Line(e, a[(i + 1) % a.length]),
-			new Line(pnt, new Point(Math.abs(maxX) * 2, pnt.y))
+			{
+				p1: e,
+				p2: a[(i + 1) % a.length]
+			},
+			{
+				p1: pnt,
+				p2: {
+					x: Math.abs(maxX) * 2,
+					y: pnt.y
+				}
+			}
 		) ? 1 : 0;
 	}).reduce((a, b) => a + b) % 2 == 1;
 }

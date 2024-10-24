@@ -73,6 +73,9 @@ class RubiksCube {
 		];
 		this.rotateVel = { x: 0, y: 0, z: 0 };
 
+		this.friction = 0.95;
+		this.lastTime = Date.now();
+
 		this.map = [
 			[0, 0, 0, 0, 0, 0, 0, 0, 0],
 			[1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -108,6 +111,8 @@ class RubiksCube {
 
 	loop() {
 		let time = Date.now();
+		let deltaTime = time - this.lastTime;
+
 		this.pieces.forEach(piece => {
 			if (!piece.turning) return;
 			let turn_progress = (time - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
@@ -130,10 +135,12 @@ class RubiksCube {
 			}
 		}
 
-		if (this.touches.length == 0) this.rotateCube(this.rotateVel.x, this.rotateVel.y, this.rotateVel.z);
-		this.rotateVel.x *= 0.95;
-		this.rotateVel.y *= 0.95;
-		this.rotateVel.z *= 0.95;
+
+		let f = this.friction ** (deltaTime / 10);
+		this.rotateVel.x *= f;
+		this.rotateVel.y *= f;
+		this.rotateVel.z *= f;
+		if (this.touches.length == 0) this.rotateCube(this.rotateVel.x * deltaTime / 10, this.rotateVel.y * deltaTime / 10, this.rotateVel.z * deltaTime / 10);
 
 		if (this.isSolved() && timer.running) {
 			timer.stop();
@@ -148,6 +155,8 @@ class RubiksCube {
 		let y = this.display.width * 0.03;
 		let x = this.display.width - y - width;
 		this.drawMap(x, y, width);*/
+
+		this.lastTime = time;
 	}
 
 	draw() {
@@ -450,9 +459,9 @@ class RubiksCube {
 					n[1] += ns[1];
 					n[2] += ns[2];
 				});
-				n[0] /= nss.length;
+				/*n[0] /= nss.length;
 				n[1] /= nss.length;
-				n[2] /= nss.length;
+				n[2] /= nss.length;*/
 				let len = Math.hypot(...n);
 				n[0] /= len;
 				n[1] /= len;
@@ -624,12 +633,15 @@ class RubiksCube {
 			let { cube, face, pieceI } = touch;
 			let piece = this.pieces[pieceI];
 			let Ply = { points: face.map(p => this.renderP(piece.transform(p))) };
-			let lines = Ply.points.map((e, i, a) => new Line(e, a[(i + 1) % a.length]));
+			let lines = Ply.points.map((e, i, a) => ({ p1: e, p2: a[(i + 1) % a.length] }));
 			lines.forEach((e, i) => {
 				let a = Math.atan2(y - touch.y, x - touch.x);
 				let d = Math.hypot(touch.y - y, touch.x - x) * 10;
-				let p = new Point(touch.x + Math.cos(a) * d, touch.y + Math.sin(a) * d);
-				if (cllnLineLine(e, new Line(touch, p))) {
+				let p = {
+					x: touch.x + Math.cos(a) * d,
+					y: touch.y + Math.sin(a) * d
+				};
+				if (cllnLineLine(e, { p1: touch, p2: p })) {
 					if (!this.scrambling) {
 						let axis = Vsub(piece.transform(face[i]), piece.transform(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
@@ -678,8 +690,8 @@ class RubiksCube {
 				}
 			});
 
-			this.rotateVel.z = -angle;
-			this.rotateCube(0, 0, this.rotateVel.z);
+			//this.rotateVel.z = -angle;
+			this.rotateCube(0, 0, this.rotateVel.z = -angle);
 			//this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 5), 13);
 			//this.pos.z = this.pos.z + -dist * 0.01;
 		}
@@ -814,6 +826,7 @@ class Piece {
 	turnStep(turn_progress) {
 		this.turn.progress = turn_progress;
 		let curve = t => t ** (1 / 2);
+		//let curve = t => (-t * t * t + 3 * t) / 2;
 		let angle = turn_progress;
 		angle = Math.floor(angle) + curve(angle - Math.floor(angle));
 		angle *= Math.PI / 2;

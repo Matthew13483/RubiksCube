@@ -58,7 +58,7 @@ function GL(canvas) {
 			
 			vec3 color = v_color;
 			float alpha = 1.0;
-			if (abs(v_color.z - (-1.0)) < 0.1) {
+			if (v_color.z < 0.0) {
 				color = texture2D(u_image, v_color.xy).xyz;
 				alpha = texture2D(u_image, v_color.xy).a;
 			}
