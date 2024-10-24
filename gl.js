@@ -78,7 +78,7 @@ function GL(canvas) {
 				vec3 viewDir = normalize(camPos - v_position);
 				vec3 reflectDir = reflect(-lightDir, norm);
 				float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-				specular += vec3(0.5) * spec;
+				specular += lightColors[i] * spec;
 			}
 			diffuse = clamp(diffuse, 0.0, 1.0);
 			specular = clamp(specular, 0.0, 1.0);

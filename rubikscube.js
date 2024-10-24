@@ -573,14 +573,11 @@ class RubiksCube {
 		let lightColors = [
 			0.7, 0.7, 0.7,
 			0.5, 0.5, 0.5,
-			0.5, 0.5, 0.5,
-			0.5, 0.5, 0.5,
-			0.5, 0.5, 0.5,
-			/*0.5, 0.5, 0.5,
-			0.7, 0.5, 0.5,
-			0.5, 0.7, 0.5,
-			0.5, 0.5, 0.7*/
+			0.4, 0.4, 0.4,
+			0.4, 0.4, 0.4,
+			0.4, 0.4, 0.4,
 		];
+
 		gl.uniform3fv(gl.getUniformLocation(program, "lightSources"), new Float32Array(lightSources));
 		gl.uniform3fv(gl.getUniformLocation(program, "lightColors"), new Float32Array(lightColors));
 
@@ -825,8 +822,8 @@ class Piece {
 
 	turnStep(turn_progress) {
 		this.turn.progress = turn_progress;
-		let curve = t => t ** (1 / 2);
-		//let curve = t => (-t * t * t + 3 * t) / 2;
+		//let curve = t => t ** (1 / 2);
+		let curve = t => (-t * t * t + 3 * t) / 2;
 		let angle = turn_progress;
 		angle = Math.floor(angle) + curve(angle - Math.floor(angle));
 		angle *= Math.PI / 2;
