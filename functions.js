@@ -1,7 +1,3 @@
-function map(x, x1, x2, y1, y2) {
-	return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
-}
-
 function dist(a, b) {
 	return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 }
@@ -138,27 +134,6 @@ function rotateAxis(point, angle, axis) {
 	//vrot = vcosθ + (k×v)sinθ + k(k•v)(1-cosθ)
 	return Vadd(Vscale(v, Math.cos(angle)), Vscale(Vcross(k, v), Math.sin(angle)), Vscale(k, Vdot(k, v) * (1 - Math.cos(angle))));
 }
-
-/*class Point {
-	constructor(x, y, z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-}
-
-class Line {
-	constructor(p1, p2) {
-		this.p1 = p1;
-		this.p2 = p2;
-	}
-}
-
-class Polygon {
-	constructor(points) {
-		this.points = points;
-	}
-}*/
 
 function cllnLineLine(l1, l2) {
 	let x1 = l1.p1.x;

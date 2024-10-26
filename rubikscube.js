@@ -754,7 +754,7 @@ class Piece {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.pieceId = this.pieceIdN = this.pieceIdO = pieceId;
+		this.pieceId = pieceId;
 		this.pieceType = pieceType;
 		this.objmat = mat;
 		/*this.geometry = m3ds[pieceType].map(e => ({
@@ -808,7 +808,7 @@ class Piece {
 
 		this.color = color;
 		this.turning = false;
-		this.turn = { progress: 0 };
+		this.turn = {};
 	}
 
 	transform(p) {
@@ -834,6 +834,6 @@ class Piece {
 		this.rotationMat = this.rotationMatO.map(v => rotateAxis(v, this.turn.times * Math.PI / 2, this.turn.axis));
 		this.rotationMatO = this.rotationMat;
 		this.turning = false;
-		this.turn = { progress: 0 };
+		this.turn = {};
 	}
 }
