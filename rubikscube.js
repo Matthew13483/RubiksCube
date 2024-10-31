@@ -490,7 +490,7 @@ class RubiksCube {
 
 		let size = 0.7;
 		let xz = 0.5 * size;
-		let y = 1.1000 / 2 + 1.01 + 0.01;
+		let y = 1.1000 / 2 + 1.01 + 0.001;
 		vertex_data.push(
 			-xz, y, -xz, 0, 1, 0, 0, 0, -1, 24,
 			-xz, y, +xz, 0, 1, 0, 0, 1, -1, 24,
