@@ -45,8 +45,8 @@ class Voronoi {
 		let fragmentShaderSource = `
 			precision mediump float;
 			uniform vec2 dim;
-			uniform vec2 points[256];
-			uniform float colors[256];
+			uniform vec2 points[64];
+			uniform float colors[64];
 			
 			void main() {
 				vec2 pos = gl_FragCoord.xy;
