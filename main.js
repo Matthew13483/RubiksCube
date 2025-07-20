@@ -133,8 +133,8 @@ button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = (
 	undo.flag = false;
 };
 
-canvas_map.width = 200;
-canvas_map.height = 150;
+canvas_map.width = 150;
+canvas_map.height = 113;
 let ctx = canvas_map.getContext('2d');
 
 let debug_performance = 0;
@@ -146,7 +146,7 @@ let frames = 0;
 
 const Vor = new Voronoi(canvas_bg);
 
-const Rubik = new RubiksCube();
+const Rubik = new RubiksCube(canvas);
 Rubik.rotateCube(0, -0.35, 0);
 Rubik.rotateCube(-3.5, 0, 0);
 

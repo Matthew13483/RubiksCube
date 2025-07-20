@@ -2,8 +2,64 @@
 
 class RubiksCube {
 
-	constructor() {
+	constructor(canvas) {
+		this.canvas = canvas;
 		this.gl = GL(canvas);
+		
+		let handleStart = event => {
+			event.preventDefault();
+			if (isTouchDevice) {
+				for (let i = 0; i < event.changedTouches.length; i++) {
+					let touch = event.changedTouches.item(i);
+					let x = touch.pageX - event.target.getBoundingClientRect().left;
+					let y = touch.pageY - event.target.getBoundingClientRect().top;
+					this.touchStart(x, y, touch.identifier);
+				}
+			} else {
+				let x = event.pageX - event.target.getBoundingClientRect().left;
+				let y = event.pageY - event.target.getBoundingClientRect().top;
+				this.touchStart(x, y, 0);
+			}
+		};
+		
+		let handleMove = event => {
+			event.preventDefault();
+			if (isTouchDevice) {
+				for (let i = 0; i < event.changedTouches.length; i++) {
+					let touch = event.changedTouches.item(i);
+					let x = touch.pageX - event.target.getBoundingClientRect().left;
+					let y = touch.pageY - event.target.getBoundingClientRect().top;
+					this.touchMove(x, y, touch.identifier);
+				}
+			} else {
+				let x = event.pageX - event.target.getBoundingClientRect().left;
+				let y = event.pageY - event.target.getBoundingClientRect().top;
+				this.touchMove(x, y, 0);
+			}
+		};
+		
+		let handleEnd = event => {
+			event.preventDefault();
+			if (isTouchDevice) {
+				for (let i = 0; i < event.changedTouches.length; i++) {
+					let touch = event.changedTouches.item(i);
+					this.touchEnd(touch.identifier);
+				}
+			}
+			else this.touchEnd(0);
+		};
+		
+		let handleCancel = event => {
+			this.touchCancel();
+		}
+		
+		let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
+		
+		this.canvas.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', handleStart);
+		this.canvas.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', handleMove);
+		this.canvas.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', handleEnd);
+		this.canvas.addEventListener(isTouchDevice ? 'touchcancel' : 'mouseout', handleCancel);
+		
 		this.reset();
 	}
 
@@ -112,9 +168,9 @@ class RubiksCube {
 		this.draw_setup();
 	}
 
-	resize(width, height) {
-		this.display.width = width;
-		this.display.height = height;
+	resize() {
+		this.display.width = this.canvas.width;
+		this.display.height = this.canvas.height;
 		GLresize(this.gl);
 	}
 
@@ -133,7 +189,7 @@ class RubiksCube {
 			}
 		});
 
-		if (this.scrambling && !this.isTurning()) {
+		if (this.scrambling && !this.pieces.some(e => e.turning)) {
 			if (this.scrambleIndex < this.scramble.length) {
 				this.turnCubeNotation(this.scramble[this.scrambleIndex]);
 				this.scrambleIndex++;
@@ -158,103 +214,9 @@ class RubiksCube {
 		}
 		timer_display.textContent = timer.display();
 
-		/*this.draw();
-		let width = Math.sqrt(this.display.width * this.display.height) * 0.2;
-		let y = this.display.width * 0.03;
-		let x = this.display.width - y - width;*/
-		this.drawMap(0, 0, 200);
+		this.drawMap(0, 0, 150);
 
 		this.lastTime = time;
-	}
-
-	//draw() {
-		/*let polys = [];
-		this.pieces.forEach(piece => {
-			piece.box.forEach((face, i) => {
-				if (!isPolyVis(face.map(point => this.transformP(piece.transform(point))))) return;
-				let dist = Vlength(this.transformP(centroid(face.map(p => piece.transform(p)))));
-				polys.push({ dist, face, piece, i });
-			});
-		});
-		polys.sort((a, b) => (b.dist + 1 * (!b.piece.boxFaces[b.i])) - (a.dist + 1 * (!a.piece.boxFaces[a.i])));
-		polys.forEach(poly => {
-			let { face, piece, i } = poly;
-			ctx.beginPath();
-			face.forEach((point, i) => {
-				let { x, y } = this.renderP(piece.transform(point));
-				ctx[i == 0 ? "moveTo" : "lineTo"](x, y);
-			});
-			ctx.closePath();
-			ctx.fillStyle = piece.boxColors[i];
-			ctx.fill();
-		});*/
-
-		/*let drawPolys = [];
-		this.pieces.forEach((piece, i) => {
-			piece.geometry.forEach((poly, i) => {
-				let face = [];
-				let face_tP = [];
-				let face_rP = [];
-				poly.points.forEach(point => {
-					let point1 = piece.transform(point);
-					let point2 = this.transformP(point1);
-					let point3 = this.projectP(point2);
-					face.push(point1);
-					face_tP.push(point2);
-					face_rP.push(point3);
-				});
-
-				if (isPolyVis(face_tP)) {
-					let cen = centroid(face);
-					let dist = Vlength(this.transformP(cen));
-					let colorI = piece.color[poly.color];
-					let light = basicLighting(face_tP);
-					drawPolys.push({ dist, face_rP, piece, colorI, light });
-				}
-			});
-		});
-		drawPolys.sort((a, b) => (b.dist + 1 * (b.colorI == 6)) - (a.dist + 1 * (a.colorI == 6)));
-
-		timeC += performance.now() - s;
-		let s1 = performance.now();
-		drawPolys.forEach(poly => {
-			let { face_rP, piece, colorI, light } = poly;
-			ctx.beginPath();
-			face_rP.forEach((point, i) => ctx[i == 0 ? "moveTo" : "lineTo"](point.x, point.y));
-			ctx.closePath();
-			ctx.fillStyle = colors[colorI];
-			ctx.fill();
-			ctx.fillStyle = (light < 0) ? "black" : "white";
-			ctx.globalAlpha = Math.abs(light) * ((colorI !== 0) ? shading.surface : shading.internals);
-			ctx.fill();
-			ctx.globalAlpha = 1;
-		});*/
-	//}
-
-	drawMap(x, y, w) {
-		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-		let h = w * 3 / 4;
-		let siW = w / 4;
-		let sqW = siW / 3;
-		let faceCoords = [
-			[1 * siW, 0 * siW],
-			[0 * siW, 1 * siW],
-			[1 * siW, 1 * siW],
-			[2 * siW, 1 * siW],
-			[3 * siW, 1 * siW],
-			[1 * siW, 2 * siW]
-		];
-		this.map.forEach((si, i) => {
-			let siX = faceCoords[i][0];
-			let siY = faceCoords[i][1];
-			si.forEach((sq, j) => {
-				let sqX = (j % 3) * sqW;
-				let sqY = Math.floor(j / 3) * sqW;
-				let padding = 0.07;
-				ctx.fillStyle = 'rgb(' + objs.colors[sq].join(',') + ')';
-				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
-			});
-		});
 	}
 
 	rotateCube(ax, ay, az) {
@@ -363,12 +325,6 @@ class RubiksCube {
 	}
 
 	projectP(point) {
-		/*let FOV = 60 * Math.PI / 180;
-		let fl = Math.hypot(this.display.width, this.display.height) / (2 * Math.tan(FOV / 2));
-		let x = point.x * fl / -point.z;
-		let y = point.y * fl / -point.z;*/
-		//return { x: x + this.display.width / 2, y: -y + this.display.height / 2 };
-
 		let p = [point.x, point.y, point.z, 1];
 		let pMat = this.pMat;
 
@@ -381,7 +337,10 @@ class RubiksCube {
 			];
 		}
 		let result = mul_mat_vec(pMat, p);
-		return { x: this.display.width * (result[0] / result[3] + 1) / 2, y: this.display.height * (-result[1] / result[3] + 1) / 2 };
+		return {
+			x: this.display.width * (result[0] / result[3] + 1) / 2,
+			y: this.display.height * (-result[1] / result[3] + 1) / 2
+		};
 	}
 
 	set_pMat() {
@@ -607,6 +566,32 @@ class RubiksCube {
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertex_data_length / 11);
 	}
 
+	drawMap(x, y, w) {
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		let h = w * 3 / 4;
+		let siW = w / 4;
+		let sqW = siW / 3;
+		let faceCoords = [
+			[1 * siW, 0 * siW],
+			[0 * siW, 1 * siW],
+			[1 * siW, 1 * siW],
+			[2 * siW, 1 * siW],
+			[3 * siW, 1 * siW],
+			[1 * siW, 2 * siW]
+		];
+		this.map.forEach((si, i) => {
+			let siX = faceCoords[i][0];
+			let siY = faceCoords[i][1];
+			si.forEach((sq, j) => {
+				let sqX = (j % 3) * sqW;
+				let sqY = Math.floor(j / 3) * sqW;
+				let padding = 0.07;
+				ctx.fillStyle = 'rgb(' + objs.colors[sq].join(',') + ')';
+				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
+			});
+		});
+	}
+
 	touchStart(x, y, id) {
 		let touch = { id };
 		this.touches.push(touch);
@@ -615,7 +600,9 @@ class RubiksCube {
 		this.rotateVel.x = this.rotateVel.y = 0;
 		this.pieces.some((piece, I) => {
 			return piece.box.some((e, i) => {
-				if (!isPolyVis(e.map(point => this.transformP(piece.transform(point))))) return false;
+				let poly = e.map(point => this.transformP(piece.transform(point)));
+				let isPolyVis = Vdot(getNormal(poly), poly[1]) < 0;
+				if (!isPolyVis) return false;
 				let Ply = { points: e.map(p => this.renderP(piece.transform(p))) };
 				if (piece.boxFaces[i] && cllnPolyPnt(Ply, { x, y })) {
 					touchingCube = true;
@@ -696,7 +683,6 @@ class RubiksCube {
 			//this.rotateVel.z = -angle;
 			this.rotateCube(0, 0, this.rotateVel.z = -angle);
 			//this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 5), 13);
-			//this.pos.z = this.pos.z + -dist * 0.01;
 		}
 	}
 
@@ -742,16 +728,14 @@ class RubiksCube {
 		}
 	}
 
-	isTurning() {
-		return this.pieces.some(e => e.turning);
-	}
-
 	isSolved() {
 		return this.map.every(e => e.reduce((a, b) => a && b === e[0], true));
 	}
+
 }
 
 class Piece {
+
 	constructor(x, y, z, id, type, color, mat = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {
 		this.x = x;
 		this.y = y;
@@ -759,21 +743,6 @@ class Piece {
 		this.id = id;
 		this.type = type;
 		this.orient_mat = mat;
-		/*this.geometry = m3ds[type].map(e => ({
-			color: e.color,
-			points: e.points.map(f => {
-				let p = {
-					x: (f[0] / 2),
-					y: (f[1] / 2),
-					z: (f[2] / -2)
-				}
-				p = rotateX(p, rot[0] * Math.PI / 180);
-				p = rotateY(p, rot[1] * Math.PI / 180);
-				p = rotateZ(p, rot[2] * Math.PI / 180);
-
-				return Vadd(p, Vscale(this, 1.02));
-			})
-		}));*/
 		this.box = [
 			[[-1, +1, -1], [+1, +1, -1], [+1, +1, +1], [-1, +1, +1]],
 			[[-1, +1, -1], [-1, +1, +1], [-1, -1, +1], [-1, -1, -1]],
@@ -790,16 +759,6 @@ class Piece {
 			let faceNormal = getNormal(face);
 			return Vdot(faceNormal, this) > 0;
 		});
-		/*this.boxColors = this.box.map((face, i) => {
-			let faceNormal = getNormal(face);
-			if (!this.boxFaces[i]) return colors[6];
-			if (Vdot(faceNormal, { x: 0, y: +1, z: 0 }) == 1) return colors[0];
-			if (Vdot(faceNormal, { x: -1, y: 0, z: 0 }) == 1) return colors[1];
-			if (Vdot(faceNormal, { x: 0, y: 0, z: +1 }) == 1) return colors[2];
-			if (Vdot(faceNormal, { x: +1, y: 0, z: 0 }) == 1) return colors[3];
-			if (Vdot(faceNormal, { x: 0, y: 0, z: -1 }) == 1) return colors[4];
-			if (Vdot(faceNormal, { x: 0, y: -1, z: 0 }) == 1) return colors[5];
-		});*/
 
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
@@ -838,4 +797,5 @@ class Piece {
 		this.turning = false;
 		this.turn = {};
 	}
+
 }

@@ -63,14 +63,6 @@ function getNormal(poly) {
 	return Vnormalize(Vcross(Vsub(poly[0], poly[1]), Vsub(poly[2], poly[1])));
 }
 
-function isPolyVis(poly) {
-	return Vdot(getNormal(poly), poly[1]) < 0;
-}
-
-function basicLighting(poly) {
-	return getNormal(poly).y;
-}
-
 function centroid(poly) {
 	let areaT = 0;
 	let centroidT = { x: 0, y: 0, z: 0 };
@@ -156,21 +148,12 @@ function cllnLineLine(l1, l2) {
 	return false;
 }
 
-function cllnPolyPnt(poly, pnt) {
-	let maxX = poly.points.map(e => e.x).reduce((a, b) => a > b ? a : b);
+function cllnPolyPnt(poly, point) {
+	let maxX = 2 * Math.abs(poly.points.map(e => e.x).reduce((a, b) => a > b ? a : b));
 	return poly.points.map((e, i, a) => {
 		return cllnLineLine(
-			{
-				p1: e,
-				p2: a[(i + 1) % a.length]
-			},
-			{
-				p1: pnt,
-				p2: {
-					x: Math.abs(maxX) * 2,
-					y: pnt.y
-				}
-			}
+			{ p1: e, p2: a[(i + 1) % a.length] },
+			{ p1: point, p2: { x: maxX, y: point.y } }
 		) ? 1 : 0;
 	}).reduce((a, b) => a + b) % 2 == 1;
 }
