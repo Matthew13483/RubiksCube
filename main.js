@@ -98,9 +98,6 @@ function toggleSound() {
 	soundOFF.style.display = !sound.enabled ? 'block' : 'none';
 }
 
-let logo = new Image();
-logo.src = 'logo.svg';
-
 const fps = {
 	startTime: Date.now(),
 	frameCount: 0,
@@ -118,16 +115,29 @@ const fps = {
 				{ function: 'Rubik.draw_loop', avgTime: timeC / frames },
 				{ function: 'Vor.draw', avgTime: timeD / frames }
 			]);
-			timeA = 0;
-			timeB = 0;
-			timeC = 0;
-			timeD = 0;
+			timeA = timeB = timeC = timeD = 0;
 			frames = 0;
 		}
 	}
 };
 
-let debug_performance = false;
+let undo = {
+	flag: false,
+	startTime: 0
+};
+button_undo.ontouchstart = () => {
+	undo.startTime = Date.now();
+	undo.flag = true;
+};
+button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = () => {
+	undo.flag = false;
+};
+
+canvas_map.width = 200;
+canvas_map.height = 150;
+let ctx = canvas_map.getContext('2d');
+
+let debug_performance = 0;
 let timeA = 0;
 let timeB = 0;
 let timeC = 0;
@@ -145,6 +155,8 @@ function loop() {
 	fps.inLoop();
 
 	let s = performance.now();
+
+	if (undo.flag && (Date.now() - undo.startTime) > 300) Rubik.turnUndo();
 
 	let s1 = performance.now();
 	Rubik.loop();

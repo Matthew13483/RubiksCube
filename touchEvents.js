@@ -3,7 +3,7 @@ let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
 canvas.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', handleStart);
 canvas.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', handleMove);
 canvas.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', handleEnd);
-canvas.addEventListener(isTouchDevice ? 'touchcancel' : '', handleCancel);
+canvas.addEventListener(isTouchDevice ? 'touchcancel' : 'mouseout', handleCancel);
 
 function handleStart(event) {
 	event.preventDefault();

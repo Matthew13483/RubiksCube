@@ -9,37 +9,46 @@ class RubiksCube {
 
 	reset() {
 		this.pieces = [
-			new Piece(-1, +1, +1, "UFL", "corner", [6, 1, 2, 0], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
-			new Piece(+1, +1, +1, "UFR", "corner", [6, 2, 3, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(-1, -1, +1, "DFL", "corner", [6, 2, 1, 5], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
-			new Piece(+1, -1, +1, "DFR", "corner", [6, 3, 2, 5], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
-			new Piece(-1, +1, -1, "UBL", "corner", [6, 4, 1, 0], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
-			new Piece(+1, +1, -1, "UBR", "corner", [6, 3, 4, 0], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
-			new Piece(-1, -1, -1, "DBL", "corner", [6, 1, 4, 5], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
-			new Piece(+1, -1, -1, "DBR", "corner", [6, 4, 3, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+			new Piece(-1, +1, +1, "UFL", "corner", [0, 2, 3, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+			new Piece(+1, +1, +1, "UFR", "corner", [0, 3, 4, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(-1, -1, +1, "DFL", "corner", [0, 3, 2, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+			new Piece(+1, -1, +1, "DFR", "corner", [0, 4, 3, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+			new Piece(-1, +1, -1, "UBL", "corner", [0, 5, 2, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+			new Piece(+1, +1, -1, "UBR", "corner", [0, 4, 5, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+			new Piece(-1, -1, -1, "DBL", "corner", [0, 2, 5, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+			new Piece(+1, -1, -1, "DBR", "corner", [0, 5, 4, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
 
-			new Piece(0, +1, +1, "UFM", "edge", [6, 2, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(0, +1, -1, "UBM", "edge", [6, 4, 0], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
-			new Piece(0, -1, +1, "DFM", "edge", [6, 2, 5], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
-			new Piece(0, -1, -1, "DBM", "edge", [6, 4, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
-			new Piece(-1, +1, 0, "ULS", "edge", [6, 1, 0], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
-			new Piece(+1, +1, 0, "URS", "edge", [6, 3, 0], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
-			new Piece(-1, -1, 0, "DLS", "edge", [6, 1, 5], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
-			new Piece(+1, -1, 0, "DRS", "edge", [6, 3, 5], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
-			new Piece(-1, 0, +1, "FLE", "edge", [6, 2, 1], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
-			new Piece(+1, 0, +1, "FRE", "edge", [6, 2, 3], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
-			new Piece(-1, 0, -1, "BLE", "edge", [6, 4, 1], [0, -1, 0, -1, 0, 0, 0, 0, -1]),
-			new Piece(+1, 0, -1, "BRE", "edge", [6, 4, 3], [0, 1, 0, 1, 0, 0, 0, 0, -1]),
+			new Piece(0, +1, +1, "UFM", "edge", [0, 3, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(0, +1, -1, "UBM", "edge", [0, 5, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+			new Piece(0, -1, +1, "DFM", "edge", [0, 3, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+			new Piece(0, -1, -1, "DBM", "edge", [0, 5, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+			new Piece(-1, +1, 0, "ULS", "edge", [0, 2, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+			new Piece(+1, +1, 0, "URS", "edge", [0, 4, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+			new Piece(-1, -1, 0, "DLS", "edge", [0, 2, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+			new Piece(+1, -1, 0, "DRS", "edge", [0, 4, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+			new Piece(-1, 0, +1, "FLE", "edge", [0, 3, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+			new Piece(+1, 0, +1, "FRE", "edge", [0, 3, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+			new Piece(-1, 0, -1, "BLE", "edge", [0, 5, 2], [0, -1, 0, -1, 0, 0, 0, 0, -1]),
+			new Piece(+1, 0, -1, "BRE", "edge", [0, 5, 4], [0, 1, 0, 1, 0, 0, 0, 0, -1]),
 
-			new Piece(0, 0, -1, "BME", "center", [6, 4], [-1, 0, 0, 0, 0, -1, 0, -1, 0]),
-			new Piece(+1, 0, 0, "RSE", "center", [6, 3], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
-			new Piece(-1, 0, 0, "LSE", "center", [6, 1], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
-			new Piece(0, 0, +1, "FME", "center", [6, 2], [-1, 0, 0, 0, 0, 1, 0, 1, 0]),
-			new Piece(0, +1, 0, "UMS", "center", [6, 0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(0, -1, 0, "DMS", "center", [6, 5], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+			new Piece(0, 0, -1, "BME", "center", [0, 5], [-1, 0, 0, 0, 0, -1, 0, -1, 0]),
+			new Piece(+1, 0, 0, "RSE", "center", [0, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+			new Piece(-1, 0, 0, "LSE", "center", [0, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+			new Piece(0, 0, +1, "FME", "center", [0, 3], [-1, 0, 0, 0, 0, 1, 0, 1, 0]),
+			new Piece(0, +1, 0, "UMS", "center", [0, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(0, -1, 0, "DMS", "center", [0, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
 
-			new Piece(0, 0, 0, "MES", "core", [6], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(0, 0, 0, "MES", "core", [0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
 		];
+
+		this.piece = {
+			U: this.pieces.find(e => e.id === "UMS"),
+			L: this.pieces.find(e => e.id === "LSE"),
+			F: this.pieces.find(e => e.id === "FME"),
+			R: this.pieces.find(e => e.id === "RSE"),
+			B: this.pieces.find(e => e.id === "BME"),
+			D: this.pieces.find(e => e.id === "DMS"),
+		};
 
 		this.cyclesMap = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
@@ -48,9 +57,9 @@ class RubiksCube {
 			B: [[[4, 0], [4, 2], [4, 8], [4, 6]], [[4, 1], [4, 5], [4, 7], [4, 3]], [[0, 0], [1, 6], [5, 8], [3, 2]], [[0, 1], [1, 3], [5, 7], [3, 5]], [[0, 2], [1, 0], [5, 6], [3, 8]]],
 			L: [[[1, 0], [1, 2], [1, 8], [1, 6]], [[1, 1], [1, 5], [1, 7], [1, 3]], [[0, 0], [2, 0], [5, 0], [4, 8]], [[0, 3], [2, 3], [5, 3], [4, 5]], [[0, 6], [2, 6], [5, 6], [4, 2]]],
 			R: [[[3, 0], [3, 2], [3, 8], [3, 6]], [[3, 1], [3, 5], [3, 7], [3, 3]], [[0, 2], [4, 6], [5, 2], [2, 2]], [[0, 5], [4, 3], [5, 5], [2, 5]], [[0, 8], [4, 0], [5, 8], [2, 8]]],
-			M: [[[0, 1], [2, 1], [5, 1], [4, 7]], [[0, 4], [2, 4], [5, 4], [4, 4]], [[0, 7], [2, 7], [5, 7], [4, 1]]],
-			E: [[[1, 3], [2, 3], [3, 3], [4, 3]], [[1, 4], [2, 4], [3, 4], [4, 4]], [[1, 5], [2, 5], [3, 5], [4, 5]]],
-			S: [[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]]],
+			//M: [[[0, 1], [2, 1], [5, 1], [4, 7]], [[0, 4], [2, 4], [5, 4], [4, 4]], [[0, 7], [2, 7], [5, 7], [4, 1]]],
+			//E: [[[1, 3], [2, 3], [3, 3], [4, 3]], [[1, 4], [2, 4], [3, 4], [4, 4]], [[1, 5], [2, 5], [3, 5], [4, 5]]],
+			//S: [[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]]],
 			x: [[[3, 0], [3, 2], [3, 8], [3, 6]], [[3, 1], [3, 5], [3, 7], [3, 3]], [[0, 2], [4, 6], [5, 2], [2, 2]], [[0, 5], [4, 3], [5, 5], [2, 5]], [[0, 8], [4, 0], [5, 8], [2, 8]],
 					[[0, 1], [4, 7], [5, 1], [2, 1]], [[0, 4], [4, 4], [5, 4], [2, 4]], [[0, 7], [4, 1], [5, 7], [2, 7]],
 					[[1, 0], [1, 6], [1, 8], [1, 2]], [[1, 1], [1, 3], [1, 7], [1, 5]], [[0, 0], [4, 8], [5, 0], [2, 0]], [[0, 3], [4, 5], [5, 3], [2, 3]], [[0, 6], [4, 2], [5, 6], [2, 6]]
@@ -65,7 +74,7 @@ class RubiksCube {
 			]
 		};
 
-		this.pos = { x: 0, y: 0, z: 9 };
+		this.pos = { x: 0, y: 0, z: 10.5 };
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
@@ -77,12 +86,12 @@ class RubiksCube {
 		this.lastTime = Date.now();
 
 		this.map = [
-			[0, 0, 0, 0, 0, 0, 0, 0, 0],
 			[1, 1, 1, 1, 1, 1, 1, 1, 1],
 			[2, 2, 2, 2, 2, 2, 2, 2, 2],
 			[3, 3, 3, 3, 3, 3, 3, 3, 3],
 			[4, 4, 4, 4, 4, 4, 4, 4, 4],
-			[5, 5, 5, 5, 5, 5, 5, 5, 5]
+			[5, 5, 5, 5, 5, 5, 5, 5, 5],
+			[6, 6, 6, 6, 6, 6, 6, 6, 6]
 		];
 
 		this.touches = [];
@@ -150,16 +159,15 @@ class RubiksCube {
 		timer_display.textContent = timer.display();
 
 		/*this.draw();
-
 		let width = Math.sqrt(this.display.width * this.display.height) * 0.2;
 		let y = this.display.width * 0.03;
-		let x = this.display.width - y - width;
-		this.drawMap(x, y, width);*/
+		let x = this.display.width - y - width;*/
+		this.drawMap(0, 0, 200);
 
 		this.lastTime = time;
 	}
 
-	draw() {
+	//draw() {
 		/*let polys = [];
 		this.pieces.forEach(piece => {
 			piece.box.forEach((face, i) => {
@@ -181,7 +189,7 @@ class RubiksCube {
 			ctx.fill();
 		});*/
 
-		let drawPolys = [];
+		/*let drawPolys = [];
 		this.pieces.forEach((piece, i) => {
 			piece.geometry.forEach((poly, i) => {
 				let face = [];
@@ -217,13 +225,14 @@ class RubiksCube {
 			ctx.fillStyle = colors[colorI];
 			ctx.fill();
 			ctx.fillStyle = (light < 0) ? "black" : "white";
-			ctx.globalAlpha = Math.abs(light) * ((colorI !== 6) ? shading.surface : shading.internals);
+			ctx.globalAlpha = Math.abs(light) * ((colorI !== 0) ? shading.surface : shading.internals);
 			ctx.fill();
 			ctx.globalAlpha = 1;
-		});
-	}
+		});*/
+	//}
 
 	drawMap(x, y, w) {
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		let h = w * 3 / 4;
 		let siW = w / 4;
 		let sqW = siW / 3;
@@ -242,7 +251,7 @@ class RubiksCube {
 				let sqX = (j % 3) * sqW;
 				let sqY = Math.floor(j / 3) * sqW;
 				let padding = 0.07;
-				ctx.fillStyle = colors[sq];
+				ctx.fillStyle = 'rgb(' + objs.colors[sq].join(',') + ')';
 				ctx.fillRect(x + siX + sqX + padding * sqW, y + siY + sqY + padding * sqW, sqW - 2 * padding * sqW, sqW - 2 * padding * sqW);
 			});
 		});
@@ -274,16 +283,16 @@ class RubiksCube {
 		});
 
 		let turns = [];
-		let U = this.findPiece('UMS');
-		let L = this.findPiece('LSE');
-		let F = this.findPiece('FME');
-		let R = this.findPiece('RSE');
-		let B = this.findPiece('BME');
-		let D = this.findPiece('DMS');
+		let U = this.piece.U;
+		let L = this.piece.L;
+		let F = this.piece.F;
+		let R = this.piece.R;
+		let B = this.piece.B;
+		let D = this.piece.D;
 		let test = (A, Z) => {
-			if (pieces.includes(A)) turns.push({ face: A.pieceId[0], clockwise: false });
-			else if (pieces.includes(Z)) turns.push({ face: Z.pieceId[0], clockwise: true });
-			else turns.push({ face: A.pieceId[0], clockwise: true }, { face: Z.pieceId[0], clockwise: false });
+			if (pieces.includes(A)) turns.push({ face: A.id[0], clockwise: false });
+			else if (pieces.includes(Z)) turns.push({ face: Z.id[0], clockwise: true });
+			else turns.push({ face: A.id[0], clockwise: true }, { face: Z.id[0], clockwise: false });
 		};
 		if (Vdot(Vnormalize(U.transform(U)), axis) == 1) test(U, D);
 		if (Vdot(Vnormalize(L.transform(L)), axis) == 1) test(L, R);
@@ -303,14 +312,7 @@ class RubiksCube {
 		let face = side[0];
 		let times = Number(side[1]) || 1;
 		let clockwise = side[side.length - 1] !== "'";
-		let piece = this.findPiece({
-			U: "UMS",
-			L: "LSE",
-			F: "FME",
-			R: "RSE",
-			B: "BME",
-			D: "DMS",
-		} [face]);
+		let piece = this.piece[face];
 		let pieceN = Vnormalize(piece.transform(piece));
 		let axis = clockwise ? Vneg(pieceN) : pieceN;
 		for (let a in axis) axis[a] = Math.round(axis[a]);
@@ -327,6 +329,19 @@ class RubiksCube {
 		let turn = this.turns[this.turns.length - 1];
 		let axis = Vneg(turn.axis);
 		if (this.turnCube(turn.pieces, axis, turn.times)) this.turns.splice(this.turns.length - 2, 2);
+	}
+
+	turnMap(side) {
+		let swap = (si1, sq1, si2, sq2) => [this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
+		this.cyclesMap[side[0]].forEach(e => {
+			let swaps = [
+				[e[0][0], e[0][1], e[1][0], e[1][1]],
+				[e[0][0], e[0][1], e[2][0], e[2][1]],
+				[e[0][0], e[0][1], e[3][0], e[3][1]]
+			];
+			if (side[side.length - 1] === "'") swaps.reverse();
+			for (let i = 0; i < (Number(side[1]) || 1); i++) swaps.forEach(s => swap(...s));
+		});
 	}
 
 	rotateAngle(a1, a2, angle, p0) {
@@ -370,7 +385,7 @@ class RubiksCube {
 	}
 
 	set_pMat() {
-		let fov = 60 * Math.PI / 180;
+		let fov = 50 * Math.PI / 180;
 		let aspect = this.display.width / this.display.height;
 		let near = 1;
 		let far = 50;
@@ -413,9 +428,9 @@ class RubiksCube {
 
 		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
-			let obj = objs[piece.pieceType];
+			let obj = objs[piece.type];
 			if (!obj) return;
-			let mat = piece.objmat;
+			let mat = piece.orient_mat;
 			let colors = objs.colors.map(c => [c[0] / 255, c[1] / 255, c[2] / 255]);
 			let vertices = obj.vertices.map(vec => {
 				let s = 1.01;
@@ -479,10 +494,11 @@ class RubiksCube {
 					let n1 = vertex_normals[face[1]];
 					let n2 = vertex_normals[face[2]];
 					let c = colors[piece.color[Number(group)]];
+					let t = piece.color[Number(group)];
 					vertex_data.push(
-						...v0, ...n0, ...c, pi,
-						...v1, ...n1, ...c, pi,
-						...v2, ...n2, ...c, pi
+						...v0, ...n0, ...c, pi, t,
+						...v1, ...n1, ...c, pi, t,
+						...v2, ...n2, ...c, pi, t
 					);
 				});
 			}
@@ -492,12 +508,12 @@ class RubiksCube {
 		let xz = 0.5 * size;
 		let y = 1.1000 / 2 + 1.01 + 0.001;
 		vertex_data.push(
-			-xz, y, -xz, 0, 1, 0, 0, 0, -1, 24,
-			-xz, y, +xz, 0, 1, 0, 0, 1, -1, 24,
-			+xz, y, +xz, 0, 1, 0, 1, 1, -1, 24,
-			-xz, y, -xz, 0, 1, 0, 0, 0, -1, 24,
-			+xz, y, +xz, 0, 1, 0, 1, 1, -1, 24,
-			+xz, y, -xz, 0, 1, 0, 1, 0, -1, 24
+			-xz, y, -xz, 0, 1, 0, 0, 0, 0, 24, -1,
+			-xz, y, +xz, 0, 1, 0, 0, 1, 0, 24, -1,
+			+xz, y, +xz, 0, 1, 0, 1, 1, 0, 24, -1,
+			-xz, y, -xz, 0, 1, 0, 0, 0, 0, 24, -1,
+			+xz, y, +xz, 0, 1, 0, 1, 1, 0, 24, -1,
+			+xz, y, -xz, 0, 1, 0, 1, 0, 0, 24, -1
 		);
 
 		this.vertex_data_length = vertex_data.length;
@@ -508,19 +524,23 @@ class RubiksCube {
 
 		let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
 		gl.enableVertexAttribArray(positionAttributeLocation);
-		gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
 
 		let normalAttributeLocation = gl.getAttribLocation(program, 'a_normal');
 		gl.enableVertexAttribArray(normalAttributeLocation);
-		gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
 		let colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
 		gl.enableVertexAttribArray(colorAttributeLocation);
-		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
 
 		let idAttributeLocation = gl.getAttribLocation(program, 'a_id');
 		gl.enableVertexAttribArray(idAttributeLocation);
-		gl.vertexAttribPointer(idAttributeLocation, 1, gl.FLOAT, false, 10 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer(idAttributeLocation, 1, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
+
+		let typeAttributeLocation = gl.getAttribLocation(program, 'a_type');
+		gl.enableVertexAttribArray(typeAttributeLocation);
+		gl.vertexAttribPointer(typeAttributeLocation, 1, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
 
 		gl.enable(gl.DEPTH_TEST);
 		gl.enable(gl.CULL_FACE);
@@ -584,20 +604,7 @@ class RubiksCube {
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		gl.drawArrays(gl.TRIANGLES, 0, this.vertex_data_length / 10);
-	}
-
-	turnMap(side) {
-		let swap = (si1, sq1, si2, sq2) => [this.map[si1][sq1], this.map[si2][sq2]] = [this.map[si2][sq2], this.map[si1][sq1]];
-		this.cyclesMap[side[0]].forEach(e => {
-			let swaps = [
-				[e[0][0], e[0][1], e[1][0], e[1][1]],
-				[e[0][0], e[0][1], e[2][0], e[2][1]],
-				[e[0][0], e[0][1], e[3][0], e[3][1]]
-			];
-			if (side[side.length - 1] === "'") swaps.reverse();
-			for (let i = 0; i < (Number(side[1]) || 1); i++) swaps.forEach(s => swap(...s));
-		});
+		gl.drawArrays(gl.TRIANGLES, 0, this.vertex_data_length / 11);
 	}
 
 	touchStart(x, y, id) {
@@ -646,8 +653,7 @@ class RubiksCube {
 						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
-						let times = 1;
-						if (pieces.length > 0 && pieces.length % 9 == 0) this.turnCube(pieces, axis, times);
+						if (pieces.length > 0 && pieces.length % 9 == 0) this.turnCube(pieces, axis, 1);
 						if (timer.maystart && !timer.running) timer.start();
 					}
 					touch.gotLine = true;
@@ -736,10 +742,6 @@ class RubiksCube {
 		}
 	}
 
-	findPiece(id) {
-		return this.pieces.find(e => e.pieceId === id);
-	}
-
 	isTurning() {
 		return this.pieces.some(e => e.turning);
 	}
@@ -750,14 +752,14 @@ class RubiksCube {
 }
 
 class Piece {
-	constructor(x, y, z, pieceId, pieceType, color = [6, 7, 7, 7], mat = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {
+	constructor(x, y, z, id, type, color, mat = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.pieceId = pieceId;
-		this.pieceType = pieceType;
-		this.objmat = mat;
-		/*this.geometry = m3ds[pieceType].map(e => ({
+		this.id = id;
+		this.type = type;
+		this.orient_mat = mat;
+		/*this.geometry = m3ds[type].map(e => ({
 			color: e.color,
 			points: e.points.map(f => {
 				let p = {
