@@ -113,9 +113,9 @@ class RubiksCube {
 			B: [[[4, 0], [4, 2], [4, 8], [4, 6]], [[4, 1], [4, 5], [4, 7], [4, 3]], [[0, 0], [1, 6], [5, 8], [3, 2]], [[0, 1], [1, 3], [5, 7], [3, 5]], [[0, 2], [1, 0], [5, 6], [3, 8]]],
 			L: [[[1, 0], [1, 2], [1, 8], [1, 6]], [[1, 1], [1, 5], [1, 7], [1, 3]], [[0, 0], [2, 0], [5, 0], [4, 8]], [[0, 3], [2, 3], [5, 3], [4, 5]], [[0, 6], [2, 6], [5, 6], [4, 2]]],
 			R: [[[3, 0], [3, 2], [3, 8], [3, 6]], [[3, 1], [3, 5], [3, 7], [3, 3]], [[0, 2], [4, 6], [5, 2], [2, 2]], [[0, 5], [4, 3], [5, 5], [2, 5]], [[0, 8], [4, 0], [5, 8], [2, 8]]],
-			//M: [[[0, 1], [2, 1], [5, 1], [4, 7]], [[0, 4], [2, 4], [5, 4], [4, 4]], [[0, 7], [2, 7], [5, 7], [4, 1]]],
-			//E: [[[1, 3], [2, 3], [3, 3], [4, 3]], [[1, 4], [2, 4], [3, 4], [4, 4]], [[1, 5], [2, 5], [3, 5], [4, 5]]],
-			//S: [[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]]],
+			/*M: [[[0, 1], [2, 1], [5, 1], [4, 7]], [[0, 4], [2, 4], [5, 4], [4, 4]], [[0, 7], [2, 7], [5, 7], [4, 1]]],
+			E: [[[1, 3], [2, 3], [3, 3], [4, 3]], [[1, 4], [2, 4], [3, 4], [4, 4]], [[1, 5], [2, 5], [3, 5], [4, 5]]],
+			S: [[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]]],
 			x: [[[3, 0], [3, 2], [3, 8], [3, 6]], [[3, 1], [3, 5], [3, 7], [3, 3]], [[0, 2], [4, 6], [5, 2], [2, 2]], [[0, 5], [4, 3], [5, 5], [2, 5]], [[0, 8], [4, 0], [5, 8], [2, 8]],
 					[[0, 1], [4, 7], [5, 1], [2, 1]], [[0, 4], [4, 4], [5, 4], [2, 4]], [[0, 7], [4, 1], [5, 7], [2, 7]],
 					[[1, 0], [1, 6], [1, 8], [1, 2]], [[1, 1], [1, 3], [1, 7], [1, 5]], [[0, 0], [4, 8], [5, 0], [2, 0]], [[0, 3], [4, 5], [5, 3], [2, 3]], [[0, 6], [4, 2], [5, 6], [2, 6]]
@@ -127,8 +127,12 @@ class RubiksCube {
 			z: [[[2, 0], [2, 2], [2, 8], [2, 6]], [[2, 1], [2, 5], [2, 7], [2, 3]], [[0, 6], [3, 0], [5, 2], [1, 8]], [[0, 7], [3, 3], [5, 1], [1, 5]], [[0, 8], [3, 6], [5, 0], [1, 2]],
 					[[0, 3], [3, 1], [5, 5], [1, 7]], [[0, 4], [3, 4], [5, 4], [1, 4]], [[0, 5], [3, 7], [5, 3], [1, 1]],
 					[[4, 0], [4, 6], [4, 8], [4, 2]], [[4, 1], [4, 3], [4, 7], [4, 5]], [[0, 0], [3, 2], [5, 8], [1, 6]], [[0, 1], [3, 5], [5, 7], [1, 3]], [[0, 2], [3, 8], [5, 6], [1, 0]]
-			]
+			]*/
 		};
+
+		this.algs = {
+			T: "R U R' U' R' F R2 U' R' U' R U R' F'",
+		}
 
 		this.pos = { x: 0, y: 0, z: 10.5 };
 		this.rotationMat = [
@@ -150,6 +154,12 @@ class RubiksCube {
 			[6, 6, 6, 6, 6, 6, 6, 6, 6]
 		];
 
+		this.turn_orientation = [
+			{ x: 1, y: 0, z: 0 },
+			{ x: 0, y: 1, z: 0 },
+			{ x: 0, y: 0, z: 1 }
+		];
+
 		this.touches = [];
 
 		this.turn = { ms: [60, 30] };
@@ -161,7 +171,7 @@ class RubiksCube {
 		this.scrambleIndex = 0;
 
 		this.display = {};
-		if (canvas) this.resize(canvas.width, canvas.height);
+		if (this.canvas) this.resize();
 
 		this.vertex_data_length = 0;
 
@@ -232,10 +242,14 @@ class RubiksCube {
 		this.set_mMat();
 	}
 
-	turnCube(pieces, axis, times) {
-		if (pieces.some(p => p.turning && (p.turn.progress / p.turn.times < 0.5))) return;
-		this.pieces.forEach(p => (p.turning && (Math.abs(Vdot(p.turn.axis, axis)) < 0.9)) && p.turnDone());
-		if (pieces.some(p => p.turning)) return;
+	turnCube(pieces, axis, times, instant = false) {
+		if (!instant) {
+			if (pieces.some(p => p.turning && (p.turn.progress / p.turn.times < 0.5))) return false;
+			this.pieces.forEach(p => (p.turning && (Math.abs(Vdot(p.turn.axis, axis)) < 0.9)) && p.turnDone());
+			if (pieces.some(p => p.turning)) return false;
+		}
+		else this.pieces.forEach(p => p.turning && p.turnDone());
+		
 		let startTime = Date.now();
 		pieces.forEach(piece => {
 			piece.turning = true;
@@ -245,45 +259,59 @@ class RubiksCube {
 		});
 
 		let turns = [];
-		let U = this.piece.U;
-		let L = this.piece.L;
-		let F = this.piece.F;
-		let R = this.piece.R;
-		let B = this.piece.B;
-		let D = this.piece.D;
-		let test = (A, Z) => {
-			if (pieces.includes(A)) turns.push({ face: A.id[0], clockwise: false });
-			else if (pieces.includes(Z)) turns.push({ face: Z.id[0], clockwise: true });
-			else turns.push({ face: A.id[0], clockwise: true }, { face: Z.id[0], clockwise: false });
+		let { U, L, F, R, B, D } = this.piece;
+		let test = (P1, P2, E1, E2, E3, E4) => {
+			if ([P1, P2, E1, E2, E3, E4].map(e => pieces.includes(e)).reduce((a, b) => a && b)) {}
+			else if (pieces.includes(P1)) turns.push({ face: P1.id[0], clockwise: false });
+			else if (pieces.includes(P2)) turns.push({ face: P2.id[0], clockwise: true });
+			else turns.push({ face: P1.id[0], clockwise: true }, { face: P2.id[0], clockwise: false });
 		};
-		if (Vdot(Vnormalize(U.transform(U)), axis) == 1) test(U, D);
-		if (Vdot(Vnormalize(L.transform(L)), axis) == 1) test(L, R);
-		if (Vdot(Vnormalize(F.transform(F)), axis) == 1) test(F, B);
-		if (Vdot(Vnormalize(R.transform(R)), axis) == 1) test(R, L);
-		if (Vdot(Vnormalize(B.transform(B)), axis) == 1) test(B, F);
-		if (Vdot(Vnormalize(D.transform(D)), axis) == 1) test(D, U);
+		if (Vdot(Vnormalize(U.transform(U)), axis) == 1) test(U, D, L, R, F, B);
+		if (Vdot(Vnormalize(L.transform(L)), axis) == 1) test(L, R, F, B, U, D);
+		if (Vdot(Vnormalize(F.transform(F)), axis) == 1) test(F, B, U, D, L, R);
+		if (Vdot(Vnormalize(R.transform(R)), axis) == 1) test(R, L, B, F, D, U);
+		if (Vdot(Vnormalize(B.transform(B)), axis) == 1) test(B, F, D, U, R, L);
+		if (Vdot(Vnormalize(D.transform(D)), axis) == 1) test(D, U, R, L, B, F);
 		turns.forEach((turn) => this.turnMap(turn.face + (times == 1 ? '' : times) + (turn.clockwise ? '' : "'")));
 
 		this.turns.push({ pieces, axis, times });
-		sound.play();
+		if (!instant) sound.play();
+		else pieces.forEach(piece => piece.turnDone());
 
 		return true;
 	}
 
-	turnCubeNotation(side) {
-		let face = side[0];
-		let times = Number(side[1]) || 1;
-		let clockwise = side[side.length - 1] !== "'";
+	turnCubeNotation(move) {
+		let face = move[0];
+		let times = Number(move[1]) || 1;
+		let clockwise = move[move.length - 1] !== "'";
 		let piece = this.piece[face];
-		let pieceN = Vnormalize(piece.transform(piece));
-		let axis = clockwise ? Vneg(pieceN) : pieceN;
-		for (let a in axis) axis[a] = Math.round(axis[a]);
-		let pieces;
-		if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).x - piece.transform(piece).x) < 0.1);
-		if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).y - piece.transform(piece).y) < 0.1);
-		if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transform(p).z - piece.transform(piece).z) < 0.1);
-
+		let pieceT = piece.transform(piece);
+		let axis = Vnormalize(clockwise ? Vneg(pieceT) : pieceT);
+		let pieces = this.pieces.filter(p => Math.abs(Vdot(axis, Vsub(p.transform(p), pieceT))) < 0.1);
 		return this.turnCube(pieces, axis, times);
+	}
+
+	turnCubeMove(move, set_face = false, instant = false) {
+		if (set_face) this.set_face();
+		let face = move[0];
+		let move_axes = {
+			R: 1, U: 2, F: 3, L: -1, D: -2, B: -3,
+			x: 1, y: 2, z: 3,
+			r: 1, u: 2, f: 3, l: -1, d: -2, b: -3,
+			M: -1, E: -2, S: 3
+		};
+		let times = Number(move[1]) || 1;
+		let clockwise = move[move.length - 1] !== "'";
+		let piece = Object.values(this.piece).find(p => Vdot(p.transform(p), this.turn_orientation[Math.abs(move_axes[face]) - 1]) == Math.sign(move_axes[face]));
+		let pieceT = piece.transform(piece);
+		let axis = Vnormalize(clockwise ? Vneg(pieceT) : pieceT);
+		let pieces;
+		if (['R', 'U', 'F', 'L', 'D', 'B'].includes(move[0])) pieces = this.pieces.filter(p => Math.abs(Vdot(axis, Vsub(p.transform(p), pieceT))) < 0.1);
+		else if (['x', 'y', 'z'].includes(move[0])) pieces = this.pieces;
+		else if (['r', 'u', 'f', 'l', 'd', 'b'].includes(move[0])) pieces = this.pieces.filter(p => !(Math.abs(Vdot(axis, Vsub(p.transform(p), Vneg(pieceT)))) < 0.1));
+		else if (['M', 'E', 'S'].includes(move[0])) pieces = this.pieces.filter(p => Math.abs(Vdot(axis, p.transform(p))) < 0.1);
+		return this.turnCube(pieces, axis, times, instant);
 	}
 
 	turnUndo() {
@@ -304,6 +332,10 @@ class RubiksCube {
 			if (side[side.length - 1] === "'") swaps.reverse();
 			for (let i = 0; i < (Number(side[1]) || 1); i++) swaps.forEach(s => swap(...s));
 		});
+	}
+
+	turnAlgInstant(alg, set_face = false) {
+		alg.split(' ').forEach(move => this.turnCubeMove(move, set_face, true));
 	}
 
 	rotateAngle(a1, a2, angle, p0) {
@@ -465,7 +497,7 @@ class RubiksCube {
 
 		let size = 0.7;
 		let xz = 0.5 * size;
-		let y = 1.1000 / 2 + 1.01 + 0.001;
+		let y = 1.1000 / 2 + 1.011;
 		vertex_data.push(
 			-xz, y, -xz, 0, 1, 0, 0, 0, 0, 24, -1,
 			-xz, y, +xz, 0, 1, 0, 0, 1, 0, 24, -1,
@@ -730,6 +762,35 @@ class RubiksCube {
 
 	isSolved() {
 		return this.map.every(e => e.reduce((a, b) => a && b === e[0], true));
+	}
+
+	set_face() {
+		let centers = ['R', 'U', 'F', 'L', 'D', 'B'];
+		let center_pos = centers.map(e => Vnormalize(Vmatrix(this.rotationMat, this.piece[e])));
+		let arr = [0, 1, 2, 3, 4, 5];
+		
+		arr.sort((a, b) => Vdot(center_pos[a], { x: 1, y: 0, z: 0 }) - Vdot(center_pos[b], { x: 1, y: 0, z: 0 }));
+		let iR = arr.pop();
+		arr.splice(arr.indexOf((iR + 3) % 6), 1);
+		
+		arr.sort((a, b) => Vdot(center_pos[a], { x: 0, y: 1, z: 0 }) - Vdot(center_pos[b], { x: 0, y: 1, z: 0 }));
+		let iU = arr.pop();
+		arr.splice(arr.indexOf((iU + 3) % 6), 1);
+		
+		arr.sort((a, b) => Vdot(center_pos[a], { x: 0, y: 0, z: 1 }) - Vdot(center_pos[b], { x: 0, y: 0, z: 1 }));
+		let iF = arr.pop();
+		
+		this.turn_orientation = [
+			Vnormalize(this.piece[centers[iR]]),
+			Vnormalize(this.piece[centers[iU]]),
+			Vnormalize(this.piece[centers[iF]])
+		];
+	}
+
+	go_face() {
+		this.rotationMat[0] = Vscale(this.turn_orientation[0], 1);
+		this.rotationMat[1] = Vscale(this.turn_orientation[1], 1);
+		this.rotationMat[2] = Vscale(this.turn_orientation[2], 1);
 	}
 
 }

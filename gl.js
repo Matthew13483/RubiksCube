@@ -70,9 +70,11 @@ function GL(canvas) {
 				alpha = texture2D(u_image, v_color.xy).a;
 			}
 			if (v_type == 0.0) {
-				diff_mul = 0.3;
-				spec_mul = 0.3;
+				spec_mul = 0.1;
 			}
+			
+			float len = length(v_position);
+			diff_mul = min(diff_mul * 0.444 * len * len, diff_mul);
 			
 			vec3 ambient = 0.1 * color + 0.3 * vec3(24.0, 24.0, 48.0) / 255.0;
 			vec3 diffuse = vec3(0.0);
