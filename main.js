@@ -188,11 +188,39 @@ let timeC = 0;
 let timeD = 0;
 let frames = 0;
 
-const Vor = new Voronoi(canvas_bg);
+let Vor;
+let Rubik;
 
-const Rubik = new RubiksCube(canvas);
-Rubik.rotateCube(0, -0.35, 0);
-Rubik.rotateCube(-3.5, 0, 0);
+requestIdleCallback(() => {
+	Vor = new Voronoi(canvas_bg);
+	
+	Rubik = new RubiksCube(canvas);
+	Rubik.rotateCube(0, -0.35, 0);
+	Rubik.rotateCube(-3.5, 0, 0);
+	
+	refresh();
+	content.style.display = 'block';
+	
+	loop();
+});
+
+window.onresize = () => {
+	refresh();
+};
+
+function refresh() {
+	canvas.width = canvas_bg.width = window.innerWidth;
+	canvas.height = canvas_bg.height = window.innerHeight;
+	
+	if (Rubik && Vor) {
+		Rubik.resize();
+		Rubik.draw_setup();
+		
+		Vor.resize();
+		Vor.draw_setup();
+		Vor.draw();
+	}
+}
 
 //let stats;
 //let loaded = false;

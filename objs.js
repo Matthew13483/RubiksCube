@@ -46,13 +46,18 @@ function parseOBJ(text) {
 	return { vertices, groups };
 }
 
-[
+let obj_links = [
 	['./obj_files/cube_core.obj', 'core'],
 	['./obj_files/cube_center.obj', 'center'],
 	['./obj_files/cube_edge.obj', 'edge'],
 	['./obj_files/cube_corner.obj', 'corner']
-].forEach(link => {
+]
+
+obj_links.forEach(link => {
 	fetchOBJ(link[0]).then(obj_txt => {
-		if (obj_txt) objs[link[1]] = parseOBJ(obj_txt);
+		if (obj_txt) {
+			objs[link[1]] = parseOBJ(obj_txt);
+			if (Rubik && obj_links.every(l => objs[l[1]])) Rubik.draw_setup();
+		}
 	});
 });
