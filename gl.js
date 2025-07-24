@@ -70,6 +70,7 @@ function GL(canvas) {
 				alpha = texture2D(u_image, v_color.xy).a;
 			}
 			if (v_type == 0.0) {
+				diff_mul = 0.9;
 				spec_mul = 0.1;
 			}
 			

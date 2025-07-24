@@ -55,7 +55,7 @@ class Voronoi {
 				vec3 color2 = color0 * 0.5;
 				float colorT = 0.0;
 				float minD1 = 1e20;
-				vec3 color;
+				//vec3 color;
 				
 				for (int i = 0; i < 64; i++) {
 					vec2 genPos = (vec2(mod(float(i), 8.0), floor(float(i) / 8.0)) + points[i]) / 8.0;
@@ -64,7 +64,7 @@ class Voronoi {
 					if (dist < minD1) {
 						minD1 = dist;
 						colorT = (1.0 - genPos.y) + (colors[i] - 0.5) * 0.25;
-						color += vec3(1.0 / dist);
+						//color += vec3(1.0 / dist);
 					}
 				}
 				
@@ -119,6 +119,16 @@ class Voronoi {
 
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
+
+		this.gl_u = {
+			'dim': gl.getUniformLocation(gl.program, 'dim'),
+			'points': gl.getUniformLocation(gl.program, 'points'),
+			'colors': gl.getUniformLocation(gl.program, 'colors')
+		};
+
+		gl.uniform2f(this.gl_u.dim, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+		gl.uniform1fv(this.gl_u.colors, new Float32Array(this.colors));
 	}
 
 	draw() {
@@ -126,21 +136,20 @@ class Voronoi {
 		if (!gl) return;
 
 		let time = Date.now() - this.startTime;
-		let genPointsT = this.genPoints.map((p, i) => {
+		let a = 0.01 * time / 1000;
+		let sin = Math.sin(a * 2 * Math.PI);
+		let cos = Math.cos(a * 2 * Math.PI);
+		let genPointsT = [];
+		for (let i = 0; i < 64; i++) {
+			let p = this.genPoints[i];
 			let x = p[0] - 0.5;
 			let y = p[1] - 0.5;
-			let a = 0.01 * time / 1000;
-			let sin = Math.sin(a * 2 * Math.PI);
-			let cos = Math.cos(a * 2 * Math.PI);
 			let x1 = x * cos - y * sin;
 			let y1 = x * sin + y * cos;
-			return [x1 + 0.5, y1 + 0.5];
-		});
+			genPointsT.push(x1 + 0.5, y1 + 0.5);
+		}
 
-		gl.uniform2f(gl.getUniformLocation(gl.program, "dim"), gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-		gl.uniform2fv(gl.getUniformLocation(gl.program, "points"), new Float32Array(genPointsT.flat()));
-		gl.uniform1fv(gl.getUniformLocation(gl.program, "colors"), new Float32Array(this.colors));
+		gl.uniform2fv(this.gl_u.points, new Float32Array(genPointsT));
 
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	}

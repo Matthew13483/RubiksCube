@@ -149,11 +149,20 @@ function cllnLineLine(l1, l2) {
 }
 
 function cllnPolyPnt(poly, point) {
-	let maxX = 2 * Math.abs(poly.points.map(e => e.x).reduce((a, b) => a > b ? a : b));
-	return poly.points.map((e, i, a) => {
-		return cllnLineLine(
-			{ p1: e, p2: a[(i + 1) % a.length] },
+	let maxX = -Infinity;
+	for (let i = 0; i < poly.points.length; i++) {
+		if (poly.points[i].x > maxX) maxX = poly.points[i].x;
+	}
+	maxX = 2 * Math.abs(maxX);
+
+	let intersections = 0;
+	for (let i = 0; i < poly.points.length; i++) {
+		const current = poly.points[i];
+		const next = poly.points[(i + 1) % poly.points.length];
+		if (cllnLineLine(
+			{ p1: current, p2: next },
 			{ p1: point, p2: { x: maxX, y: point.y } }
-		) ? 1 : 0;
-	}).reduce((a, b) => a + b) % 2 == 1;
+		)) intersections++;
+	}
+	return intersections % 2 === 1;
 }

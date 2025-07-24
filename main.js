@@ -14,22 +14,27 @@ class Timer {
 		this.startTime = Date.now();
 	}
 	stop() {
+		this.update();
 		this.running = false;
-		this.endTime = Date.now();
 	}
 	reset() {
 		this.running = false;
 		this.startTime = 0;
 		this.endTime = 0;
 	}
-	display() {
+	update() {
 		if (this.running) this.endTime = Date.now();
-		return this.toString(this.time());
+		return this.time();
 	}
-	toString(msec) {
-		let min = Math.floor(msec / 60000);
-		let sec = (msec / 1000) % 60;
-		return min.toString().padStart(2, 0) + ':' + sec.toFixed(3).toString().padStart(6, 0);
+	display() {
+		this.update();
+		return this.timeToString();
+	}
+	timeToString() {
+		let time = this.time();
+		let min = Math.floor(time / 60000);
+		let sec = (time / 1000) % 60;
+		return min.toString().padStart(2, '0') + ':' + sec.toFixed(3).padStart(6, 0);
 	}
 }
 
@@ -63,7 +68,7 @@ function toggleTimer() {
 
 function scrambleCube() {
 	if (timer.enabled) {
-		Rubik.reset();
+		Rubik.resetCube();
 		Rubik.rotateCube(
 			Math.random() * 2 * Math.PI,
 			Math.random() * 2 * Math.PI,
@@ -105,16 +110,31 @@ const fps = {
 		fps.frameCount++;
 		let time = Date.now() - fps.startTime;
 		if (time > 1000) {
-			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2);
+			let table = {
+				'Main_Loop': Number((timeA / frames).toFixed(4)),
+				'R_loop': Number((timeB / frames).toFixed(4)),
+				'R_draw_loop': Number((timeC / frames).toFixed(4)),
+				'Vor_draw': Number((timeD / frames).toFixed(4))
+			};
+			debug_table.push(table);
+			
+			let MS = '';
+			if (debug_performance) {
+				let maxL = 0;
+				Object.keys(table).forEach((key, i) => {
+					if (key.length > maxL) maxL = key.length;
+				});
+				Object.keys(table).forEach((key, i) => {
+					let pad = '<span style="opacity: 0.3">' + '.'.repeat(maxL - key.length) + '</span>';
+					MS += '<br>' + key + pad + ': ' + table[key].toFixed(4);
+				});
+				MS = '<span style="font-size:13px;">' + MS + '</span>';
+			}
+			
+			fps_display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2) + MS;
 			fps.startTime = Date.now();
 			fps.frameCount = 0;
-
-			if (debug_performance) console.table([
-				{ function: 'loop', avgTime: timeA / frames },
-				{ function: 'Rubik.loop', avgTime: timeB / frames },
-				{ function: 'Rubik.draw_loop', avgTime: timeC / frames },
-				{ function: 'Vor.draw', avgTime: timeD / frames }
-			]);
+			
 			timeA = timeB = timeC = timeD = 0;
 			frames = 0;
 		}
@@ -137,7 +157,31 @@ canvas_map.width = 150;
 canvas_map.height = 113;
 let ctx = canvas_map.getContext('2d');
 
-let debug_performance = 0;
+let debug_performance = false;
+let debug_table = [];
+
+function debug(last_n) {
+	table = debug_table;
+	if (last_n && last_n <= debug_table.length) table = debug_table.slice(debug_table.length - last_n);
+	console.table(table);
+}
+function debug_ave(n) {
+	let limit = debug_table.length;
+	if (n && n <= debug_table.length) limit = n;
+	let a = [];
+	for (let i = 0; i < Object.keys(debug_table[0]).length; i++) a.push(0);
+	let c = 0;
+	for (i = 0; i < limit; i++) {
+		Object.values(debug_table[i]).forEach((t, i) => a[i] += Number(t));
+		c++;
+	}
+	console.log('count: ' + c);
+	let m = a.map(m => (m / c).toFixed(4));
+	let table = Object.keys(debug_table[0]).map((f, i) => ({ function: f, avgTime: m[i] }));
+	
+	console.table(table);
+}
+
 let timeA = 0;
 let timeB = 0;
 let timeC = 0;
@@ -150,8 +194,12 @@ const Rubik = new RubiksCube(canvas);
 Rubik.rotateCube(0, -0.35, 0);
 Rubik.rotateCube(-3.5, 0, 0);
 
+//let stats;
+//let loaded = false;
+
 function loop() {
 	requestAnimationFrame(loop);
+	//if (loaded) stats.begin();
 	fps.inLoop();
 
 	let s = performance.now();
@@ -172,4 +220,38 @@ function loop() {
 	timeA += performance.now() - s;
 
 	frames++;
+	//if (loaded) stats.end();
 }
+
+/*const script = document.createElement('script');
+script.src = 'https://mrdoob.github.io/stats.js/build/stats.min.js';
+script.onload = () => {
+	stats = new Stats();
+	stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+	document.body.appendChild(stats.dom);
+	loaded = true;
+};
+document.head.appendChild(script);*/
+
+
+
+
+window.onload = () => {
+	window.onresize();
+	
+	content.style.display = 'block';
+	
+	loop();
+};
+
+window.onresize = () => {
+	canvas.width = canvas_bg.width = window.innerWidth;
+	canvas.height = canvas_bg.height = window.innerHeight;
+	
+	Rubik.resize();
+	Rubik.draw_setup();
+	
+	Vor.resize();
+	Vor.draw_setup();
+	Vor.draw();
+};
