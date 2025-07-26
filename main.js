@@ -191,7 +191,7 @@ let frames = 0;
 let Vor;
 let Rubik;
 
-requestIdleCallback(() => {
+//requestIdleCallback(() => {
 	Vor = new Voronoi(canvas_bg);
 	
 	Rubik = new RubiksCube(canvas);
@@ -202,7 +202,7 @@ requestIdleCallback(() => {
 	content.style.display = 'block';
 	
 	loop();
-});
+//});
 
 window.onresize = () => {
 	refresh();

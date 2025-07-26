@@ -57,7 +57,7 @@ obj_links.forEach(link => {
 	fetchOBJ(link[0]).then(obj_txt => {
 		if (obj_txt) {
 			objs[link[1]] = parseOBJ(obj_txt);
-			if (Rubik && obj_links.every(l => objs[l[1]])) Rubik.draw_setup();
+			if (typeof Rubik === 'object' && obj_links.every(l => objs[l[1]])) Rubik.draw_setup();
 		}
 	});
 });
