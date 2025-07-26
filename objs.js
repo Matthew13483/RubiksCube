@@ -2,8 +2,8 @@ const objs = {
 	colors: [
 		[150, 150, 150],
 		[252, 252, 252],
-		[220, 96, 0],
-		[0, 133, 0],
+		[228, 104, 0],
+		[0, 137, 0],
 		[176, 0, 0],
 		[10, 10, 176],
 		[252, 252, 0]
@@ -51,13 +51,17 @@ let obj_links = [
 	['./obj_files/cube_center.obj', 'center'],
 	['./obj_files/cube_edge.obj', 'edge'],
 	['./obj_files/cube_corner.obj', 'corner']
-]
+];
 
-obj_links.forEach(link => {
-	fetchOBJ(link[0]).then(obj_txt => {
-		if (obj_txt) {
-			objs[link[1]] = parseOBJ(obj_txt);
-			if (typeof Rubik === 'object' && obj_links.every(l => objs[l[1]])) Rubik.draw_setup();
-		}
+function loadOBJ(links) {
+	links.forEach(link => {
+		fetchOBJ(link[0]).then(obj_txt => {
+			if (obj_txt) {
+				objs[link[1]] = parseOBJ(obj_txt);
+				if (typeof Rubik === 'object' && obj_links.every(l => objs[l[1]])) Rubik.draw_setup();
+			}
+		});
 	});
-});
+}
+
+requestIdleCallback(() => loadOBJ(obj_links));

@@ -83,6 +83,8 @@ class Sound {
 		this.enabled = false;
 		this.audio = new Audio();
 		this.audio.src = src;
+		this.audio.preload = 'auto';
+		this.audio.load();
 	}
 	play() {
 		if (this.enabled) {
@@ -120,18 +122,12 @@ const fps = {
 			
 			let MS = '';
 			if (debug_performance) {
-				let maxL = 0;
-				Object.keys(table).forEach((key, i) => {
-					if (key.length > maxL) maxL = key.length;
-				});
-				Object.keys(table).forEach((key, i) => {
-					let pad = '<span style="opacity: 0.3">' + '.'.repeat(maxL - key.length) + '</span>';
-					MS += '<br>' + key + pad + ': ' + table[key].toFixed(4);
-				});
-				MS = '<span style="font-size:13px;">' + MS + '</span>';
+				for (let key in table) {
+					let pad = '.'.repeat(12 - key.length);
+					MS += `\n${key}${pad}${table[key]}`;
+				}
 			}
-			
-			fps_display.innerHTML = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2) + MS;
+			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2) + MS;
 			fps.startTime = Date.now();
 			fps.frameCount = 0;
 			
@@ -153,8 +149,6 @@ button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = (
 	undo.flag = false;
 };
 
-canvas_map.width = 150;
-canvas_map.height = 113;
 let ctx = canvas_map.getContext('2d');
 
 let debug_performance = false;
@@ -191,7 +185,7 @@ let frames = 0;
 let Vor;
 let Rubik;
 
-//requestIdleCallback(() => {
+requestIdleCallback(() => {
 	Vor = new Voronoi(canvas_bg);
 	
 	Rubik = new RubiksCube(canvas);
@@ -199,13 +193,14 @@ let Rubik;
 	Rubik.rotateCube(-3.5, 0, 0);
 	
 	refresh();
-	content.style.display = 'block';
 	
 	loop();
-//});
+});
 
+let resizeTimeout;
 window.onresize = () => {
-	refresh();
+	clearTimeout(resizeTimeout);
+	resizeTimeout = setTimeout(refresh, 10);
 };
 
 function refresh() {
