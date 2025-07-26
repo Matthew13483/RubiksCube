@@ -182,19 +182,28 @@ let timeC = 0;
 let timeD = 0;
 let frames = 0;
 
-let Vor;
 let Rubik;
+let Vor;
 
 requestIdleCallback(() => {
+	Rubik = new RubiksCube(canvas);
 	Vor = new Voronoi(canvas_bg);
 	
-	Rubik = new RubiksCube(canvas);
-	Rubik.rotateCube(0, -0.35, 0);
-	Rubik.rotateCube(-3.5, 0, 0);
+	requestIdleCallback(() => {
+		Rubik.init_gl();
+		Rubik.rotateCube(0, -0.35, 0);
+		Rubik.rotateCube(-3.5, 0, 0);
+	});
 	
-	refresh();
+	requestIdleCallback(() => {
+		Vor.init_gl();
+	});
 	
-	loop();
+	requestIdleCallback(() => {
+		refresh();
+		loop();
+		document.body.style.display = 'block';
+	});
 });
 
 let resizeTimeout;
@@ -204,7 +213,7 @@ window.onresize = () => {
 };
 
 function refresh() {
-	canvas.width = canvas_bg.width = window.innerWidth;
+	canvas.width = canvas_bg.width = window.innerWidth + 1;
 	canvas.height = canvas_bg.height = window.innerHeight;
 	
 	if (Rubik && Vor) {

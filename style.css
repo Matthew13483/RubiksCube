@@ -2,7 +2,9 @@ body {
 	margin: 0;
 	user-select: none;
 	overflow: hidden;
-	background: #000000;
+	height:100vh;
+	background-color: #181830;
+	background: linear-gradient(180deg, #202040, #101020);
 }
 
 #canvas_bg {
@@ -10,8 +12,7 @@ body {
 	position: fixed;
 	top: 0;
 	left: 0;
-	background-color: #181830;
-	background: linear-gradient(180deg, #202040, #101020);
+	background: transparent;
 }
 
 #canvas_map {

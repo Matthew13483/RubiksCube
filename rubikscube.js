@@ -4,7 +4,6 @@ class RubiksCube {
 
 	constructor(canvas) {
 		this.canvas = canvas;
-		this.gl = GL(canvas);
 		
 		let handleStart = event => {
 			event.preventDefault();
@@ -136,6 +135,10 @@ class RubiksCube {
 		this.show_map = false;
 		
 		this.reset();
+	}
+
+	init_gl() {
+		this.gl = GL(this.canvas);
 	}
 
 	reset() {

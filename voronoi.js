@@ -14,8 +14,10 @@ class Voronoi {
 		}
 
 		this.startTime = Date.now();
+	}
 
-		let gl = canvas.getContext("webgl");
+	init_gl() {
+		let gl = this.canvas.getContext("webgl");
 
 		if (!gl) {
 			console.error('WebGL is not supported');
@@ -94,8 +96,6 @@ class Voronoi {
 		gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
 		gl.program = program;
-
-		this.draw_setup();
 	}
 
 	resize() {
