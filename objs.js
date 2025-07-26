@@ -64,4 +64,4 @@ function loadOBJ(links) {
 	});
 }
 
-requestIdleCallback(() => loadOBJ(obj_links));
+loadOBJ(obj_links);
