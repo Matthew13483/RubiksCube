@@ -630,16 +630,16 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let gl = this.gl;
 		if (!gl) return;
 		let program = gl.program;
-
+		
 		['u_iMat', 'u_pMat', 'u_vMat', 'u_mMat', 'camPos', 'lightSources', 'lightColors'].forEach(loc => {
 			this.gl_u[loc] = gl.getUniformLocation(program, loc);
 		});
-
+		
 		this.set_iMat();
 		this.set_pMat();
 		this.set_vMat();
 		this.set_mMat();
-
+		
 		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
 			let obj = objs[piece.type];
@@ -655,16 +655,24 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				];
 			});
 			let vertex_normals = [];
+			let vertex_normals0 = [];
 			let groups_normals = {};
 			let normals = [];
-			for (let i = 0; i < obj.vertices.length; i++) normals.push([]);
-
+			let normals0 = [];
+			for (let i = 0; i < obj.vertices.length; i++) {
+				normals.push([]);
+				normals0.push([]);
+			}
+			
 			for (let group in obj.groups) {
 				groups_normals[group] = obj.groups[group].map(face => {
 					let v0 = vertices[face[0]];
 					let v1 = vertices[face[1]];
 					let v2 = vertices[face[2]];
-					if (!(v0 && v1 && v2)) return;
+					if (!(v0 && v1 && v2)) {
+						console.error('triangle with two sides');
+						return;
+					}
 					let cross = [
 						(v0[1] - v2[1]) * (v1[2] - v2[2]) - (v0[2] - v2[2]) * (v1[1] - v2[1]),
 						(v0[2] - v2[2]) * (v1[0] - v2[0]) - (v0[0] - v2[0]) * (v1[2] - v2[2]),
@@ -673,14 +681,17 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 					let len = Math.hypot(...cross);
 					let n = [cross[0] / len, cross[1] / len, cross[2] / len];
 					face.forEach(vi => {
-						if (!normals[vi].some(ns => Math.hypot(ns[0] - n[0], ns[1] - n[1], ns[2] - n[2]) < 1)) {
+						if (normals[vi].every(ns => (ns[0] * n[0] + ns[1] * n[1] + ns[2] * n[2]) < 0.7)) {
 							normals[vi].push(n);
+						}
+						if (group == '0' && normals0[vi].every(ns => (ns[0] * n[0] + ns[1] * n[1] + ns[2] * n[2]) < 0.7)) {
+							normals0[vi].push(n);
 						}
 					});
 					return n;
 				});
 			}
-
+			
 			normals.forEach((nss, i) => {
 				let n = [0, 0, 0];
 				nss.forEach(ns => {
@@ -697,16 +708,44 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				n[2] /= len;
 				vertex_normals[i] = n;
 			});
-
+			normals0.forEach((nss, i) => {
+				let n = [0, 0, 0];
+				nss.forEach(ns => {
+					n[0] += ns[0];
+					n[1] += ns[1];
+					n[2] += ns[2];
+				});
+				/*n[0] /= nss.length;
+				n[1] /= nss.length;
+				n[2] /= nss.length;*/
+				let len = Math.hypot(...n);
+				n[0] /= len;
+				n[1] /= len;
+				n[2] /= len;
+				vertex_normals0[i] = n;
+			});
+			
 			for (let group in obj.groups) {
 				obj.groups[group].forEach((face, i) => {
 					let v0 = vertices[face[0]];
 					let v1 = vertices[face[1]];
 					let v2 = vertices[face[2]];
 					if (!(v0 && v1 && v2)) return;
-					let n0 = vertex_normals[face[0]];
-					let n1 = vertex_normals[face[1]];
-					let n2 = vertex_normals[face[2]];
+					let n = groups_normals[group][i];
+					let n0;
+					let n1;
+					let n2;
+					if (group == '0') {
+						n0 = vertex_normals0[face[0]];
+						n1 = vertex_normals0[face[1]];
+						n2 = vertex_normals0[face[2]];
+					}
+					else {
+						n0 = vertex_normals[face[0]];
+						n1 = vertex_normals[face[1]];
+						n2 = vertex_normals[face[2]];
+					}
+					
 					let c = colors[piece.color[Number(group)]];
 					let t = piece.color[Number(group)];
 					vertex_data.push(
@@ -717,7 +756,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				});
 			}
 		});
-
+		
 		let size = 0.7;
 		let xz = 0.5 * size;
 		let y = 1.1000 / 2 + 1.011;
@@ -729,39 +768,39 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			+xz, y, +xz, 0, 1, 0, 1, 1, 0, 24, -1,
 			+xz, y, -xz, 0, 1, 0, 1, 0, 0, 24, -1
 		);
-
+		
 		this.vertex_data_length = vertex_data.length;
-
+		
 		let positionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex_data), gl.STATIC_DRAW);
-
+		
 		let positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
 		gl.enableVertexAttribArray(positionAttributeLocation);
 		gl.vertexAttribPointer(positionAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
-
+		
 		let normalAttributeLocation = gl.getAttribLocation(program, 'a_normal');
 		gl.enableVertexAttribArray(normalAttributeLocation);
 		gl.vertexAttribPointer(normalAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
+		
 		let colorAttributeLocation = gl.getAttribLocation(program, 'a_color');
 		gl.enableVertexAttribArray(colorAttributeLocation);
 		gl.vertexAttribPointer(colorAttributeLocation, 3, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
-
+		
 		let idAttributeLocation = gl.getAttribLocation(program, 'a_id');
 		gl.enableVertexAttribArray(idAttributeLocation);
 		gl.vertexAttribPointer(idAttributeLocation, 1, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 9 * Float32Array.BYTES_PER_ELEMENT);
-
+		
 		let typeAttributeLocation = gl.getAttribLocation(program, 'a_type');
 		gl.enableVertexAttribArray(typeAttributeLocation);
 		gl.vertexAttribPointer(typeAttributeLocation, 1, gl.FLOAT, false, 11 * Float32Array.BYTES_PER_ELEMENT, 10 * Float32Array.BYTES_PER_ELEMENT);
-
+		
 		gl.enable(gl.DEPTH_TEST);
 		gl.enable(gl.CULL_FACE);
-
+		
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
+		
 		this.logo = new Image();
 		this.logo.src = "logo.svg";
 		this.logo.onload = () => {
@@ -921,9 +960,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				}
 			});
 
-			//this.rotateVel.z = -angle;
 			this.rotateCube(0, 0, this.rotateVel.z = -angle);
-			//this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 5), 13);
+			/*this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 7), 1300);
+			this.set_vMat();
+			this.gl.uniform3f(this.gl_u['camPos'], this.pos.x, this.pos.y, this.pos.z);*/
 		}
 	}
 
