@@ -270,7 +270,10 @@ class RubiksCube {
 		
 		this.touches = [];
 		
-		this.turn = { ms: [60, 30] };
+		this.turn_ms = {
+			touch: 60,
+			scramble: 30,
+		};
 		
 		this.display = {};
 		if (this.canvas) this.resize();
@@ -339,7 +342,7 @@ class RubiksCube {
 		this.pieces.forEach(piece => {
 			if (!piece.displayed) piecesNotDisplayed = true;
 			if (!piece.turning) return;
-			let turn_progress = (time - piece.turn.startTime) / this.turn.ms[Number(this.scrambling)];
+			let turn_progress = (time - piece.turn.startTime) / piece.turn.ms;
 			if (turn_progress < piece.turn.times) {
 				piece.turnStep(turn_progress);
 				turning_pieces = true;
@@ -354,7 +357,7 @@ class RubiksCube {
 		
 		if (this.scrambling && !turning_pieces) {
 			if (this.scrambleIndex < this.scramble.length) {
-				this.turnCubeNotation(this.scramble[this.scrambleIndex]);
+				this.turnCubeNotation(this.scramble[this.scrambleIndex], this.turn_ms.scramble);
 				this.scrambleIndex++;
 			}
 			else {
@@ -387,7 +390,7 @@ class RubiksCube {
 
 	rotateCube(ax, ay, az) {
 		this.rotationMat.forEach(v => {
-			let p = rotateZ(rotateY(rotateX(v, ax), ay), az)
+			let p = rotateZ(rotateY(rotateX(v, ax), ay), az);
 			v.x = p.x;
 			v.y = p.y;
 			v.z = p.z;
@@ -395,8 +398,8 @@ class RubiksCube {
 		this.set_mMat();
 	}
 
-	turnCube(pieces, axis, times, instant = false) {
-		if (!instant) {
+	turnCube(pieces, axis, times, ms) {
+		if (ms > 0) {
 			if (pieces.some(p => p.turning && (p.turn.progress / p.turn.times < 0.5))) return false;
 			this.pieces.forEach(p => (p.turning && (Math.abs(Vdot(p.turn.axis, axis)) < 0.9)) && p.turnDone());
 			if (pieces.some(p => p.turning)) return false;
@@ -410,6 +413,7 @@ class RubiksCube {
 			piece.turn.axis = axis;
 			piece.turn.times = times;
 			piece.turn.progress = 0;
+			piece.turn.ms = ms;
 			piece.displayed = false;
 		});
 		
@@ -469,16 +473,17 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			orientation: orientation,
 			cube_rotations: cube_rotations,
 			move: move,
-			time: timer.update()
+			time: timer.update(),
+			ms: ms
 		});
 		
-		if (!instant) sound.play();
+		if (ms > 0) sound.play();
 		else pieces.forEach(piece => piece.turnDone());
 
 		return true;
 	}
 
-	turnCubeNotation(move) {
+	turnCubeNotation(move, ms) {
 		let face = move[0];
 		let times = Number(move[1]) || 1;
 		let clockwise = move[move.length - 1] !== "'";
@@ -486,14 +491,14 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let pieceT = piece.transform(piece);
 		let axis = Vnormalize(clockwise ? Vneg(pieceT) : pieceT);
 		let pieces = this.pieces.filter(p => Math.abs(Vdot(axis, Vsub(p.transform(p), pieceT))) < 0.1);
-		return this.turnCube(pieces, axis, times);
+		return this.turnCube(pieces, axis, times, ms);
 	}
 
-	turnCubeMove(move, set_face = false, instant = false, inverse) {
-		if (set_face) this.set_face();
+	turnCubeMove(move, ms = this.turn_ms.touch, inverse) {
 		let move_i = [];
 		move.split('').forEach((c, i, a) => (/[a-zA-Z]/g).test(c) && move_i.push(i));
 		let moves = move_i.map((m, i, a) => move.substring(m, a[i+1]));
+		if (this.pieces.some(p => p.turning)) return moves.map(() => false);
 		return moves.map(move => {
 			let face = move[0];
 			let move_axes = {
@@ -512,14 +517,14 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			else if (['x', 'y', 'z'].includes(move[0])) pieces = this.pieces;
 			else if (['r', 'u', 'f', 'l', 'd', 'b'].includes(move[0])) pieces = this.pieces.filter(p => !(Math.abs(Vdot(axis, Vsub(p.transform(p), Vneg(pieceT)))) < 0.1));
 			else if (['M', 'E', 'S'].includes(move[0])) pieces = this.pieces.filter(p => Math.abs(Vdot(axis, p.transform(p))) < 0.1);
-			return this.turnCube(pieces, axis, times, instant);
+			return this.turnCube(pieces, axis, times, ms);
 		});
 	}
 
 	turnUndo() {
 		if (this.turns.length <= this.undoCap) return;
 		let turn = this.turns[this.turns.length - 1];
-		if (this.turnCube(turn.pieces, Vneg(turn.axis), turn.times)) {
+		if (this.turnCube(turn.pieces, Vneg(turn.axis), turn.times, this.turn_ms.touch)) {
 			this.turns.pop();
 			this.turns.pop();
 			this.turnsCubeMove.pop();
@@ -543,7 +548,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	turnAlgInstant(alg, set_face = false, inverse = false) {
 		if (set_face) this.set_face();
 		else this.reset_face();
-		(inverse ? alg.split(' ').reverse() : alg.split(' ')).forEach(move => this.turnCubeMove(move, false, true, inverse));
+		(inverse ? alg.split(' ').reverse() : alg.split(' ')).forEach(move => this.turnCubeMove(move, 0, inverse));
 	}
 
 	renderP(point) {
@@ -920,7 +925,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
-						this.turnCube(pieces, axis, 1);
+						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
 						if (timer.maystart && !timer.running) timer.start();
 					}
 					touch.gotLine = true;
@@ -954,7 +959,9 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 					let ad = Math.hypot(ax, ay);
 					let bd = Math.hypot(bx, by);
 					dist += ad - bd;
-					angle += Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
+					let d_angle = Math.acos(Math.min(Math.max((ax * bx + ay * by) / (ad * bd), -1), 1)) * Math.sign(ax * by - ay * bx);
+					if (!isNaN(d_angle)) angle += d_angle;
+					else console.log('d_angle is NaaaN');
 					touch.ax = undefined;
 					touch.ay = undefined;
 				}
@@ -1025,6 +1032,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		timer.maystart = false;
 		this.undoCap = this.turns.length;
 		
+		let reconstruction = [];
 		let solution = [];
 		let solution_times = [];
 		
@@ -1034,9 +1042,15 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			"R'": "M", "U'": "E", "F'": "S'", "L'": "M'", "D'": "E'", "B'": "S",
 		}
 		let n = this.turnsCubeMove.length;
+		let ms;
 		for (let i = 0; i < n; i++) {
 			let turn = this.turnsCubeMove[i];
 			let move = turn.move;
+			ms = turn.ms;
+			
+			solution.push(...turn.cube_rotations, move);
+			solution_times.push(turn.time);
+			
 			if (turn.shortened) continue;
 			if (i < n - 1) {
 				let turn1 = this.turnsCubeMove[i + 1];
@@ -1064,15 +1078,17 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				}
 				turn1.shortened = shortened;
 			}
-			solution.push(...turn.cube_rotations, move);
-			solution_times.push(turn.time);
+			reconstruction.push(...turn.cube_rotations, move);
 		}
 		
 		this.solves.push({
 			scramble: this.scramble.join(' '),
+			date: this.turnsCubeMove[0].time,
 			time: timer.time(),
+			reconstruction: reconstruction.join(' '),
 			solution: solution.join(' '),
-			solution_times: solution_times.join(' ')
+			solution_times: solution_times.join(' '),
+			ms: ms
 		});
 		console.log(this.solves[this.solves.length - 1]);
 	}
@@ -1117,7 +1133,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			]
 		};
 	}
-	
+
 	get_face_rot() {
 		let transpose = M => [
 			{ x: M[0].x, y: M[1].x, z: M[2].x },
@@ -1185,8 +1201,80 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			let dir = ['', "'"]
 			let pick = arr => arr[Math.floor(Math.random() * arr.length)];
 			let move = pick(moves) + pick(turns) + pick(dir);
-			this.turnCubeMove(move, false, true);
+			this.turnCubeMove(move, 0);
 		}
+	}
+
+	replay() {
+		if (this.solves.length == 0) return;
+		let solve = this.solves[this.solves.length - 1];
+		let { scramble, time, solution, solution_times, ms } = solve;
+		let solution1 = solution.split(' ');
+		let solution_times1 = solution_times.split(' ').map(n => Number(n));
+		
+		this.resetCube();
+		for (let i = 0; i < solution1.length; i++) {
+			let move = solution1[0];
+			if (['x', 'y', 'z'].includes(move[0])) {
+				scramble += ' ' + move;
+				solution1.shift();
+			}
+			else {
+				break;
+			}
+		}
+		this.turnAlgInstant(scramble);
+		Rubik.rotateCube(0, 0.35, 0);
+		Rubik.rotateCube(-0.35, 0, 0);
+		
+		let turn, rotation = [], time0 = 0, time1 = 0;
+		let time_i = 0;
+		let moves = [];
+		for (let i = 0; solution1.length > 0; i++) {
+			let move = solution1[0];
+			if (['x', 'y', 'z'].includes(move[0])) {
+				rotation.push(move);
+			}
+			else {
+				let r_ms = ms;
+				let dt = time1 - time0;
+				if (dt - ms < r_ms * rotation.length) {
+					r_ms = (dt - ms) / rotation.length;
+				}
+				rotation.forEach((move, i) => {
+					moves.push({
+						move: move,
+						time: time1 - r_ms * (rotation.length - i),
+						ms: r_ms
+					});
+				});
+				rotation = [];
+				time0 = solution_times1[time_i];
+				time1 = solution_times1[time_i + 1];
+				time_i ++;
+				moves.push({
+					move: move,
+					time: time0,
+					ms: ms
+				});
+			}
+			solution1.shift();
+		}
+		
+		let time_a = Date.now();
+		let i = 0;
+		let loop = () => {
+			let { move, time, ms } = moves[i];
+			let success = false;
+			let time_b = Date.now() - time_a;
+			if (time_b > time) {
+				success = this.turnCubeMove(move, ms)[0];
+			}
+			if (success) i++;
+			if (i < moves.length) setTimeout(loop, 0);
+			else console.log('replay done', time_b);
+		}
+		setTimeout(loop, 2000);
 	}
 
 }
