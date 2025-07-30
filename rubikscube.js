@@ -130,7 +130,7 @@ class RubiksCube {
 			
 		}
 		
-		this.solves = [];
+		this.solves = JSON.parse(localStorage.getItem('solves') || '[]').map(solve_s => this.solve_toObject(solve_s));
 		
 		this.show_map = false;
 		
@@ -474,6 +474,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			cube_rotations: cube_rotations,
 			move: move,
 			time: timer.update(),
+			date: Date.now(),
 			ms: ms
 		});
 		
@@ -1032,65 +1033,26 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		timer.maystart = false;
 		this.undoCap = this.turns.length;
 		
-		let reconstruction = [];
 		let solution = [];
 		let solution_times = [];
 		
-		let side = ['R', 'U', 'F', 'L', 'D', 'B'];
-		let wide = {
-			"R": "M'", "U": "E'", "F": "S", "L": "M", "D": "E", "B": "S'",
-			"R'": "M", "U'": "E", "F'": "S'", "L'": "M'", "D'": "E'", "B'": "S",
-		}
-		let n = this.turnsCubeMove.length;
-		let ms;
-		for (let i = 0; i < n; i++) {
-			let turn = this.turnsCubeMove[i];
-			let move = turn.move;
-			ms = turn.ms;
-			
-			solution.push(...turn.cube_rotations, move);
+		this.turnsCubeMove.forEach(turn => {
+			solution.push(...turn.cube_rotations, turn.move);
 			solution_times.push(turn.time);
-			
-			if (turn.shortened) continue;
-			if (i < n - 1) {
-				let turn1 = this.turnsCubeMove[i + 1];
-				let shortened = false;
-				let time_diff = turn1.time - turn.time;
-				if (turn1.cube_rotations.length == 0) {
-					if (time_diff < 250 && turn.move == turn1.move) {
-						move = turn.move[0] + '2' + turn.move.slice(1);
-						shortened = true;
-					}
-					if (time_diff < 100) {
-						if (wide[turn1.move] == turn.move) {
-							move = turn1.move.toLowerCase();
-							shortened = true;
-						}
-						if (wide[turn.move] == turn1.move) {
-							move = turn.move.toLowerCase();
-							shortened = true;
-						}
-					}
-					if (time_diff < 50 && turn1.move[0] == side[(side.indexOf(turn.move[0]) + 3) % 6]) {
-						move = turn.move + turn1.move;
-						shortened = true;
-					}
-				}
-				turn1.shortened = shortened;
-			}
-			reconstruction.push(...turn.cube_rotations, move);
-		}
+		});
 		
 		this.solves.push({
-			scramble: this.scramble.join(' '),
-			date: this.turnsCubeMove[0].time,
+			date: this.turnsCubeMove[0].date,
 			time: timer.time(),
-			reconstruction: reconstruction.join(' '),
+			scramble: this.scramble.join(' '),
 			solution: solution.join(' '),
-			solution_times: solution_times.join(' '),
-			ms: ms
+			ms: this.turnsCubeMove[0].ms,
+			solution_times: solution_times.join(' ')
 		});
-		console.log(this.solves[this.solves.length - 1]);
+		
+		let solves = JSON.stringify(this.solves.map(solve_o => this.solve_toString(solve_o)));
+		localStorage.setItem('solves', solves);
+		localStorage.setItem('solves_data', `${solves.length * 2} bytes, ${this.solves.length} solves`);
 	}
 
 	get_face() {
@@ -1230,8 +1192,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let turn, rotation = [], time0 = 0, time1 = 0;
 		let time_i = 0;
 		let moves = [];
-		for (let i = 0; solution1.length > 0; i++) {
-			let move = solution1[0];
+		for (let i = 0; i < solution1.length; i++) {
+			let move = solution1[i];
 			if (['x', 'y', 'z'].includes(move[0])) {
 				rotation.push(move);
 			}
@@ -1258,23 +1220,98 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 					ms: ms
 				});
 			}
-			solution1.shift();
 		}
 		
-		let time_a = Date.now();
+		let time_a;
 		let i = 0;
+		let count = 0;
 		let loop = () => {
+			count++;
 			let { move, time, ms } = moves[i];
 			let success = false;
 			let time_b = Date.now() - time_a;
+			let time_d = time - time_b;
 			if (time_b > time) {
 				success = this.turnCubeMove(move, ms)[0];
 			}
 			if (success) i++;
-			if (i < moves.length) setTimeout(loop, 0);
-			else console.log('replay done', time_b);
+			let delay = Math.max(0, success ? 0 : Math.floor(time_d * 0.9));
+			if (i < moves.length) setTimeout(loop, delay);
+			else console.log('replay done', time_b, count);
 		}
-		setTimeout(loop, 2000);
+		setTimeout(() => {
+			time_a = Date.now();
+			loop();
+		}, 2000);
+	}
+
+	solve_toString(object) {
+		let moves_compress = moves => {
+			return moves.map(move => {
+				let moveChars = 'RUFLDBxyzMES';
+				let ext = ["", "'", "2"];
+				let i = moveChars.indexOf(move[0]) + 12 * ext.indexOf(move[1] || "");
+				return i.toString(36);
+			});
+		};
+		let number_compress = numbers => {
+			return numbers.map(number => {
+				return (number < 1296) ? number.toString(36).padStart(2, '0') : '_' + number.toString(36).padStart(3, '0');
+			});
+		};
+		let solution_times = object.solution_times.split(' ');
+		let dt = [];
+		let n = solution_times.length;
+		for (let i = 0; i < n - 1; i++) {
+			dt.push(solution_times[i + 1] - solution_times[i]);
+		}
+		return [
+			object.date,
+			object.time,
+			moves_compress(object.scramble.split(' ')).join(''),
+			moves_compress(object.solution.split(' ')).join(''),
+			object.ms,
+			number_compress(dt).join('')
+		].join(' ');
+	}
+
+	solve_toObject(string) {
+		let [ date, time, scrambleC, solutionC, ms, dt] = string.split(' ');
+		let moves_decompress = moves => {
+			return moves.map(move => {
+				let moveChars = 'RUFLDBxyzMES';
+				let ext = ["", "'", "2"];
+				let i = parseInt(move, 36);
+				return moveChars[i % 12] + ext[Math.floor(i / 12)];
+			});
+		};
+		let number_decompress = numbers => {
+			let out = [];
+			for (let i = 0; i < numbers.length; i += 2) {
+				if (numbers[i] != '_') {
+					out.push(parseInt(numbers.slice(i, i + 2), 36));
+				}
+				else {
+					out.push(parseInt(numbers.slice(i + 1, i + 4), 36));
+					i += 2;
+				}
+			}
+			return out;
+		};
+		let solution_times = [0];
+		let dt1 = number_decompress(dt);
+		let n = dt1.length;
+		for (let i = 0; i < n; i++) {
+			solution_times.push(solution_times[i] + Number(dt1[i]));
+		}
+		return {
+			date: Number(date),
+			time: Number(time),
+			scramble: moves_decompress(scrambleC.split('')).join(' '),
+			solution: moves_decompress(solutionC.split('')).join(' '),
+			ms: Number(ms),
+			solution_times: solution_times.join(' ')
+		};
 	}
 
 }
