@@ -105,6 +105,13 @@ function toggleSound() {
 	soundOFF.style.display = !sound.enabled ? 'block' : 'none';
 }
 
+let show_list = false;
+function toggleList() {
+	show_list = !show_list;
+	times_container.style.height = show_list ? '180px' : '0';
+	times_container.style.opacity = show_list ? '1' : '0';
+}
+
 const fps = {
 	startTime: Date.now(),
 	frameCount: 0,

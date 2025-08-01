@@ -16,10 +16,65 @@
 	<canvas id="canvas"></canvas>
 	<p id="fps_display" onclick="debug_performance = !debug_performance"></p>
 	<div class="column" id="bottom">
-		<div id="timer_container">
+		<div class="column" id="timer_container">
 			<p id="timer_display"></p>
+			<div id="times_container">
+				<div id="stats">
+					<table>
+						<tr>
+							<th id="stat_len"></th>
+							<th>current</th>
+							<th>best</th>
+						</tr>
+						<tr>
+							<th>time</th>
+							<td id="stat_c1"></td>
+							<td id="stat_b1"></td>
+						</tr>
+						<tr>
+							<th>mo3</th>
+							<td id="stat_c3"></td>
+							<td id="stat_b3"></td>
+						</tr>
+						<tr>
+							<th>ao5</th>
+							<td id="stat_c5"></td>
+							<td id="stat_b5"></td>
+						</tr>
+						<tr>
+							<th>ao12</th>
+							<td id="stat_c12"></td>
+							<td id="stat_b12"></td>
+						</tr>
+						<tr>
+							<th>ao50</th>
+							<td id="stat_c50"></td>
+							<td id="stat_b50"></td>
+						</tr>
+						<tr>
+							<th>ao100</th>
+							<td id="stat_c100"></td>
+							<td id="stat_b100"></td>
+						</tr>
+					</table>
+				</div>
+				<div id="times">
+					<ul id="times_list">
+						<!--<li>19.36</li>
+						<li>15.37</li>
+						<li>17.36</li>
+						<li>17.36</li>
+						<li>14.68</li>
+						<li>17.36</li>
+						<li>21.360</li>-->
+					</ul>
+				</div>
+			</div>
 		</div>
 		<div class="row" id="buttons_container">
+			<svg class="button" onclick="toggleList()" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+				<path d="M223.999,128.00037a8.00039,8.00039,0,0,1-8,8h-176a8,8,0,0,1,0-16h176A8.00039,8.00039,0,0,1,223.999,128.00037Zm-184-56h176a8,8,0,0,0,0-16h-176a8,8,0,1,0,0,16Zm176,112h-176a8,8,0,0,0,0,16h176a8,8,0,0,0,0-16Z" />
+			</svg>
 			<svg class="button" id="button_toggleTimer" onclick="toggleTimer()" fill="white" viewBox="0 0 24 24">
 				<path id="timerON" d="M12 20.016c3.891 0 6.984-3.141 6.984-7.031S15.89 6.001 12 6.001s-6.984 3.094-6.984 6.984S8.11 20.016 12 20.016zm7.031-12.61C20.25 8.953 21 10.875 21 12.984c0 4.969-4.031 9-9 9s-9-4.031-9-9 4.031-9 9-9c2.109 0 4.078.797 5.625 2.016l1.406-1.453c.516.422.984.891 1.406 1.406zm-8.015 6.61v-6h1.969v6h-1.969zM15 .984V3H9V.984h6z" />
 				<path id="timerOFF" d="M12 20.016c1.266 0 2.484-.375 3.516-.984L5.953 9.469a6.922 6.922 0 0 0-.938 3.516c0 3.891 3.094 7.031 6.984 7.031zM3 3.984L20.766 21.75 19.5 23.016l-2.531-2.531c-1.453.938-3.141 1.5-4.969 1.5-4.969 0-9-4.031-9-9 0-1.828.563-3.563 1.5-4.969L1.734 5.25zm8.016 5.438V8.016h1.969v3.422zM15 .984V3H9V.984h6zm4.031 3.563l1.406 1.406-1.406 1.453C20.25 8.953 21 10.875 21 12.984a9.001 9.001 0 0 1-1.5 4.969L18.047 16.5a6.922 6.922 0 0 0 .938-3.516A6.942 6.942 0 0 0 12.001 6a6.741 6.741 0 0 0-3.469.938l-1.5-1.453a8.993 8.993 0 0 1 4.969-1.5c2.109 0 4.078.75 5.625 1.969z" />

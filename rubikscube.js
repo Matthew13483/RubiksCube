@@ -131,6 +131,18 @@ class RubiksCube {
 		}
 		
 		this.solves = JSON.parse(localStorage.getItem('solves') || '[]').map(solve_s => this.solve_toObject(solve_s));
+		for (let i = this.solves.length - 1; i >= 0; i--) {
+			let li = document.createElement('li');
+			li.textContent = (this.solves[i].time / 1000).toFixed(3);
+			li.onclick = () => this.solve_click(this.solves[i]);
+			times_list.appendChild(li);
+		}
+		
+		this.stat = {
+			c1: Infinity, c3: Infinity, c5: Infinity, c12: Infinity, c50: Infinity, c100: Infinity,
+			b1: Infinity, b3: Infinity, b5: Infinity, b12: Infinity, b50: Infinity, b100: Infinity
+		};
+		this.updateTable(true);
 		
 		this.show_map = false;
 		
@@ -210,7 +222,7 @@ class RubiksCube {
 					}
 					if (v_type == 0.0) {
 						diff_mul = 0.9;
-						spec_mul = 0.1;
+						spec_mul = 0.5;
 					}
 					
 					float len = length(v_position);
@@ -291,6 +303,8 @@ class RubiksCube {
 		this.pieces.forEach(piece => piece.reset());
 		
 		this.pos = { x: 0, y: 0, z: 10.5 };
+		this.fov = 50 * Math.PI / 180;
+		
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
@@ -596,7 +610,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	set_pMat() {
-		let fov = 50 * Math.PI / 180;
+		let fov = this.fov;
 		let aspect = this.display.width / this.display.height;
 		let near = 1;
 		let far = 50;
@@ -1053,6 +1067,13 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let solves = JSON.stringify(this.solves.map(solve_o => this.solve_toString(solve_o)));
 		localStorage.setItem('solves', solves);
 		localStorage.setItem('solves_data', `${solves.length * 2} bytes, ${this.solves.length} solves`);
+		
+		let i = this.solves.length - 1;
+		let li = document.createElement('li');
+		li.textContent = (this.solves[i].time / 1000).toFixed(3);
+		li.onclick = () => this.solve_click(this.solves[i]);
+		times_list.insertBefore(li, times_list.firstChild);
+		this.updateTable(false);
 	}
 
 	get_face() {
@@ -1167,9 +1188,9 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		}
 	}
 
-	replay() {
-		if (this.solves.length == 0) return;
-		let solve = this.solves[this.solves.length - 1];
+	replay(solve) {
+		//if (this.solves.length == 0) return;
+		//let solve = this.solves[this.solves.length - 1];
 		let { scramble, time, solution, solution_times, ms } = solve;
 		let solution1 = solution.split(' ');
 		let solution_times1 = solution_times.split(' ').map(n => Number(n));
@@ -1312,6 +1333,81 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			ms: Number(ms),
 			solution_times: solution_times.join(' ')
 		};
+	}
+
+	solve_click(solve) {
+		this.replay(solve);
+	}
+
+	get_ave(solves) {
+		let len = solves.length;
+		let trim = 0;
+		if (len >= 5) trim = 1;
+		if (len >= 10) trim = Math.round(0.05 * len);
+		return solves.map(solve => solve.time).sort().slice(trim, len - trim).reduce((a, b) => a + b) / (len - 2 * trim);
+	}
+
+	updateTable(init) {
+		let len = this.solves.length;
+		let current = n => {
+			let arr = this.solves.slice(len - n, len);
+			if (arr.length == n) return arr;
+		};
+		let sample = (n, i) => {
+			let arr = this.solves.slice(i, i + n);
+			if (arr.length == n) return arr;
+		};
+		
+		this.stat.c1 = this.solves[len - 1].time;
+		if (len >= 3) this.stat.c3 = this.get_ave(current(3));
+		if (len >= 5) this.stat.c5 = this.get_ave(current(5));
+		if (len >= 12) this.stat.c12 = this.get_ave(current(12));
+		if (len >= 50) this.stat.c50 = this.get_ave(current(50));
+		if (len >= 100) this.stat.c100 = this.get_ave(current(100));
+		
+		if (!init) {
+			if (this.stat.c1 < this.stat.b1) this.stat.b1 = this.stat.c1;
+			if (this.stat.c3 < this.stat.b3) this.stat.b3 = this.stat.c3;
+			if (this.stat.c5 < this.stat.b5) this.stat.b5 = this.stat.c5;
+			if (this.stat.c12 < this.stat.b12) this.stat.b12 = this.stat.c12;
+			if (this.stat.c50 < this.stat.b50) this.stat.b50 = this.stat.c50;
+			if (this.stat.c100 < this.stat.b100) this.stat.b100 = this.stat.c100;
+		}
+		
+		if (init) for (let i = 0; i < len; i++) {
+			let sample1 = this.solves[i];
+			let sample3 = sample(3, i);
+			let sample5 = sample(5, i);
+			let sample12 = sample(12, i);
+			let sample50 = sample(50, i);
+			let sample100 = sample(100, i);
+			if (sample1.time < this.stat.b1) this.stat.b1 = sample1.time;
+			if (sample3) {
+				let ave = this.get_ave(sample3);
+				if (ave < this.stat.b3) this.stat.b3 = ave;
+			}
+			if (sample5) {
+				let ave = this.get_ave(sample5);
+				if (ave < this.stat.b5) this.stat.b5 = ave;
+			}
+			if (sample12) {
+				let ave = this.get_ave(sample12);
+				if (ave < this.stat.b12) this.stat.b12 = ave;
+			}
+			if (sample50) {
+				let ave = this.get_ave(sample50);
+				if (ave < this.stat.b50) this.stat.b50 = ave;
+			}
+			if (sample100) {
+				let ave = this.get_ave(sample100);
+				if (ave < this.stat.b100) this.stat.b100 = ave;
+			}
+		}
+		
+		stat_len.textContent = len;
+		for (let key in this.stat) {
+			document.getElementById('stat_' + key).textContent = (this.stat[key] == Infinity) ? '-' : (this.stat[key] / 1000).toFixed(3);
+		}
 	}
 
 }
