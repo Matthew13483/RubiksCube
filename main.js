@@ -149,11 +149,11 @@ let undo = {
 	flag: false,
 	startTime: 0
 };
-button_undo.ontouchstart = () => {
+button_undo.ontouchstart = button_undo.onmousedown = () => {
 	undo.startTime = Date.now();
 	undo.flag = true;
 };
-button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = () => {
+button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = button_undo.onmousemove = button_undo.onmouseup = button_undo.onmouseout = () => {
 	undo.flag = false;
 };
 
