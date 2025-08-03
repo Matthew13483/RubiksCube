@@ -1359,7 +1359,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			if (arr.length == n) return arr;
 		};
 		
-		this.stat.c1 = this.solves[len - 1].time;
+		if (this.solves[len - 1]) this.stat.c1 = this.solves[len - 1].time;
 		if (len >= 3) this.stat.c3 = this.get_ave(current(3));
 		if (len >= 5) this.stat.c5 = this.get_ave(current(5));
 		if (len >= 12) this.stat.c12 = this.get_ave(current(12));
