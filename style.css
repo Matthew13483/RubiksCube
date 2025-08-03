@@ -103,7 +103,7 @@ div.column {
 }
 
 #stats, #times {
-	overflow: scroll;
+	overflow: auto;
 }
 
 #stats {
