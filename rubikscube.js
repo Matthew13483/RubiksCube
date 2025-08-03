@@ -130,7 +130,8 @@ class RubiksCube {
 			
 		}
 		
-		this.solves = JSON.parse(localStorage.getItem('solves') || '[]').map(solve_s => this.solve_toObject(solve_s));
+		this.solves_string = JSON.parse(localStorage.getItem('solves') || '[]');
+		this.solves = this.solves_string.map(solve_s => this.solve_toObject(solve_s));
 		for (let i = this.solves.length - 1; i >= 0; i--) {
 			let li = document.createElement('li');
 			li.textContent = (this.solves[i].time / 1000).toFixed(3);
@@ -542,8 +543,6 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		if (this.turnCube(turn.pieces, Vneg(turn.axis), turn.times, this.turn_ms.touch)) {
 			this.turns.pop();
 			this.turns.pop();
-			this.turnsCubeMove.pop();
-			this.turnsCubeMove.pop();
 		}
 	}
 
@@ -1055,16 +1054,18 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			solution_times.push(turn.time);
 		});
 		
-		this.solves.push({
+		let solve = {
 			date: this.turnsCubeMove[0].date,
 			time: timer.time(),
 			scramble: this.scramble.join(' '),
 			solution: solution.join(' '),
 			ms: this.turnsCubeMove[0].ms,
 			solution_times: solution_times.join(' ')
-		});
+		};
+		this.solves.push(solve);
+		this.solves_string.push(this.solve_toString(solve));
 		
-		let solves = JSON.stringify(this.solves.map(solve_o => this.solve_toString(solve_o)));
+		let solves = JSON.stringify(this.solves_string);
 		localStorage.setItem('solves', solves);
 		localStorage.setItem('solves_data', `${solves.length * 2} bytes, ${this.solves.length} solves`);
 		

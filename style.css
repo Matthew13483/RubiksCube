@@ -90,7 +90,7 @@ div.column {
 	width: max-content;
 	height: 0;
 	opacity: 0;
-	margin: 7px;
+	margin: 0;
 	padding: 6px;
 	backdrop-filter: blur(20px);
 	color: white;
