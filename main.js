@@ -130,9 +130,11 @@ const fps = {
 			
 			let MS = '';
 			if (debug_performance) {
+				MS += '..' + version;
 				for (let key in table) {
 					let pad = '.'.repeat(12 - key.length);
-					MS += `\n${key}${pad}${table[key]}`;
+					let time = Number(table[key]).toFixed(4);
+					MS += `\n${key}${pad}${time}`;
 				}
 			}
 			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2) + MS;
@@ -233,6 +235,8 @@ function refresh() {
 
 //let stats;
 //let loaded = false;
+
+const version = 'v 0101';
 
 function loop() {
 	requestAnimationFrame(loop);
