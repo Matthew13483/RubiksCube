@@ -41,7 +41,6 @@ class Timer {
 const timer = new Timer();
 
 timer.enabled = false;
-timer.maystart = false;
 
 function toggleTimer() {
 	timer.enabled = !timer.enabled;
@@ -61,7 +60,7 @@ function toggleTimer() {
 		timer_display.style.opacity = 0;
 		timer_display.style.transform = 'translateY(100%)';
 		timer.reset();
-		timer.maystart = false;
+		if (Rubik.mode[0] == 'speed_solve') Rubik.mode = ['casual'];
 		Rubik.undoCap = 0;
 	}
 }
@@ -136,6 +135,7 @@ const fps = {
 					let time = Number(table[key]).toFixed(4);
 					MS += `\n${key}${pad}${time}`;
 				}
+				MS += '\n' + Rubik.mode.join(' ');
 			}
 			fps_display.textContent = 'FPS: ' + (1000 * fps.frameCount / time).toFixed(2) + MS;
 			fps.startTime = Date.now();
@@ -236,7 +236,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0102';
+const version = 'v 0200';
 
 function loop() {
 	requestAnimationFrame(loop);

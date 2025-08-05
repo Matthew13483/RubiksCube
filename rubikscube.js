@@ -278,6 +278,8 @@ class RubiksCube {
 	}
 
 	reset() {
+		this.mode = ['casual'];
+		
 		this.friction = 0.95;
 		this.lastTime = Date.now();
 		
@@ -289,7 +291,7 @@ class RubiksCube {
 		};
 		
 		this.display = {};
-		if (this.canvas) this.resize();
+		this.resize();
 		
 		this.time_display = '';
 		
@@ -377,7 +379,7 @@ class RubiksCube {
 			}
 			else {
 				this.scrambling = false;
-				if (timer.maystart) {
+				if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready') {
 					this.undoCap = this.turns.length;
 					this.turnsCubeMove.length = 0;
 				}
@@ -940,7 +942,11 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
 						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
-						if (timer.maystart && !timer.running) timer.start();
+						if (this.mode[0] == 'playback') this.mode = ['casual'];
+						if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
+							this.mode[1] = 'go';
+							timer.start();
+						}
 					}
 					touch.gotLine = true;
 				}
@@ -1025,8 +1031,11 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		this.scrambleIndex = 0;
 		if (timer.enabled) {
 			timer.reset();
-			timer.maystart = true;
+			this.mode = ['speed_solve', 'ready'];
 			timer_display.style.color = '#ffffff';
+		}
+		else {
+			this.mode = ['casual'];
 		}
 	}
 
@@ -1043,7 +1052,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 
 	justSolved() {
 		timer.stop();
-		timer.maystart = false;
+		this.mode = ['casual'];
 		this.undoCap = this.turns.length;
 		
 		let solution = [];
@@ -1190,8 +1199,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	replay(solve) {
-		//if (this.solves.length == 0) return;
-		//let solve = this.solves[this.solves.length - 1];
+		this.mode = ['playback', 'playing'];
 		let { scramble, time, solution, solution_times, ms } = solve;
 		let solution1 = solution.split(' ');
 		let solution_times1 = solution_times.split(' ').map(n => Number(n));
@@ -1208,8 +1216,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			}
 		}
 		this.turnAlgInstant(scramble);
-		Rubik.rotateCube(0, 0.35, 0);
-		Rubik.rotateCube(-0.35, 0, 0);
+		this.rotateCube(0, 0.35, 0);
+		this.rotateCube(-0.35, 0, 0);
 		
 		let turn, rotation = [], time0 = 0, time1 = 0;
 		let time_i = 0;
@@ -1248,6 +1256,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let i = 0;
 		let count = 0;
 		let loop = () => {
+			if (this.mode[0] !== 'playback') return;
 			count++;
 			let { move, time, ms } = moves[i];
 			let success = false;
