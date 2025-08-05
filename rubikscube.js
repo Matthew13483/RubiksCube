@@ -933,7 +933,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				};
 				if (cllnLineLine(e, { p1: touch, p2: p })) {
 					if (!this.scrambling) {
-						let axis = Vsub(piece.transform(face[i]), piece.transform(face[(i + 1) % face.length]));
+						let axis = Vsub(piece.transformO(face[i]), piece.transformO(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
 						let pieces;
 						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
@@ -1448,7 +1448,11 @@ class Piece {
 			{ x: 0, y: 1, z: 0 },
 			{ x: 0, y: 0, z: 1 }
 		];
-		this.rotationMatO = this.rotationMat;
+		this.rotationMatO = [
+			{ x: 1, y: 0, z: 0 },
+			{ x: 0, y: 1, z: 0 },
+			{ x: 0, y: 0, z: 1 }
+		];
 
 		this.turning = false;
 		this.turn = {};
@@ -1458,6 +1462,10 @@ class Piece {
 
 	transform(p) {
 		return Vmatrix(this.rotationMat, p);
+	}
+
+	transformO(p) {
+		return Vmatrix(this.rotationMatO, p);
 	}
 
 	transformDone(p) {
