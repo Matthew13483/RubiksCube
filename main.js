@@ -145,17 +145,15 @@ const fps = {
 	}
 };
 
-let undo = {
-	flag: false,
-	startTime: 0
-};
-button_undo.ontouchstart = button_undo.onmousedown = () => {
+let isTouchDevice = navigator.maxTouchPoints;
+let undo = { flag: false, startTime: 0 };
+button_undo.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', () => {
 	undo.startTime = Date.now();
 	undo.flag = true;
-};
-button_undo.ontouchmove = button_undo.ontouchend = button_undo.ontouchcancel = button_undo.onmousemove = button_undo.onmouseup = button_undo.onmouseout = () => {
-	undo.flag = false;
-};
+});
+button_undo.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', () => undo.flag = false);
+button_undo.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', () => undo.flag = false);
+button_undo.addEventListener(isTouchDevice ? 'touchcancel' : 'mouseout', () => undo.flag = false);
 
 let ctx = canvas_map.getContext('2d');
 
@@ -210,7 +208,6 @@ requestIdleCallback(() => {
 	requestIdleCallback(() => {
 		refresh();
 		loop();
-		document.body.style.display = 'block';
 	});
 });
 

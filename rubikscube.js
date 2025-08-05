@@ -52,7 +52,7 @@ class RubiksCube {
 			this.touchCancel();
 		}
 		
-		let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints;
+		let isTouchDevice = navigator.maxTouchPoints;
 		
 		this.canvas.addEventListener(isTouchDevice ? 'touchstart' : 'mousedown', handleStart);
 		this.canvas.addEventListener(isTouchDevice ? 'touchmove' : 'mousemove', handleMove);
