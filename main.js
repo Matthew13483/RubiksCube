@@ -107,9 +107,21 @@ function toggleSound() {
 let show_list = false;
 function toggleList() {
 	show_list = !show_list;
-	times_container.style.height = show_list ? '180px' : '0';
+	times_container.style.maxHeight = show_list ? '180px' : '0';
 	times_container.style.opacity = show_list ? '1' : '0';
-	times_container.style.margin = show_list ? '7px' : '0';
+	times_container.style.marginBottom = show_list ? '7px' : '0';
+	times_container.style.padding = show_list ? '6px' : '0';
+	if (!show_list && show_solveInfo) toggleInfo();
+}
+
+let show_solveInfo = false;
+let element_solveInfo = null;
+function toggleInfo() {
+	show_solveInfo = !show_solveInfo;
+	solveInfo_container.style.maxHeight = show_solveInfo ? '180px' : '0';
+	solveInfo_container.style.opacity = show_solveInfo ? '1' : '0';
+	solveInfo_container.style.marginBottom = show_solveInfo ? '7px' : '0';
+	solveInfo_container.style.padding = show_solveInfo ? '6px' : '0';
 }
 
 const fps = {
@@ -236,7 +248,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0200';
+const version = 'v 0300';
 
 function loop() {
 	requestAnimationFrame(loop);

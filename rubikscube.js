@@ -135,7 +135,8 @@ class RubiksCube {
 		for (let i = this.solves.length - 1; i >= 0; i--) {
 			let li = document.createElement('li');
 			li.textContent = (this.solves[i].time / 1000).toFixed(3);
-			li.onclick = () => this.solve_click(this.solves[i]);
+			li.onclick = () => this.solve_click(this.solves[i], i);
+			li.id = 'solve_' + i;
 			times_list.appendChild(li);
 		}
 		
@@ -233,23 +234,24 @@ class RubiksCube {
 					vec3 diffuse = vec3(0.0);
 					vec3 specular = vec3(0.0);
 					
+					vec3 norm = normalize(v_normal);
+					vec3 viewDir = normalize(camPos - v_position);
+					
 					for (int i = 0; i < 5; i++) {
 						vec3 lightPos = lightSources[i];
 						
-						vec3 norm = normalize(v_normal);
 						vec3 lightDir = normalize(lightPos - v_position);
 						float diff = max(dot(norm, lightDir), 0.0);
 						diffuse += lightColors[i] * diff * color;
 						
-						vec3 viewDir = normalize(camPos - v_position);
 						vec3 reflectDir = reflect(-lightDir, norm);
-						float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+						float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
 						specular += lightColors[i] * spec;
 					}
 					diffuse = clamp(diffuse, 0.0, 1.0);
 					specular = clamp(specular, 0.0, 1.0);
 					
-					vec3 result = ambient + diff_mul * diffuse + 0.5 * spec_mul * specular;
+					vec3 result = ambient + diff_mul * diffuse + 0.3 * spec_mul * specular;
 					
 					vec3 shade0 = 0.8 * v_color;
 					vec3 shade1 = v_color * vec3(dot(v_normal, normalize(lightSources[0] - v_position))) * 0.3;
@@ -935,7 +937,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				};
 				if (cllnLineLine(e, { p1: touch, p2: p })) {
 					if (!this.scrambling) {
-						let axis = Vsub(piece.transformO(face[i]), piece.transformO(face[(i + 1) % face.length]));
+						let axis = Vsub(piece.transformDone(face[i]), piece.transformDone(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
 						let pieces;
 						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
@@ -1081,7 +1083,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let i = this.solves.length - 1;
 		let li = document.createElement('li');
 		li.textContent = (this.solves[i].time / 1000).toFixed(3);
-		li.onclick = () => this.solve_click(this.solves[i]);
+		li.onclick = () => this.solve_click(this.solves[i], i);
+		li.id = 'solve_' + i;
 		times_list.insertBefore(li, times_list.firstChild);
 		this.updateTable(false);
 	}
@@ -1345,8 +1348,29 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		};
 	}
 
-	solve_click(solve) {
-		this.replay(solve);
+	solve_click(solve, i) {
+		let element = document.getElementById('solve_' + i);
+		
+		if (show_solveInfo && element_solveInfo === element) toggleInfo();
+		else if (!show_solveInfo) toggleInfo();
+		
+		solveInfo_time.innerHTML = (solve.time / 1000).toFixed(3);
+		solveInfo_time.onclick = () => this.replay(solve);
+		
+		let now = new Date(solve.date);
+		let formattedDate = now.toLocaleDateString('en-US', { dateStyle: 'medium' });
+		let formattedTime = now.toLocaleTimeString('en-US', { timeStyle: 'short' });
+		
+		solveInfo_date.innerHTML = formattedDate + '<br>' + formattedTime;
+		
+		solveInfo_scramble.innerHTML = solve.scramble;
+		
+		element_solveInfo = element;
+		/*element.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start'
+		});*/
+		//this.replay(solve);
 	}
 
 	get_ave(solves) {
@@ -1376,7 +1400,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		if (len >= 100) this.stat.c100 = this.get_ave(current(100));
 		
 		if (!init) {
-			if (this.stat.c1 < this.stat.b1) this.stat.b1 = this.stat.c1;
+			if (this.stat.c1 < this.stat.b1) {
+				this.stat.b1 = this.stat.c1;
+				this.pb = len - 1;
+			}
 			if (this.stat.c3 < this.stat.b3) this.stat.b3 = this.stat.c3;
 			if (this.stat.c5 < this.stat.b5) this.stat.b5 = this.stat.c5;
 			if (this.stat.c12 < this.stat.b12) this.stat.b12 = this.stat.c12;
@@ -1391,7 +1418,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			let sample12 = sample(12, i);
 			let sample50 = sample(50, i);
 			let sample100 = sample(100, i);
-			if (sample1.time < this.stat.b1) this.stat.b1 = sample1.time;
+			if (sample1.time < this.stat.b1) {
+				this.stat.b1 = sample1.time;
+				this.pb = i;
+			}
 			if (sample3) {
 				let ave = this.get_ave(sample3);
 				if (ave < this.stat.b3) this.stat.b3 = ave;
@@ -1471,10 +1501,6 @@ class Piece {
 
 	transform(p) {
 		return Vmatrix(this.rotationMat, p);
-	}
-
-	transformO(p) {
-		return Vmatrix(this.rotationMatO, p);
 	}
 
 	transformDone(p) {

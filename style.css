@@ -73,6 +73,7 @@ div.column {
 #timer_container {
 	pointer-events: none;
 	overflow: hidden;
+	margin-bottom: 7px;
 }
 
 #timer_display {
@@ -85,16 +86,74 @@ div.column {
 	transition: all 0.2s;
 }
 
+#toast_container {
+	display: none;
+	margin: 0;
+}
+
+#solveInfo_container {
+	pointer-events: auto;
+	overflow: hidden;
+	width: max-content;
+	height: auto;
+	max-height: 0;
+	opacity: 1;
+	margin: 0;
+	padding: 0;
+	backdrop-filter: blur(20px);
+	font-family: monospace;
+	color: white;
+	background: #6060cc80;
+	box-shadow: 0 3px 5px #00000050;
+	transition: all 0.3s;
+	display: grid;
+	grid-template-areas:
+		"time date"
+		"scrm scrm";
+	grid-template-columns: auto auto;
+	grid-template-rows: auto auto;
+	gap: 6px;
+}
+
+#solveInfo_container p {
+	margin: 0;
+	padding: 3px 10px;
+	background: #6060cc80;
+	box-shadow: 0 3px 5px #00000020;
+}
+
+#solveInfo_time {
+	grid-area: time;
+	font-size: 20px;
+}
+
+#solveInfo_time:active {
+	background: #6060ccff;
+}
+
+#solveInfo_date {
+	grid-area: date;
+	font-size: 10px;
+}
+
+#solveInfo_scramble {
+	grid-area: scrm;
+	max-width: 250px;
+}
+
 #times_container {
 	pointer-events: auto;
+	overflow: hidden;
 	width: max-content;
-	height: 0;
+	height: 180px;
+	max-height: 0;
 	opacity: 0;
 	margin: 0;
-	padding: 6px;
+	padding: 0;
 	backdrop-filter: blur(20px);
+	font-family: monospace;
 	color: white;
-	background: #6060cc20;
+	background: #6060cc80;
 	box-shadow: 0 3px 5px #00000050;
 	transition: all 0.3s;
 	display: grid;
@@ -107,16 +166,8 @@ div.column {
 }
 
 #stats {
-	background: #6060cc20;
+	background: #6060cc80;
 	box-shadow: 0 3px 5px #00000020;
-}
-
-#stats table {
-	font-family: monospace;
-}
-
-#stats th {
-	font-weight: normal;
 }
 
 #stats th, #stats td {
@@ -125,7 +176,6 @@ div.column {
 
 #times ul {
 	list-style-type: none;
-	font-family: monospace;
 	font-size: 20px;
 	margin: 0;
 	padding: 0;
@@ -133,7 +183,7 @@ div.column {
 
 #times li {
 	padding: 3px 10px;
-	background: #6060cc20;
+	background: #6060cc80;
 	text-align: center;
 	transition: all 0.1s;
 	box-shadow: 0 3px 5px #00000020;
