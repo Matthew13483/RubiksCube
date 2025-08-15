@@ -15,6 +15,7 @@ div.row {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	justify-content: center;
 }
 
 div.column {
@@ -86,6 +87,27 @@ div.column {
 	transition: all 0.2s;
 }
 
+.slider {
+	accent-color: #6060CC;
+	width: 99%;
+}
+
+#animControl_container {
+	display: none;
+	position: fixed;
+	bottom: 80px;
+	left: 50vw;
+	transform: translateX(-50%);
+	padding: 6px;
+	border-radius: 10px;
+	background: #303066;
+	box-shadow: 0 3px 5px #00000050;
+}
+
+#animControl_buttons {
+	width: 100%;
+}
+
 #toast_container {
 	display: none;
 	margin: 0;
@@ -97,7 +119,7 @@ div.column {
 	width: max-content;
 	height: auto;
 	max-height: 0;
-	opacity: 1;
+	opacity: 0;
 	margin: 0;
 	padding: 0;
 	backdrop-filter: blur(20px);
@@ -113,6 +135,13 @@ div.column {
 	grid-template-columns: auto auto;
 	grid-template-rows: auto auto;
 	gap: 6px;
+}
+
+#solveInfo_container.show, #times_container.show {
+	max-height: 180px;
+	opacity: 1;
+	margin-bottom: 7px;
+	padding: 6px;
 }
 
 #solveInfo_container p {
@@ -189,6 +218,10 @@ div.column {
 	box-shadow: 0 3px 5px #00000020;
 }
 
+#times li.highlight {
+	background: #6060ccff;
+}
+
 #times li + li {
 	margin-top: 6px;
 }
@@ -219,8 +252,18 @@ div.column {
 	fill: #606090;
 }
 
-#timerON,
-#soundON {
+#button_grid {
+	position: fixed;
+	top: 15px;
+	right: 15px;
+	transition: all 0.5s;
+}
+
+#button_grid:hover {
+	transform: rotate(-90deg);
+}
+
+path.hidden {
 	display: none;
 }
 

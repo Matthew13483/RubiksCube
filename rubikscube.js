@@ -20,7 +20,6 @@ class RubiksCube {
 				this.touchStart(x, y, 0);
 			}
 		};
-		
 		let handleMove = event => {
 			event.preventDefault();
 			if (isTouchDevice) {
@@ -36,7 +35,6 @@ class RubiksCube {
 				this.touchMove(x, y, 0);
 			}
 		};
-		
 		let handleEnd = event => {
 			event.preventDefault();
 			if (isTouchDevice) {
@@ -47,7 +45,6 @@ class RubiksCube {
 			}
 			else this.touchEnd(0);
 		};
-		
 		let handleCancel = event => {
 			this.touchCancel();
 		}
@@ -91,7 +88,7 @@ class RubiksCube {
 
 			new Piece(0, 0, 0, "0", "core", [0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
 		];
-
+		
 		this.center_pieces = {
 			U: this.pieces.find(e => e.id === "U"),
 			L: this.pieces.find(e => e.id === "L"),
@@ -100,7 +97,7 @@ class RubiksCube {
 			B: this.pieces.find(e => e.id === "B"),
 			D: this.pieces.find(e => e.id === "D"),
 		};
-
+		
 		this.cyclesMap = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
 			D: [[[5, 0], [5, 2], [5, 8], [5, 6]], [[5, 1], [5, 5], [5, 7], [5, 3]], [[1, 6], [2, 6], [3, 6], [4, 6]], [[1, 7], [2, 7], [3, 7], [4, 7]], [[1, 8], [2, 8], [3, 8], [4, 8]]],
@@ -124,18 +121,20 @@ class RubiksCube {
 					[[4, 0], [4, 6], [4, 8], [4, 2]], [[4, 1], [4, 3], [4, 7], [4, 5]], [[0, 0], [3, 2], [5, 8], [1, 6]], [[0, 1], [3, 5], [5, 7], [1, 3]], [[0, 2], [3, 8], [5, 6], [1, 0]]
 			]*/
 		};
-
+		
 		this.algs = {
 			T: "R U R' U' R' F R2 U' R' U' R U R' F'",
 			
 		}
 		
 		this.solves_string = JSON.parse(localStorage.getItem('solves') || '[]');
-		this.solves = this.solves_string.map(solve_s => this.solve_toObject(solve_s));
-		for (let i = this.solves.length - 1; i >= 0; i--) {
+		
+		for (let i = this.solves_string.length - 1; i >= 0; i--) {
+			let solve_string = this.solves_string[i];
+			let time = Number(solve_string.split(' ')[1]);
 			let li = document.createElement('li');
-			li.textContent = (this.solves[i].time / 1000).toFixed(3);
-			li.onclick = () => this.solve_click(this.solves[i], i);
+			li.textContent = (time / 1000).toFixed(3);
+			li.onclick = () => this.solve_click(solve_string, i);
 			li.id = 'solve_' + i;
 			times_list.appendChild(li);
 		}
@@ -358,7 +357,7 @@ class RubiksCube {
 		
 		let turning_pieces = false;
 		let piecesNotDisplayed = false;
-		this.pieces.forEach(piece => {
+		if (this.mode[0] != 'animation') this.pieces.forEach(piece => {
 			if (!piece.displayed) piecesNotDisplayed = true;
 			if (!piece.turning) return;
 			let turn_progress = (time - piece.turn.startTime) / piece.turn.ms;
@@ -372,7 +371,7 @@ class RubiksCube {
 			}
 		});
 		
-		if (turning_pieces || piecesNotDisplayed) this.set_iMat();
+		if (turning_pieces || piecesNotDisplayed || this.mode[0] == 'animation') this.set_iMat();
 		
 		if (this.scrambling && !turning_pieces) {
 			if (this.scrambleIndex < this.scramble.length) {
@@ -405,6 +404,8 @@ class RubiksCube {
 		else ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		
 		this.lastTime = time;
+		
+		if (this.mode[0] == 'animation') this.anim_loop();
 	}
 
 	rotateCube(ax, ay, az) {
@@ -936,7 +937,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 					y: touch.y + Math.sin(a) * d
 				};
 				if (cllnLineLine(e, { p1: touch, p2: p })) {
-					if (!this.scrambling) {
+					if (!this.scrambling && this.mode[0] != 'animation') {
 						let axis = Vsub(piece.transformDone(face[i]), piece.transformDone(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
 						let pieces;
@@ -944,7 +945,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
 						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
 						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
-						if (this.mode[0] == 'playback') this.mode = ['casual'];
+						if (this.mode[0] == 'replay') this.mode = ['casual'];
 						if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
 							this.mode[1] = 'go';
 							timer.start();
@@ -1027,18 +1028,24 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	scrambleCube() {
-		if (this.scrambling) return;
-		this.scrambling = true;
-		this.scramble = this.generateScramble();
-		this.scrambleIndex = 0;
+		if (this.scrambling || this.mode[0] == 'animation') return;
 		if (timer.enabled) {
 			timer.reset();
 			this.mode = ['speed_solve', 'ready'];
+			this.resetCube();
+			this.rotateCube(
+				Math.random() * 2 * Math.PI,
+				Math.random() * 2 * Math.PI,
+				Math.random() * 2 * Math.PI
+			);
 			timer_display.style.color = '#ffffff';
 		}
 		else {
 			this.mode = ['casual'];
 		}
+		this.scrambling = true;
+		this.scramble = this.generateScramble();
+		this.scrambleIndex = 0;
 	}
 
 	isSolved() {
@@ -1071,21 +1078,23 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			scramble: this.scramble.join(' '),
 			solution: solution.join(' '),
 			ms: this.turnsCubeMove[0].ms,
-			solution_times: solution_times.join(' ')
+			solution_times: solution_times
 		};
-		this.solves.push(solve);
 		this.solves_string.push(this.solve_toString(solve));
 		
 		let solves = JSON.stringify(this.solves_string);
 		localStorage.setItem('solves', solves);
-		localStorage.setItem('solves_data', `${solves.length * 2} bytes, ${this.solves.length} solves`);
+		localStorage.setItem('solves_data', `${solves.length * 2} bytes, ${this.solves_string.length} solves`);
 		
-		let i = this.solves.length - 1;
+		let i = this.solves_string.length - 1;
+		let solve_string = this.solves_string[i];
+		let time = Number(solve_string.split(' ')[1]);
 		let li = document.createElement('li');
-		li.textContent = (this.solves[i].time / 1000).toFixed(3);
-		li.onclick = () => this.solve_click(this.solves[i], i);
+		li.textContent = (time / 1000).toFixed(3);
+		li.onclick = () => this.solve_click(solve_string, i);
 		li.id = 'solve_' + i;
 		times_list.insertBefore(li, times_list.firstChild);
+		
 		this.updateTable(false);
 	}
 
@@ -1202,10 +1211,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	replay(solve) {
-		this.mode = ['playback', 'playing'];
+		this.mode = ['replay'];
 		let { scramble, time, solution, solution_times, ms } = solve;
 		let solution1 = solution.split(' ');
-		let solution_times1 = solution_times.split(' ').map(n => Number(n));
+		let solution_times1 = solution_times.map(n => Number(n));
 		
 		this.resetCube();
 		for (let i = 0; i < solution1.length; i++) {
@@ -1259,7 +1268,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		let i = 0;
 		let count = 0;
 		let loop = () => {
-			if (this.mode[0] !== 'playback') return;
+			if (this.mode[0] !== 'replay') return;
 			count++;
 			let { move, time, ms } = moves[i];
 			let success = false;
@@ -1271,7 +1280,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			if (success) i++;
 			let delay = Math.max(0, success ? 0 : Math.floor(time_d * 0.9));
 			if (i < moves.length) setTimeout(loop, delay);
-			else console.log('replay done', time_b, count);
+			else this.mode = ['casual'];
 		}
 		setTimeout(() => {
 			time_a = Date.now();
@@ -1280,11 +1289,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	solve_toString(object) {
+		let codeToMove = ["R", "U", "F", "L", "D", "B", "x", "y", "z", "M", "E", "S", "R'", "U'", "F'", "L'", "D'", "B'", "x'", "y'", "z'", "M'", "E'", "S'", "R2", "U2", "F2", "L2", "D2", "B2", "x2", "y2", "z2", "M2", "E2", "S2"];
 		let moves_compress = moves => {
 			return moves.map(move => {
-				let moveChars = 'RUFLDBxyzMES';
-				let ext = ["", "'", "2"];
-				let i = moveChars.indexOf(move[0]) + 12 * ext.indexOf(move[1] || "");
+				let i = codeToMove.indexOf(move);
 				return i.toString(36);
 			});
 		};
@@ -1293,7 +1301,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				return (number < 1296) ? number.toString(36).padStart(2, '0') : '_' + number.toString(36).padStart(3, '0');
 			});
 		};
-		let solution_times = object.solution_times.split(' ');
+		let solution_times = object.solution_times;
 		let dt = [];
 		let n = solution_times.length;
 		for (let i = 0; i < n - 1; i++) {
@@ -1311,44 +1319,40 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 
 	solve_toObject(string) {
 		let [ date, time, scrambleC, solutionC, ms, dt] = string.split(' ');
+		let codeToMove = ["R", "U", "F", "L", "D", "B", "x", "y", "z", "M", "E", "S", "R'", "U'", "F'", "L'", "D'", "B'", "x'", "y'", "z'", "M'", "E'", "S'", "R2", "U2", "F2", "L2", "D2", "B2", "x2", "y2", "z2", "M2", "E2", "S2"];
+		
 		let moves_decompress = moves => {
-			return moves.map(move => {
-				let moveChars = 'RUFLDBxyzMES';
-				let ext = ["", "'", "2"];
-				let i = parseInt(move, 36);
-				return moveChars[i % 12] + ext[Math.floor(i / 12)];
-			});
-		};
-		let number_decompress = numbers => {
-			let out = [];
-			for (let i = 0; i < numbers.length; i += 2) {
-				if (numbers[i] != '_') {
-					out.push(parseInt(numbers.slice(i, i + 2), 36));
-				}
-				else {
-					out.push(parseInt(numbers.slice(i + 1, i + 4), 36));
-					i += 2;
-				}
+			let out = new Array(moves.length);
+			for (let j = 0; j < moves.length; j++) {
+				let move = moves[j];
+				let char = move.charCodeAt(0);
+				let i = char - (char >= 97 ? 87 : 48);
+				out[j] = codeToMove[i];
 			}
-			return out;
+			return out.join(' ');
 		};
-		let solution_times = [0];
-		let dt1 = number_decompress(dt);
-		let n = dt1.length;
-		for (let i = 0; i < n; i++) {
-			solution_times.push(solution_times[i] + Number(dt1[i]));
+		let solution_times = new Array(Math.floor(dt.length / 2) + 1).fill('');
+		solution_times = [0];
+		for (let i = 0, j = 0; i < dt.length; i += 2) {
+			let _ = +(dt[i] == '_');
+			let time = parseInt(dt.slice(i + _, i + 2 + 2 * _), 36)
+			solution_times[j + 1] = solution_times[j] + time;
+			j++;
+			i += 2 * _;
 		}
+		
 		return {
 			date: Number(date),
 			time: Number(time),
-			scramble: moves_decompress(scrambleC.split('')).join(' '),
-			solution: moves_decompress(solutionC.split('')).join(' '),
+			scramble: moves_decompress(scrambleC),
+			solution: moves_decompress(solutionC),
 			ms: Number(ms),
-			solution_times: solution_times.join(' ')
+			solution_times: solution_times
 		};
 	}
 
-	solve_click(solve, i) {
+	solve_click(solve_string, i) {
+		let solve = this.solve_toObject(solve_string);
 		let element = document.getElementById('solve_' + i);
 		
 		if (show_solveInfo && element_solveInfo === element) toggleInfo();
@@ -1365,6 +1369,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		
 		solveInfo_scramble.innerHTML = solve.scramble;
 		
+		if (element_solveInfo) element_solveInfo.classList.remove('highlight');
+		if (show_solveInfo) element.classList.add('highlight');
 		element_solveInfo = element;
 		/*element.scrollIntoView({
 			behavior: 'smooth',
@@ -1373,83 +1379,230 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		//this.replay(solve);
 	}
 
-	get_ave(solves) {
-		let len = solves.length;
-		let trim = 0;
-		if (len >= 5) trim = 1;
-		if (len >= 10) trim = Math.round(0.05 * len);
-		return solves.map(solve => solve.time).sort().slice(trim, len - trim).reduce((a, b) => a + b) / (len - 2 * trim);
-	}
-
 	updateTable(init) {
-		let len = this.solves.length;
-		let current = n => {
-			let arr = this.solves.slice(len - n, len);
-			if (arr.length == n) return arr;
-		};
-		let sample = (n, i) => {
-			let arr = this.solves.slice(i, i + n);
-			if (arr.length == n) return arr;
-		};
-		
-		if (this.solves[len - 1]) this.stat.c1 = this.solves[len - 1].time;
-		if (len >= 3) this.stat.c3 = this.get_ave(current(3));
-		if (len >= 5) this.stat.c5 = this.get_ave(current(5));
-		if (len >= 12) this.stat.c12 = this.get_ave(current(12));
-		if (len >= 50) this.stat.c50 = this.get_ave(current(50));
-		if (len >= 100) this.stat.c100 = this.get_ave(current(100));
-		
-		if (!init) {
-			if (this.stat.c1 < this.stat.b1) {
-				this.stat.b1 = this.stat.c1;
-				this.pb = len - 1;
-			}
-			if (this.stat.c3 < this.stat.b3) this.stat.b3 = this.stat.c3;
-			if (this.stat.c5 < this.stat.b5) this.stat.b5 = this.stat.c5;
-			if (this.stat.c12 < this.stat.b12) this.stat.b12 = this.stat.c12;
-			if (this.stat.c50 < this.stat.b50) this.stat.b50 = this.stat.c50;
-			if (this.stat.c100 < this.stat.b100) this.stat.b100 = this.stat.c100;
+		let len = this.solves_string.length;
+		let times = new Array(len);
+		for (let i = len - 1; i >= 0; i--) {
+			times[i] = Number(this.solves_string[i].split(' ')[1]);
 		}
 		
-		if (init) for (let i = 0; i < len; i++) {
-			let sample1 = this.solves[i];
-			let sample3 = sample(3, i);
-			let sample5 = sample(5, i);
-			let sample12 = sample(12, i);
-			let sample50 = sample(50, i);
-			let sample100 = sample(100, i);
-			if (sample1.time < this.stat.b1) {
-				this.stat.b1 = sample1.time;
-				this.pb = i;
+		const worker = new Worker(`data:text/javascript,
+			function getTrimmedAvg(times, start, size) {
+				let trim = 0;
+				if (size >= 5) trim = 1;
+				if (size >= 10) trim = Math.round(0.05 * size);
+				
+				let sum = 0;
+				let minVals = new Array(trim).fill(Infinity);
+				let maxVals = new Array(trim).fill(-Infinity);
+				for (let j = 0; j < size; j++) {
+					let val = times[start + j];
+					sum += val;
+					if (val < minVals[trim - 1]) {
+						let k;
+						for (k = trim - 1; k > 0 && val < minVals[k - 1]; k--) {
+							minVals[k] = minVals[k - 1];
+						}
+						minVals[k] = val;
+					}
+					if (val > maxVals[trim - 1]) {
+						let k;
+						for (k = trim - 1; k > 0 && val > maxVals[k - 1]; k--) {
+							maxVals[k] = maxVals[k - 1];
+						}
+						maxVals[k] = val;
+					}
+				}
+				for (let i = 0; i < trim; i++) {
+					sum -= minVals[i];
+					sum -= maxVals[i];
+				}
+				return sum / (size - 2 * trim);
 			}
-			if (sample3) {
-				let ave = this.get_ave(sample3);
-				if (ave < this.stat.b3) this.stat.b3 = ave;
+			onmessage = function(e) {
+				const { init, len, stat, times } = e.data;
+				
+				if (len >= 1) stat.c1 = getTrimmedAvg(times, len - 1, 1);
+				if (len >= 3) stat.c3 = getTrimmedAvg(times, len - 3, 3);
+				if (len >= 5) stat.c5 = getTrimmedAvg(times, len - 5, 5);
+				if (len >= 12) stat.c12 = getTrimmedAvg(times, len - 12, 12);
+				if (len >= 50) stat.c50 = getTrimmedAvg(times, len - 50, 50);
+				if (len >= 100) stat.c100 = getTrimmedAvg(times, len - 100, 100);
+				
+				if (!init) {
+					if (stat.c1 < stat.b1) stat.b1 = stat.c1;
+					if (stat.c3 < stat.b3) stat.b3 = stat.c3;
+					if (stat.c5 < stat.b5) stat.b5 = stat.c5;
+					if (stat.c12 < stat.b12) stat.b12 = stat.c12;
+					if (stat.c50 < stat.b50) stat.b50 = stat.c50;
+					if (stat.c100 < stat.b100) stat.b100 = stat.c100;
+				}
+				else for (let i = 0; i < len; i++) {
+					if (len - i >= 1) stat.b1 = Math.min(stat.b1, getTrimmedAvg(times, i, 1));
+					if (len - i >= 3) stat.b3 = Math.min(stat.b3, getTrimmedAvg(times, i, 3));
+					if (len - i >= 5) stat.b5 = Math.min(stat.b5, getTrimmedAvg(times, i, 5));
+					if (len - i >= 12) stat.b12 = Math.min(stat.b12, getTrimmedAvg(times, i, 12));
+					if (len - i >= 50) stat.b50 = Math.min(stat.b50, getTrimmedAvg(times, i, 50));
+					if (len - i >= 100) stat.b100 = Math.min(stat.b100, getTrimmedAvg(times, i, 100));
+				}
+				
+				postMessage(stat);
+			};
+		`);
+		worker.onmessage = e => {
+			this.stat = e.data;
+			for (let key in this.stat) {
+				document.getElementById('stat_' + key).textContent = (this.stat[key] == Infinity) ? '-' : (this.stat[key] / 1000).toFixed(3);
 			}
-			if (sample5) {
-				let ave = this.get_ave(sample5);
-				if (ave < this.stat.b5) this.stat.b5 = ave;
-			}
-			if (sample12) {
-				let ave = this.get_ave(sample12);
-				if (ave < this.stat.b12) this.stat.b12 = ave;
-			}
-			if (sample50) {
-				let ave = this.get_ave(sample50);
-				if (ave < this.stat.b50) this.stat.b50 = ave;
-			}
-			if (sample100) {
-				let ave = this.get_ave(sample100);
-				if (ave < this.stat.b100) this.stat.b100 = ave;
-			}
-		}
+		};
+		worker.postMessage({ init, len, stat: this.stat, times });
 		
 		stat_len.textContent = len;
-		for (let key in this.stat) {
-			document.getElementById('stat_' + key).textContent = (this.stat[key] == Infinity) ? '-' : (this.stat[key] / 1000).toFixed(3);
+	}
+
+	get_anim(setup, alg) {
+		this.resetCube();
+		this.turnAlgInstant(setup);
+		let alg_moves = alg.split(' ');
+		let changes_mat = new Array(alg_moves + 1);
+		changes_mat[0] = this.pieces.map(piece => piece.rotationMat);
+		let turns = new Array(alg_moves.length);
+		alg_moves.forEach((move, i) => {
+			this.turnAlgInstant(move);
+			changes_mat[i + 1] = this.pieces.map(piece => piece.rotationMat);
+			turns[i] = this.turns[this.turns.length - 1];
+		});
+		this.resetCube();
+		this.turnAlgInstant(setup);
+		let m_ms = 200;
+		let p_ms = 50;
+		let n = alg_moves.length;
+		let duration = n * (m_ms + p_ms);
+		
+		return { m_ms, p_ms, n, duration, changes_mat, turns };
+	}
+
+	anim_prog(anim, prog) {
+		prog = Math.min(Math.max(prog, 0), 1);
+		let i = Math.floor(anim.n * prog);
+		let t = anim.n * prog - i;
+		let at = Math.min(t * ((anim.m_ms + anim.p_ms) / anim.m_ms), 1);
+		let current_mat = anim.changes_mat[i];
+		this.pieces.forEach((piece, i) => {
+			piece.rotationMat = piece.rotationMatO = current_mat[i];
+			piece.displayed = false;
+		});
+		if (i < anim.n) {
+			let pieces = anim.turns[i].pieces;
+			let times = anim.turns[i].times;
+			pieces.forEach(piece => {
+				piece.turn.times = times;
+				piece.turn.axis = anim.turns[i].axis;
+				piece.turnStep(at * times);
+			});
 		}
 	}
 
+	anim_input(slider) {
+		this.anim_prog(this.anim, slider.value / this.anim.n);
+		this.anim.value = slider.value;
+		this.anim.play = false;
+	}
+
+	animate_start(slider) {
+		this.mode = ['animation'];
+		this.anim = this.get_anim('z2 ' + this.algs.T, this.algs.T);
+		this.rotateCube(0, 0.35, 0);
+		this.rotateCube(-0.35, 0, 0);
+		this.anim.value = 0;
+		this.anim.play = false;
+		slider.step = 0.0001;
+		slider.min = 0;
+		slider.max = this.anim.n;
+		slider.value = 0;
+	}
+	
+	animate_end(slider) {
+		this.mode = ['casual'];
+		this.anim = null;
+		slider.value = 0;
+	}
+
+	anim_start(slider) {
+		slider.value = 0;
+		this.anim_prog(this.anim, 0);
+		this.anim.value = 0;
+		this.anim.play = false;
+	}
+
+	anim_backward(slider) {
+		if (!this.anim.move) this.anim.value = Math.max(Math.round(this.anim.value - 1), 0);
+		this.anim.play = false;
+	}
+
+	anim_play(slider) {
+		if (this.anim.value == this.anim.n) anim_start();
+		this.anim.play = !this.anim.play;
+		this.anim.date = Date.now();
+		this.anim.preval = Number(slider.value);
+		this.anim.move = false;
+	}
+
+	anim_forward(slider) {
+		if (!this.anim.move) this.anim.value = Math.min(Math.round(this.anim.value + 1), this.anim.n);
+		this.anim.play = false;
+	}
+
+	anim_end(slider) {
+		slider.value = slider.max;
+		this.anim_prog(this.anim, 1);
+		this.anim.value = this.anim.n;
+		this.anim.play = false;
+	}
+
+	anim_loop() {
+		if (this.anim.play) {
+			let dt = Date.now() - this.anim.date;
+			let duration = this.anim.n * (this.anim.m_ms + this.anim.p_ms);
+			let prog = dt / duration + this.anim.preval / this.anim.n;
+			if (prog > 1) {
+				this.anim_end(slider);
+				anim_updateSVG();
+			}
+			else {
+				this.anim.value = slider.value = prog * this.anim.n;
+				this.anim_prog(this.anim, prog);
+			}
+		}
+		else if (this.anim.move) {
+			let dt = Date.now() - this.anim.date;
+			let duration = this.anim.n * (this.anim.m_ms + this.anim.p_ms);
+			let prog = dt / duration;
+			let value = this.anim.preval + prog * this.anim.n * Math.sign(this.anim.value - this.anim.preval);
+			if (Math.sign(this.anim.value - value) != Math.sign(this.anim.value - this.anim.preval)) {
+				value = this.anim.value;
+				this.anim.move = false;
+			}
+			slider.value = value;
+			
+			this.anim_prog(this.anim, value / this.anim.n);
+		}
+		else if (Math.abs(Number(slider.value) - this.anim.value) > 0.0001) {
+			this.anim.move = true;
+			this.anim.date = Date.now();
+			this.anim.preval = Number(slider.value);
+		}
+	}
+
+	/*a() {
+		let anim = this.get_anim(this.algs.T, this.algs.T);
+		let t = 0;
+		let I = setInterval(() => {
+			let info = this.anim_prog(anim, t);
+			t += 0.001;
+			if (t > 1.001) clearInterval(I);
+		}, 1);
+	}*/
 }
 
 class Piece {

@@ -44,17 +44,15 @@ timer.enabled = false;
 
 function toggleTimer() {
 	timer.enabled = !timer.enabled;
+	timerON.classList.toggle('hidden', !timer.enabled);
+	timerOFF.classList.toggle('hidden', timer.enabled);
 	if (timer.enabled) {
-		timerON.style.display = 'block'
-		timerOFF.style.display = 'none';
 		button_scramble.style.animation = 'highlight 1.5s';
 		timer_display.style.color = '#565670';
 		timer_display.style.opacity = 1;
 		timer_display.style.transform = 'translateY(0%)';
 	}
 	else {
-		timerON.style.display = 'none';
-		timerOFF.style.display = 'block';
 		button_scramble.style.animation = 'none';
 		timer_display.style.color = '#565670';
 		timer_display.style.opacity = 0;
@@ -66,14 +64,6 @@ function toggleTimer() {
 }
 
 function scrambleCube() {
-	if (timer.enabled) {
-		Rubik.resetCube();
-		Rubik.rotateCube(
-			Math.random() * 2 * Math.PI,
-			Math.random() * 2 * Math.PI,
-			Math.random() * 2 * Math.PI
-		);
-	}
 	Rubik.scrambleCube();
 }
 
@@ -100,17 +90,14 @@ const sound = new Sound('assets/turn1.mp3');
 
 function toggleSound() {
 	sound.toggle();
-	soundON.style.display = sound.enabled ? 'block' : 'none';
-	soundOFF.style.display = !sound.enabled ? 'block' : 'none';
+	soundON.classList.toggle('hidden', !sound.enabled);
+	soundOFF.classList.toggle('hidden', sound.enabled);
 }
 
 let show_list = false;
 function toggleList() {
 	show_list = !show_list;
-	times_container.style.maxHeight = show_list ? '180px' : '0';
-	times_container.style.opacity = show_list ? '1' : '0';
-	times_container.style.marginBottom = show_list ? '7px' : '0';
-	times_container.style.padding = show_list ? '6px' : '0';
+	times_container.classList.toggle('show', show_list);
 	if (!show_list && show_solveInfo) toggleInfo();
 }
 
@@ -118,10 +105,48 @@ let show_solveInfo = false;
 let element_solveInfo = null;
 function toggleInfo() {
 	show_solveInfo = !show_solveInfo;
-	solveInfo_container.style.maxHeight = show_solveInfo ? '180px' : '0';
-	solveInfo_container.style.opacity = show_solveInfo ? '1' : '0';
-	solveInfo_container.style.marginBottom = show_solveInfo ? '7px' : '0';
-	solveInfo_container.style.padding = show_solveInfo ? '6px' : '0';
+	if (!show_solveInfo && element_solveInfo) element_solveInfo.classList.remove('highlight');
+	solveInfo_container.classList.toggle('show', show_solveInfo);
+}
+
+//setTimeout(animate_start, 3000);
+slider.oninput = () => {
+	Rubik.anim_input(slider);
+	anim_updateSVG();
+}
+function animate_start() {
+	animControl_container.style.display = 'block';
+	Rubik.animate_start(slider);
+	anim_updateSVG();
+}
+function animate_end() {
+	animControl_container.style.display = 'none';
+	Rubik.animate_end(slider);
+	anim_updateSVG();
+}
+function anim_start() {
+	Rubik.anim_start(slider);
+	anim_updateSVG();
+}
+function anim_backward() {
+	Rubik.anim_backward(slider);
+	anim_updateSVG();
+}
+function anim_play() {
+	Rubik.anim_play(slider);
+	anim_updateSVG();
+}
+function anim_forward() {
+	Rubik.anim_forward(slider);
+	anim_updateSVG();
+}
+function anim_end() {
+	Rubik.anim_end(slider);
+	anim_updateSVG();
+}
+function anim_updateSVG() {
+	animPause.classList.toggle('hidden', !Rubik.anim.play);
+	animPlay.classList.toggle('hidden', Rubik.anim.play);
 }
 
 const fps = {
@@ -248,30 +273,30 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0300';
+const version = 'v 0400';
 
 function loop() {
 	requestAnimationFrame(loop);
 	//if (loaded) stats.begin();
 	fps.inLoop();
-
+	
 	let s = performance.now();
-
+	
 	if (undo.flag && (Date.now() - undo.startTime) > 300) Rubik.turnUndo();
-
+	
 	let s1 = performance.now();
 	Rubik.loop();
 	timeB += performance.now() - s1;
 	let s2 = performance.now();
 	Rubik.draw_loop();
 	timeC += performance.now() - s2;
-
+	
 	let s3 = performance.now();
 	if (fps.frameCount % 3 == 0) Vor.draw();
 	timeD += performance.now() - s3;
-
+	
 	timeA += performance.now() - s;
-
+	
 	frames++;
 	//if (loaded) stats.end();
 }
