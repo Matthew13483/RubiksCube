@@ -158,26 +158,26 @@ function toggleAlgs() {
 
 let algs = [
 	"R U' R U R U R U' R' U' R2", //Ua perm
-	"R2 U R U R' U' R3 U' R' U R'", //Ub perm
-	"M2' U M2' U2 M2' U M2'", // H perm
-	"M2' U2 M U M2' U M2' U M", // Z perm
-	"x R' U R' D2 R U' R' D2 R2 x'", // Aa perm
-	"x R2 D2 R U R' D2 R U' R x'", // Ab perm
-	"x' R U' R' D R U R' D' R U R' D R U' R' D' x", // E perm
-	"R U' R' U' R U R D R' U' R D' R' U2 R'", // Ra perm
+	"R2' U R U R' U' R3 U' R' U R'", //Ub perm
+	"M2' U M2' U2 M2' U M2'", //H perm
+	"M2' U2 M U M2' U M2' U M", //Z perm
+	"x R' U R' D2 R U' R' D2 R2 x'", //Aa perm
+	"x R2' D2 R U R' D2 R U' R x'", //Ab perm
+	"x' R U' R' D R U R' D' R U R' D R U' R' D' x", //E perm
+	"R U' R' U' R U R D R' U' R D' R' U2 R'", //Ra perm
 	"R' U2 R' D' R U' R' D R U R U' R' U' R", //Rb Perm
-	"R U R' F' R U R' U' R' F R2 U' R' U'", // Jb perm
-	"R' U L' U2 R U' R' U2 R L U'", // Ja perm
-	"R U R' U' R' F R2 U' R' U' R U R' F'", // T perm
-	"R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R", // F perm
-	"F R U' R' U' R U R' F' R U R' U' R' F R F'", // Y perm
-	"R' U R' U' R D' R' D R' U D' R2 U' R2 D R2", // V perm
+	"R U R' F' R U R' U' R' F R2 U' R' U'", //Jb perm
+	"R' U L' U2 R U' R' U2 R L U'", //Ja perm
+	"R U R' U' R' F R2 U' R' U' R U R' F'", //T perm
+	"R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R", //F perm
+	"F R U' R' U' R U R' F' R U R' U' R' F R F'", //Y perm
+	"R' U R' U' R D' R' D R' U D' R2 U' R2' D R2", //V perm
 	"(R U R' U) (R U R' F') (R U R' U') R' F R2 U' R' U2 (R U' R')", //Na perm
 	"r' D' F r U' r' F' D r2 U r' U' r' F r F'", //Nb perm
-	"R2 U R' U R' U' R U' R2 U' D R' U R D'", // Ga perm
-	"R' U' R U D' R2 U R' U R U' R U' R2 D", // Gb perm
-	"R2 U' R U' R U R' U R2 D' U R U' R' D", // Gc perm
-	"R U R' U' D R2 U' R U' R' U R' U R2 D'", // Gd perm
+	"R2 U R' U R' U' R U' R2 U' D R' U R D'", //Ga perm
+	"R' U' R U D' R2 U R' U R U' R U' R2' D", //Gb perm
+	"R2' U' R U' R U R' U R2 D' U R U' R' D", //Gc perm
+	"R U R' U' D R2 U' R U' R' U R' U R2 D'", //Gd perm
 ];
 
 function create_alg_svg(alg) {
@@ -271,6 +271,7 @@ function create_alg_svg(alg) {
 	algs_container.appendChild(clone);
 	algs_container.lastElementChild.addEventListener('click', () => {
 		animate_start(alg1.join(' '), alg);
+		toggleAlgs();
 	});
 }
 for (let i = 0; i < algs.length; i++) create_alg_svg(algs[i % algs.length]);
@@ -399,7 +400,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0401';
+const version = 'v 0402';
 
 function loop() {
 	requestAnimationFrame(loop);
