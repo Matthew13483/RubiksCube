@@ -14,11 +14,39 @@
 	<canvas id="canvas_bg"></canvas>
 	<canvas id="canvas_map" width="150" height="113"></canvas>
 	<canvas id="canvas"></canvas>
-	<svg class="button" id="button_grid" fill="white" viewBox="0 0 24 24">
+	<template id="alg_svg_template" class="hidden">
+	<svg class="alg_svg" id="state" viewBox="0 0 36 36">
+		<rect class="sticker" x="8" y="8" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="15" y="8" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="22" y="8" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="8" y="15" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="15" y="15" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="22" y="15" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="8" y="22" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="15" y="22" width="6" height="6" fill="white"/>
+		<rect class="sticker" x="22" y="22" width="6" height="6" fill="white"/>
+		<polygon class="sticker" points="4,9 7,8 7,14 4,14.4" fill="white"/>
+		<polygon class="sticker" points="4,15.3 7,15 7,21 4,20.7" fill="white"/>
+		<polygon class="sticker" points="4,27 7,28 7,22 4,21.6" fill="white"/>
+		<polygon class="sticker" points="9,4 8,7 14,7 14.4,4" fill="white"/>
+		<polygon class="sticker" points="15.3,4 15,7 21,7 20.7,4" fill="white"/>
+		<polygon class="sticker" points="27,4 28,7 22,7 21.6,4" fill="white"/>
+		<polygon class="sticker" points="32,9 29,8 29,14 32,14.4" fill="white"/>
+		<polygon class="sticker" points="32,15.3 29,15 29,21 32,20.7" fill="white"/>
+		<polygon class="sticker" points="32,27 29,28 29,22 32,21.6" fill="white"/>
+		<polygon class="sticker" points="9,32 8,29 14,29 14.4,32" fill="white"/>
+		<polygon class="sticker" points="15.3,32 15,29 21,29 20.7,32" fill="white"/>
+		<polygon class="sticker" points="27,32 28,29 22,29 21.6,32" fill="white"/>
+
+	</svg>
+	</template>
+	<svg class="button" id="button_algs" onclick="toggleAlgs()" fill="white" viewBox="0 0 24 24">
 		<path d="M2 2h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33M2 9.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33M2 16.66h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33"/>
 	</svg>
+	<div id="algs_container"></div>
 	<p id="fps_display" onclick="debug_performance = !debug_performance"></p>
 	<div id="animControl_container">
+		<svg id="close" onclick="animate_end()" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
 		<input type="range" min="0" max="1" step="0.0001" value="0" class="slider" id="slider">
 		<div class="row" id="animControl_buttons">
 			<svg class="button" id="animControl_start" onclick="anim_start()" viewBox="0 0 24 24"><path d="M11.484 12l8.531-6v12zm-.468 6l-8.531-6 8.531-6v12z"/></svg>

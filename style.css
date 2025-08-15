@@ -63,6 +63,48 @@ div.column {
 	display: block;
 }
 
+#button_algs {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	transition: all 0.2s;
+}
+
+#button_algs.show {
+	transform: rotate(-90deg);
+}
+
+#algs_container {
+	z-index: 1;
+	overflow: auto;
+	position: fixed;
+	top: 55px;
+	left: 50vw;
+	opacity: 0;
+	transform-origin: top right;
+	transform: translateX(-50%) scale(0);
+	max-height: 80vh;
+	padding: 6px;
+	background:	#303066;
+	box-shadow: 0 3px 5px #00000050;
+	display: grid;
+	grid-template-columns: auto auto auto auto;
+	gap: 6px;
+	transition: all 0.2s;
+}
+
+#algs_container.show {
+	opacity: 1;
+	transform: translateX(-50%) scale(1);
+}
+
+.alg_svg {
+	width: 80px;
+	height: 80px;
+	background: linear-gradient(180deg, #202040c0, #101020c0);
+	box-shadow: 0 3px 5px #00000020;
+}
+
 #bottom {
 	pointer-events: none;
 	position: fixed;
@@ -106,6 +148,15 @@ div.column {
 
 #animControl_buttons {
 	width: 100%;
+}
+
+#close {
+	fill: #757575;
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	top: -28px;
+	right: 4px;
 }
 
 #toast_container {
@@ -252,18 +303,7 @@ div.column {
 	fill: #606090;
 }
 
-#button_grid {
-	position: fixed;
-	top: 15px;
-	right: 15px;
-	transition: all 0.5s;
-}
-
-#button_grid:hover {
-	transform: rotate(-90deg);
-}
-
-path.hidden {
+.hidden {
 	display: none;
 }
 
