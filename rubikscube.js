@@ -6,7 +6,9 @@ class RubiksCube {
 		this.canvas = canvas;
 		
 		let handleStart = event => {
-			event.preventDefault();
+			let scale = window.visualViewport ? window.visualViewport.scale : 1;
+			if (scale <= 1.001) event.preventDefault();
+			else return;
 			if (isTouchDevice) {
 				for (let i = 0; i < event.changedTouches.length; i++) {
 					let touch = event.changedTouches.item(i);
@@ -21,7 +23,9 @@ class RubiksCube {
 			}
 		};
 		let handleMove = event => {
-			event.preventDefault();
+			let scale = window.visualViewport ? window.visualViewport.scale : 1;
+			if (scale <= 1.001) event.preventDefault();
+			else return;
 			if (isTouchDevice) {
 				for (let i = 0; i < event.changedTouches.length; i++) {
 					let touch = event.changedTouches.item(i);
@@ -36,7 +40,9 @@ class RubiksCube {
 			}
 		};
 		let handleEnd = event => {
-			event.preventDefault();
+			let scale = window.visualViewport ? window.visualViewport.scale : 1;
+			if (scale <= 1.001) event.preventDefault();
+			else return;
 			if (isTouchDevice) {
 				for (let i = 0; i < event.changedTouches.length; i++) {
 					let touch = event.changedTouches.item(i);
@@ -1081,7 +1087,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	get_face() {
 		let centers = ['R', 'U', 'F', 'L', 'D', 'B'];
 		let center_pos = centers.map(e => Vnormalize(Vmatrix(this.rotationMat, this.center_pieces[e].transform(this.center_pieces[e]))));
-		const used = [];
+		let used = [];
 		
 		let pickIndex = dir => {
 			let maxDot = -Infinity, idx = -1;
@@ -1132,7 +1138,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			return M.map(row => {
 				let maxAxis = null;
 				let maxVal = -Infinity;
-				for (const axis of axes) {
+				for (let axis of axes) {
 					if (used.includes(axis)) continue;
 					let val = Math.abs(row[axis]);
 					if (val > maxVal) {
@@ -1358,7 +1364,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			times[i] = Number(this.solves_string[i].split(' ')[1]);
 		}
 		
-		const worker = new Worker(`data:text/javascript,
+		let worker = new Worker(`data:text/javascript,
 			function getTrimmedAvg(times, start, size) {
 				let trim = 0;
 				if (size >= 5) trim = 1;
@@ -1392,7 +1398,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				return sum / (size - 2 * trim);
 			}
 			onmessage = function(e) {
-				const { init, len, stat, times } = e.data;
+				let { init, len, stat, times } = e.data;
 				
 				if (len >= 1) stat.c1 = getTrimmedAvg(times, len - 1, 1);
 				if (len >= 3) stat.c3 = getTrimmedAvg(times, len - 3, 3);
@@ -1444,14 +1450,12 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			changes_mat[i + 1] = this.pieces.map(piece => piece.rotationMat);
 			turns[i] = this.turns[this.turns.length - 1];
 		});
-		this.resetCube();
-		this.turnAlgInstant(setup);
 		let m_ms = 200;
 		let p_ms = 50;
 		let n = alg_moves.length;
 		let duration = n * (m_ms + p_ms);
 		
-		return { m_ms, p_ms, n, duration, changes_mat, turns };
+		return { setup, alg, m_ms, p_ms, n, duration, changes_mat, turns };
 	}
 
 	anim_prog(anim, prog) {
@@ -1486,6 +1490,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		this.anim = this.get_anim(setup, alg);
 		this.rotateCube(0, 0.35, 0);
 		this.rotateCube(-0.35, 0, 0);
+		this.anim_prog(this.anim, 0);
 		this.anim.value = 0;
 		this.anim.play = false;
 		slider.step = 0.0001;
@@ -1496,15 +1501,19 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	
 	animate_end(slider) {
 		this.mode = ['casual'];
+		this.resetCube();
+		this.turnAlgInstant(this.anim.setup);
+		this.rotateCube(0, 0.35, 0);
+		this.rotateCube(-0.35, 0, 0);
 		this.anim = null;
 		slider.value = 0;
 	}
 
 	anim_start(slider) {
-		slider.value = 0;
 		this.anim_prog(this.anim, 0);
 		this.anim.value = 0;
 		this.anim.play = false;
+		slider.value = 0;
 	}
 
 	anim_backward(slider) {
@@ -1526,10 +1535,10 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_end(slider) {
-		slider.value = slider.max;
 		this.anim_prog(this.anim, 1);
 		this.anim.value = this.anim.n;
 		this.anim.play = false;
+		slider.value = slider.max;
 	}
 
 	anim_loop() {

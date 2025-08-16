@@ -109,7 +109,6 @@ function toggleInfo() {
 	solveInfo_container.classList.toggle('show', show_solveInfo);
 }
 
-//setTimeout(animate_start, 3000);
 slider.oninput = () => {
 	Rubik.anim_input(slider);
 	anim_updateSVG();
@@ -145,12 +144,16 @@ function anim_end() {
 	anim_updateSVG();
 }
 function anim_updateSVG() {
-	animPause.classList.toggle('hidden', !Rubik.anim.play);
-	animPlay.classList.toggle('hidden', Rubik.anim.play);
+	let anim_play = Rubik.anim && Rubik.anim.play;
+	animPause.classList.toggle('hidden', !anim_play);
+	animPlay.classList.toggle('hidden', anim_play);
 }
 
 let show_algs = false;
 function toggleAlgs() {
+	if (!algs_container.shown) algs.forEach(create_alg_svg);
+	algs_container.shown = true;
+	
 	show_algs = !show_algs;
 	algs_container.classList.toggle('show', show_algs);
 	button_algs.classList.toggle('show', show_algs);
@@ -259,14 +262,14 @@ function create_alg_svg(alg) {
 		[3, 2], [3, 1], [3, 0],
 		[2, 0], [2, 1], [2, 2]
 	];
-	let colors1 = objs.colors.map(c => 'rgb(' + c.join(',') + ')');
+	let colors = objs.colors.map(c => 'rgb(' + c.join(',') + ')');
 	
 	let template = document.getElementById('alg_svg_template');
 	let clone = template.content.cloneNode(true);
 	let stickers = clone.querySelectorAll('.sticker');
 	stickers.forEach((sticker, i) => {
 		let map_color = cube_map[stickerPositions[i][0]][stickerPositions[i][1]];
-		sticker.setAttribute('fill', colors1[map_color]);
+		sticker.setAttribute('fill', colors[map_color]);
 	});
 	algs_container.appendChild(clone);
 	algs_container.lastElementChild.addEventListener('click', () => {
@@ -274,7 +277,7 @@ function create_alg_svg(alg) {
 		toggleAlgs();
 	});
 }
-for (let i = 0; i < algs.length; i++) create_alg_svg(algs[i % algs.length]);
+//algs.forEach(create_alg_svg);
 
 const fps = {
 	startTime: Date.now(),
@@ -400,7 +403,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0402';
+const version = 'v 0403';
 
 function loop() {
 	requestAnimationFrame(loop);
