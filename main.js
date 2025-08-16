@@ -106,12 +106,12 @@ slider.oninput = () => {
 	Rubik.anim_input(slider);
 	anim_updateSVG();
 }
-function animate_start(setup, alg) {
+function animate_start(setup, alg, alg0) {
 	animControl_container.classList.remove('hidden');
 	animControl_details.classList.remove('hidden');
 	animControl_svg.innerHTML = '';
 	animControl_svg.appendChild(create_alg_svg(alg).svg);
-	animControl_alg.textContent = alg;
+	animControl_alg.textContent = alg0;
 	Rubik.animate_start(slider, setup, alg);
 	anim_updateSVG();
 }
@@ -155,7 +155,8 @@ function toggleAlgs() {
 }
 
 let alg_sets = {
-	PLL: [
+	'PLL': [
+		"111111111000000000000", "",
 		"R U' R U R U R U' R' U' R2", //Ua perm
 		"R2' U R U R' U' R3 U' R' U R'", //Ub perm
 		"M2' U M2' U2 M2' U M2'", //H perm
@@ -178,40 +179,101 @@ let alg_sets = {
 		"R2' U' R U' R U R' U R2 D' U R U' R' D", //Gc perm
 		"R U R' U' D R2 U' R U' R' U R' U R2 D'", //Gd perm
 	],
-	ZBLL: [
-		""
-	]
+	'ZBLL': {
+		0: "010111010000000000000", 1: "",
+		'U': {
+			0: "010111111000101000000", 1: "U' (L' U2 L U L' U L) (R U2' R' U' R U' R')",
+			'U F': [
+				"111111111101101101101", "U' (L' U2 L U L' U L) (R U2' R' U' R U' R')",
+				"(L' U2 L U L' U L) (R U2' R' U' R U' R')",
+				"(R U R' U R U2' R') U (R U2' R' U' R U' R')",
+				"(R U R' U') (R U' R' U2)2 R U R'",
+				"(R U2' R' U' R U' R') U' (R U R' U R U2' R')",
+				"(R' U2 R U R' U R) U (R' U' R U' R' U2 R)",
+				"(R' U2' R2 U R2' U) R U' (R U R' U') R U' R'",
+				"(R U2' R2' U' R2 U') (R' U R' U') (R U R' U R)",
+				"(R' U' R U' R' U2 R) (R U R' U R U2' R')",
+				"(R U R' U R U2' R') (R' U' R U' R' U2' R)",
+				"x' R2 D2 (R' U' R D2) R2' D (R U R' D') x",
+				"(R' U' R U') (R U R' U') (R' U2' R U2' R U2' R')",
+				"(R U R' U) (R' U' R U') (R' U2' R U2' R U2' R')"
+			],
+			'U B': [
+				"111111111101101101101", "(R U R' L') U2 (R U' R' U') (R U' R' L)",
+				"(R U R' L') U2 (R U' R' U') (R U' R' L)",
+				"(R U R' U) L' (R U R' U') L (U' R U' R')",
+				"(r U R' U' r' R U R U' R') (F R U R' U' F')",
+				"r U2' (R2' F R F') U2' r' (R U R U' R')",
+				"(R' U2 R) F U' (R' U R U) (R' U R U') F'",
+				"(R U' R' U') (R U R D) (R' U R D') R2'",
+				"F (R U R' U')2 F' U' R' (F' U' F) U R",
+				"(R' U2 R) F U' (R' U' R U) F'",
+				"R' D' (R U' R' D) R2 U2' R' U R U R'",
+				"F (R U R' U') F' U2 (r' U r2 U' r2' U' r2 U r')",
+				"R D' R2' U (R U R' U2') R2 D R'",
+				"F (R U' R' U' R U2' R' U')2 F'"
+			],
+			'U /': [
+				"111111111101101101101", "U2 R2 D (r' U2 r D') R' U2 R'",
+				"R2 D (r' U2 r D') R' U2 R'",
+				"R2 D (R' U2 R D') R' U2 R'",
+				"(R' U' R U' R' U2 R) (R U' L' U R' U' L)",
+				"R2 D (R' U R D') (R2' U R U2 R')",
+				"(R' U' L U') (R U L' U) (R' U' R U') R' U R",
+				"(R U' R' U') (R U2' R' UD) (R' U R U2) (R' U R D')",
+				"(R U' L' U R' U' L) (R' U' R U' R' U2 R)",
+				"(R U2' R2' D') (R U2 R' D) (R2 U' R' U2 R U2' R')",
+				"(R' U' R U) (R U R' U') R' U F (R U R U' R') F'",
+				"(R' U R' D') (R U R' U2') (R U R' UD) R U' R",
+				"(R' U' R U') L U' (R' U2 L' U2) R U' L U2 L'",
+				"(R U' R' U) (R U R' U')2 R U L U' R' U L'"
+			]
+		}
+	}
 };
 
-for (let key in alg_sets) {
-	let group = document.createElement('div');
-	let members = document.createElement('div');
-	group.classList.add('alg_group');
-	members.classList.add('alg_members', 'hidden');
-	
-	let svg = create_alg_svg(alg_sets[key][0]).svg;
-	let name = document.createElement('span');
-	name.textContent = key;
-	let arrow = document.createElement('span');
-	arrow.textContent = '▶';
-	group.append(svg, name, arrow);
-	
-	group.onclick = () => {
-		members.classList.toggle('hidden');
-		arrow.textContent = members.classList.contains('hidden') ? '▶' : '▼';
-		if (!members.shown) for (let i = 0; i < alg_sets[key].length; i++) {
-			let alg_svg = create_alg_svg(alg_sets[key][i]);
-			members.appendChild(alg_svg.svg);
-			members.lastElementChild.addEventListener('click', alg_svg.click);
-		}
-		members.shown = true;
-	};
-	
-	algs_container.append(group, members);
+function loadAlgs(obj) {
+	let arr = [];
+	for (let key in obj) {
+		if (key == 0 || key == 1) continue;
+		let group = document.createElement('div');
+		let members = document.createElement('div');
+		group.classList.add('alg_group');
+		members.classList.add('alg_members', 'hidden');
+		
+		let svg = create_alg_svg(obj[key][1], obj[key][0]).svg;
+		let name = document.createElement('span');
+		name.textContent = key;
+		let arrow = document.createElement('span');
+		arrow.textContent = '▶';
+		group.append(svg, name, arrow);
+		
+		group.onclick = () => {
+			members.classList.toggle('hidden');
+			arrow.textContent = members.classList.contains('hidden') ? '▶' : '▼';
+			if (!members.shown) {
+				if (Array.isArray(obj[key])) {
+					for (let i = 2; i < obj[key].length; i++) {
+						let alg_svg = create_alg_svg(obj[key][i]);
+						members.appendChild(alg_svg.svg);
+						members.lastElementChild.addEventListener('click', alg_svg.click);
+					}
+				}
+				else {
+					members.append(...loadAlgs(obj[key]));
+				}
+			}
+			members.shown = true;
+		};
+		arr.push(group, members);
+	}
+	return arr;
 }
+algs_container.append(...loadAlgs(alg_sets));
 
-function create_alg_svg(alg) {
-	alg = alg.split('').map(m => (m == '(' || m == ')') ? '' : m).join('');
+function create_alg_svg(alg, rest) {
+	let alg0 = alg;
+	alg = alg.replace(/\(([^)]+)\)(\d+)?/g, (_, g, n) => (g + " ").repeat(n || 1).trim());
 	let cube_map = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -274,12 +336,22 @@ function create_alg_svg(alg) {
 			for (let i = 0; i < (Number(move[1]) || 1); i++) swaps.forEach(s => swap(...s));
 		});
 	}
+	let move_split = move => {
+		let move_i = [];
+		move.split('').forEach((c, i, a) => (/[a-zA-Z]/g).test(c) && move_i.push(i));
+		return move_i.map((m, i, a) => move.substring(m, a[i + 1]));
+	};
 	let anti = move => {
 		if (move.length == 0) return '';
-		return (move[move.length - 1] === "'") ? move.substring(0, move.length - 1) : move + "'";
+		let moves = move_split(move);
+		return moves.map(move => {
+			return (move[move.length - 1] === "'") ? move.substring(0, move.length - 1) : move + "'";
+		}).join('')
 	};
 	let alg1 = ['z2', ...alg.split(' ').reverse().map(anti)];
-	alg1.forEach(turnMap);
+	alg1.forEach(move => {
+		move_split(move).forEach(turnMap);
+	});
 	let stickerPositions = [
 		[0, 0], [0, 1], [0, 2],
 		[0, 3], [0, 4], [0, 5],
@@ -295,10 +367,11 @@ function create_alg_svg(alg) {
 	let stickers = clone.querySelectorAll('.sticker');
 	stickers.forEach((sticker, i) => {
 		let map_color = cube_map[stickerPositions[i][0]][stickerPositions[i][1]];
-		sticker.setAttribute('fill', colors[map_color]);
+		let fill = rest ? (rest[i] == '1') : true;
+		sticker.setAttribute('fill', fill ? colors[map_color] : "#404040");
 	});
 	return { svg: clone, click: () => {
-		animate_start(alg1.join(' '), alg);
+		animate_start(alg1.join(' '), alg, alg0);
 		toggleAlgs();
 	} };
 }
@@ -427,7 +500,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0404';
+const version = 'v 0405';
 
 function loop() {
 	requestAnimationFrame(loop);

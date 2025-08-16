@@ -1446,9 +1446,9 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		changes_mat[0] = this.pieces.map(piece => piece.rotationMat);
 		let turns = new Array(alg_moves.length);
 		alg_moves.forEach((move, i) => {
-			this.turnAlgInstant(move);
+			let length = this.turnCubeMove(move, 0).length;
 			changes_mat[i + 1] = this.pieces.map(piece => piece.rotationMat);
-			turns[i] = this.turns[this.turns.length - 1];
+			turns[i] = this.turns.slice(this.turns.length - length, this.turns.length);//this.turns[this.turns.length - 1];
 		});
 		let m_ms = 200;
 		let p_ms = 50;
@@ -1469,12 +1469,14 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			piece.displayed = false;
 		});
 		if (i < anim.n) {
-			let pieces = anim.turns[i].pieces;
-			let times = anim.turns[i].times;
-			pieces.forEach(piece => {
-				piece.turn.times = times;
-				piece.turn.axis = anim.turns[i].axis;
-				piece.turnStep(at * times);
+			anim.turns[i].forEach(turn => {
+				let pieces = turn.pieces;
+				let times = turn.times;
+				pieces.forEach(piece => {
+					piece.turn.times = times;
+					piece.turn.axis = turn.axis;
+					piece.turnStep(at * times);
+				});
 			});
 		}
 	}
