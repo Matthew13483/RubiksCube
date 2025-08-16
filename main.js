@@ -46,17 +46,10 @@ function toggleTimer() {
 	timer.enabled = !timer.enabled;
 	timerON.classList.toggle('hidden', !timer.enabled);
 	timerOFF.classList.toggle('hidden', timer.enabled);
-	if (timer.enabled) {
-		button_scramble.style.animation = 'highlight 1.5s';
-		timer_display.style.color = '#565670';
-		timer_display.style.opacity = 1;
-		timer_display.style.transform = 'translateY(0%)';
-	}
-	else {
-		button_scramble.style.animation = 'none';
-		timer_display.style.color = '#565670';
-		timer_display.style.opacity = 0;
-		timer_display.style.transform = 'translateY(100%)';
+	timer_display.style.color = '#565670';
+	timer_display.classList.toggle('show', timer.enabled);
+	button_scramble.style.animation = timer.enabled ? 'highlight 1.5s' : 'none';
+	if (!timer.enabled) {
 		timer.reset();
 		if (Rubik.mode[0] == 'speed_solve') Rubik.mode = ['casual'];
 		Rubik.undoCap = 0;
@@ -114,12 +107,17 @@ slider.oninput = () => {
 	anim_updateSVG();
 }
 function animate_start(setup, alg) {
-	animControl_container.style.display = 'block';
+	animControl_container.classList.remove('hidden');
+	animControl_details.classList.remove('hidden');
+	animControl_svg.innerHTML = '';
+	animControl_svg.appendChild(create_alg_svg(alg).svg);
+	animControl_alg.textContent = alg;
 	Rubik.animate_start(slider, setup, alg);
 	anim_updateSVG();
 }
 function animate_end() {
-	animControl_container.style.display = 'none';
+	animControl_container.classList.add('hidden');
+	animControl_details.classList.add('hidden');
 	Rubik.animate_end(slider);
 	anim_updateSVG();
 }
@@ -151,37 +149,66 @@ function anim_updateSVG() {
 
 let show_algs = false;
 function toggleAlgs() {
-	if (!algs_container.shown) algs.forEach(create_alg_svg);
-	algs_container.shown = true;
-	
 	show_algs = !show_algs;
 	algs_container.classList.toggle('show', show_algs);
 	button_algs.classList.toggle('show', show_algs);
 }
 
-let algs = [
-	"R U' R U R U R U' R' U' R2", //Ua perm
-	"R2' U R U R' U' R3 U' R' U R'", //Ub perm
-	"M2' U M2' U2 M2' U M2'", //H perm
-	"M2' U2 M U M2' U M2' U M", //Z perm
-	"x R' U R' D2 R U' R' D2 R2 x'", //Aa perm
-	"x R2' D2 R U R' D2 R U' R x'", //Ab perm
-	"x' R U' R' D R U R' D' R U R' D R U' R' D' x", //E perm
-	"R U' R' U' R U R D R' U' R D' R' U2 R'", //Ra perm
-	"R' U2 R' D' R U' R' D R U R U' R' U' R", //Rb Perm
-	"R U R' F' R U R' U' R' F R2 U' R' U'", //Jb perm
-	"R' U L' U2 R U' R' U2 R L U'", //Ja perm
-	"R U R' U' R' F R2 U' R' U' R U R' F'", //T perm
-	"R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R", //F perm
-	"F R U' R' U' R U R' F' R U R' U' R' F R F'", //Y perm
-	"R' U R' U' R D' R' D R' U D' R2 U' R2' D R2", //V perm
-	"(R U R' U) (R U R' F') (R U R' U') R' F R2 U' R' U2 (R U' R')", //Na perm
-	"r' D' F r U' r' F' D r2 U r' U' r' F r F'", //Nb perm
-	"R2 U R' U R' U' R U' R2 U' D R' U R D'", //Ga perm
-	"R' U' R U D' R2 U R' U R U' R U' R2' D", //Gb perm
-	"R2' U' R U' R U R' U R2 D' U R U' R' D", //Gc perm
-	"R U R' U' D R2 U' R U' R' U R' U R2 D'", //Gd perm
-];
+let alg_sets = {
+	PLL: [
+		"R U' R U R U R U' R' U' R2", //Ua perm
+		"R2' U R U R' U' R3 U' R' U R'", //Ub perm
+		"M2' U M2' U2 M2' U M2'", //H perm
+		"M2' U2 M U M2' U M2' U M", //Z perm
+		"x R' U R' D2 R U' R' D2 R2 x'", //Aa perm
+		"x R2' D2 R U R' D2 R U' R x'", //Ab perm
+		"x' R U' R' D R U R' D' R U R' D R U' R' D' x", //E perm
+		"R U' R' U' R U R D R' U' R D' R' U2 R'", //Ra perm
+		"R' U2 R' D' R U' R' D R U R U' R' U' R", //Rb Perm
+		"R U R' F' R U R' U' R' F R2 U' R' U'", //Jb perm
+		"R' U L' U2 R U' R' U2 R L U'", //Ja perm
+		"R U R' U' R' F R2 U' R' U' R U R' F'", //T perm
+		"R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R", //F perm
+		"F R U' R' U' R U R' F' R U R' U' R' F R F'", //Y perm
+		"R' U R' U' R D' R' D R' U D' R2 U' R2' D R2", //V perm
+		"R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'", //Na perm
+		"r' D' F r U' r' F' D r2 U r' U' r' F r F'", //Nb perm
+		"R2 U R' U R' U' R U' R2 U' D R' U R D'", //Ga perm
+		"R' U' R U D' R2 U R' U R U' R U' R2' D", //Gb perm
+		"R2' U' R U' R U R' U R2 D' U R U' R' D", //Gc perm
+		"R U R' U' D R2 U' R U' R' U R' U R2 D'", //Gd perm
+	],
+	ZBLL: [
+		""
+	]
+};
+
+for (let key in alg_sets) {
+	let group = document.createElement('div');
+	let members = document.createElement('div');
+	group.classList.add('alg_group');
+	members.classList.add('alg_members', 'hidden');
+	
+	let svg = create_alg_svg(alg_sets[key][0]).svg;
+	let name = document.createElement('span');
+	name.textContent = key;
+	let arrow = document.createElement('span');
+	arrow.textContent = '▶';
+	group.append(svg, name, arrow);
+	
+	group.onclick = () => {
+		members.classList.toggle('hidden');
+		arrow.textContent = members.classList.contains('hidden') ? '▶' : '▼';
+		if (!members.shown) for (let i = 0; i < alg_sets[key].length; i++) {
+			let alg_svg = create_alg_svg(alg_sets[key][i]);
+			members.appendChild(alg_svg.svg);
+			members.lastElementChild.addEventListener('click', alg_svg.click);
+		}
+		members.shown = true;
+	};
+	
+	algs_container.append(group, members);
+}
 
 function create_alg_svg(alg) {
 	alg = alg.split('').map(m => (m == '(' || m == ')') ? '' : m).join('');
@@ -264,20 +291,17 @@ function create_alg_svg(alg) {
 	];
 	let colors = objs.colors.map(c => 'rgb(' + c.join(',') + ')');
 	
-	let template = document.getElementById('alg_svg_template');
-	let clone = template.content.cloneNode(true);
+	let clone = alg_svg_template.content.cloneNode(true);
 	let stickers = clone.querySelectorAll('.sticker');
 	stickers.forEach((sticker, i) => {
 		let map_color = cube_map[stickerPositions[i][0]][stickerPositions[i][1]];
 		sticker.setAttribute('fill', colors[map_color]);
 	});
-	algs_container.appendChild(clone);
-	algs_container.lastElementChild.addEventListener('click', () => {
+	return { svg: clone, click: () => {
 		animate_start(alg1.join(' '), alg);
 		toggleAlgs();
-	});
+	} };
 }
-//algs.forEach(create_alg_svg);
 
 const fps = {
 	startTime: Date.now(),
@@ -403,7 +427,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0403';
+const version = 'v 0404';
 
 function loop() {
 	requestAnimationFrame(loop);

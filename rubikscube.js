@@ -1501,10 +1501,11 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	
 	animate_end(slider) {
 		this.mode = ['casual'];
+		let rotationMat = this.rotationMat;
 		this.resetCube();
 		this.turnAlgInstant(this.anim.setup);
-		this.rotateCube(0, 0.35, 0);
-		this.rotateCube(-0.35, 0, 0);
+		this.rotationMat = rotationMat;
+		this.draw_setup();
 		this.anim = null;
 		slider.value = 0;
 	}
