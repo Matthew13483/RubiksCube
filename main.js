@@ -43,6 +43,7 @@ const timer = new Timer();
 timer.enabled = false;
 
 function toggleTimer() {
+	if (show_list) toggleList();
 	timer.enabled = !timer.enabled;
 	timerON.classList.toggle('hidden', !timer.enabled);
 	timerOFF.classList.toggle('hidden', timer.enabled);
@@ -89,6 +90,7 @@ function toggleSound() {
 
 let show_list = false;
 function toggleList() {
+	if (timer.enabled) toggleTimer();
 	show_list = !show_list;
 	times_container.classList.toggle('show', show_list);
 	if (!show_list && show_solveInfo) toggleInfo();
@@ -100,7 +102,6 @@ function toggleInfo() {
 	show_solveInfo = !show_solveInfo;
 	solveInfo_container.classList.toggle('show', show_solveInfo);
 	if (!show_solveInfo && element_solveInfo) element_solveInfo.classList.remove('highlight');
-	if (timer.enabled) toggleTimer();
 }
 
 slider.oninput = () => {
@@ -108,6 +109,8 @@ slider.oninput = () => {
 	anim_updateSVG();
 }
 function animate_start(setup, alg, alg0) {
+	if (show_list) toggleList();
+	if (timer.enabled) toggleTimer();
 	animControl_container.classList.remove('hidden');
 	animControl_details.classList.remove('hidden');
 	animControl_svg.innerHTML = '';
@@ -115,7 +118,6 @@ function animate_start(setup, alg, alg0) {
 	animControl_alg.textContent = alg0;
 	Rubik.animate_start(slider, setup, alg);
 	anim_updateSVG();
-	if (timer.enabled) toggleTimer();
 }
 function animate_end() {
 	animControl_container.classList.add('hidden');
@@ -502,7 +504,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0406';
+const version = 'v 0407';
 
 function loop() {
 	requestAnimationFrame(loop);
