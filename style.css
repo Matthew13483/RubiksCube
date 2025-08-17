@@ -206,33 +206,11 @@ div.column {
 	margin: 0;
 }
 
-#timer_container {
-	pointer-events: none;
-	overflow: hidden;
-	margin-bottom: 7px;
-}
-
-#timer_display {
-	margin: 0;
-	font-family: monospace;
-	font-size: 35px;
-	color: #565670;
-	opacity: 0;
-	transform: translateY(100%);
-	transition: all 0.2s;
-}
-
-#timer_display.show {
-	opacity: 1;
-	transform: translateY(0%);
-}
-
 #solveInfo_container {
 	pointer-events: auto;
 	overflow: hidden;
 	width: max-content;
 	height: auto;
-	max-height: 0;
 	transform: scale(0);
 	transform-origin: bottom;
 	opacity: 0;
@@ -254,7 +232,6 @@ div.column {
 }
 
 #solveInfo_container.show, #times_container.show {
-	max-height: 180px;
 	transform: scale(1);
 	opacity: 1;
 	margin-bottom: 7px;
@@ -292,7 +269,6 @@ div.column {
 	overflow: hidden;
 	width: max-content;
 	height: 180px;
-	max-height: 0;
 	transform: scale(0);
 	transform-origin: bottom;
 	opacity: 0;
@@ -347,6 +323,29 @@ div.column {
 
 #times li:active {
 	background: #6060ccff;
+}
+
+#timer_container {
+	position: absolute;
+	bottom: 50px;
+	pointer-events: none;
+	overflow: hidden;
+	margin-bottom: 7px;
+}
+
+#timer_display {
+	margin: 0;
+	font-family: monospace;
+	font-size: 35px;
+	color: #565670;
+	opacity: 0;
+	transform: translateY(100%);
+	transition: all 0.2s;
+}
+
+#timer_display.show {
+	opacity: 1;
+	transform: translateY(0%);
 }
 
 #buttons_container {

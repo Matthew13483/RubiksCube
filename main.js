@@ -98,8 +98,9 @@ let show_solveInfo = false;
 let element_solveInfo = null;
 function toggleInfo() {
 	show_solveInfo = !show_solveInfo;
-	if (!show_solveInfo && element_solveInfo) element_solveInfo.classList.remove('highlight');
 	solveInfo_container.classList.toggle('show', show_solveInfo);
+	if (!show_solveInfo && element_solveInfo) element_solveInfo.classList.remove('highlight');
+	if (timer.enabled) toggleTimer();
 }
 
 slider.oninput = () => {
@@ -114,6 +115,7 @@ function animate_start(setup, alg, alg0) {
 	animControl_alg.textContent = alg0;
 	Rubik.animate_start(slider, setup, alg);
 	anim_updateSVG();
+	if (timer.enabled) toggleTimer();
 }
 function animate_end() {
 	animControl_container.classList.add('hidden');
@@ -500,7 +502,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0405';
+const version = 'v 0406';
 
 function loop() {
 	requestAnimationFrame(loop);
