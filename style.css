@@ -102,7 +102,6 @@ div.column {
 	grid-column: span 4;
 	height: 80px;
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
 	background: linear-gradient(180deg, #101020c0, #080810c0);
 }
@@ -112,10 +111,14 @@ div.column {
 }
 
 .alg_group span {
-	font-size: 35px;
 	font-family: monospace;
 	color: white;
 	margin: 0px 10px;
+}
+
+.alg_group span:last-child {
+	font-size: 35px;
+	margin-left: auto;
 }
 
 .alg_members {
