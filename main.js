@@ -90,7 +90,6 @@ function toggleSound() {
 
 let show_list = false;
 function toggleList() {
-	if (timer.enabled) toggleTimer();
 	show_list = !show_list;
 	times_container.classList.toggle('show', show_list);
 	if (!show_list && show_solveInfo) toggleInfo();
@@ -187,7 +186,7 @@ let alg_sets = {
 		0: "010111010000000000000", 1: "",
 		'U': {
 			0: "010111111000101000000", 1: "U' (L' U2 L U L' U L) (R U2' R' U' R U' R')",
-			'U F': [
+			'U F-light': [
 				"111111111101101101101", "U' (L' U2 L U L' U L) (R U2' R' U' R U' R')",
 				"(L' U2 L U L' U L) (R U2' R' U' R U' R')",
 				"(R U R' U R U2' R') U (R U2' R' U' R U' R')",
@@ -202,7 +201,7 @@ let alg_sets = {
 				"(R' U' R U') (R U R' U') (R' U2' R U2' R U2' R')",
 				"(R U R' U) (R' U' R U') (R' U2' R U2' R U2' R')"
 			],
-			'U B': [
+			'U B-light': [
 				"111111111101101101101", "(R U R' L') U2 (R U' R' U') (R U' R' L)",
 				"(R U R' L') U2 (R U' R' U') (R U' R' L)",
 				"(R U R' U) L' (R U R' U') L (U' R U' R')",
@@ -262,7 +261,7 @@ let alg_sets = {
 				"F (R U' R' U) (R U R' U) (R U' R' F')",
 				"L' (R' U R U') L (R' U' R U2) (R U R2' U R2 U2' R')"
 			],
-			'U FB': [
+			'U FB-light': [
 				"111111111101101101101", "U' R2' F' (R U R' U') (R' F R2 U') (R' U2 R2 U) (R' U R)",
 				"R2' F' (R U R' U') (R' F R2 U') (R' U2 R2 U) (R' U R)",
 				"R' F (R U' R' U') (R U R' F') (R U R' U') (R' F R F' R)",
@@ -280,7 +279,7 @@ let alg_sets = {
 		},
 		'T': {
 			0: "010111111100000100000", 1: "U' (R U R' U R U2' R') (L' U' L U' L' U2 L)",
-			'T FB': [
+			'T FB-light': [
 				"111111111101101101101", "U' (R U R' U R U2' R') (L' U' L U' L' U2 L)",
 				"(R U R' U R U2' R') (L' U' L U' L' U2 L)",
 				"(R U' R' U2) (R U R' U2) (R U R' U) R U' R'",
@@ -295,7 +294,7 @@ let alg_sets = {
 				"(R' U' R2 U R2' U R2 U2') (R' U R' U R)",
 				"(R U R2' U' R2 U' R2' U2') (R U' R U' R')"
 			],
-			'T RL': [
+			'T LR-light': [
 				"111111111101101101101", "U (R U' R2' D') (r U2 r' D) (R2 U' R' U') R U' R'",
 				"(R U' R2' D') (r U2 r' D) (R2 U' R' U') R U' R'",
 				"(R U R' F' R U R' U' R' F R) U' (R' F R U R U' R' F')",
@@ -310,7 +309,7 @@ let alg_sets = {
 				"R2' F2 (R U2 R U2') R' F' (R U R' U') R' F' R2",
 				"(R' U' R U' R' U2 R) (R U R' U) (L' U R U' L) U2 R'"
 			],
-			'T L': [
+			'T L-light': [
 				"111111111101101101101", "U L (R U' R' U) L' (R U R' U) (R U R' U') R U' R'",
 				"L (R U' R' U) L' (R U R' U) (R U R' U') R U' R'",
 				"(r U R' U') (r' F R F')",
@@ -325,7 +324,7 @@ let alg_sets = {
 				"(R' U2 R U2') (R' U R U') (L U' R' U L' U R)",
 				"(R U' R' U') (R U R D) (R' U2 R D') R' U' R'",
 			],
-			'T R': [
+			'T R-light': [
 				"111111111101101101101", "R2' F2 (R U2' R U2') (R' F2 R U') R' U R",
 				"R2' F2 (R U2' R U2') (R' F2 R U') R' U R",
 				"(l' U' L U) (R U' r' F)",
@@ -340,7 +339,7 @@ let alg_sets = {
 				"R' U2' (R2 U R' U') R' U2' F' (R U2 R U2') R' F",
 				"R' U (R U R' U') R' D' (R U2 R' D) R U R",
 			],
-			'T F': [
+			'T F-light': [
 				"111111111101101101101", "(R U R' U') (R' U L' U2) (R U' R' U2 L) R2 U' R'",
 				"(R U R' U') (R' U L' U2) (R U' R' U2 L) R2 U' R'",
 				"(R' U R U2') L' (R' U R U') L",
@@ -355,7 +354,7 @@ let alg_sets = {
 				"F (R U' R' U') (R U2 R' U') F' (R' U' R U' R' U2 R)",
 				"(R' U2' R U R' U R) F U (R U2' R' U) (R U R' F')"
 			],
-			'T B': [
+			'T B-light': [
 				"111111111101101101101", "U' x (R' U2 R' D2) (R U2 R') D2 R2 x'",
 				"x (R' U2 R' D2) (R U2 R') D2 R2 x'",
 				"x' (R U2 R D2) (R' U2 R) D2 R2' x",
@@ -388,7 +387,7 @@ let alg_sets = {
 				"(R U2 R' U') (R U R' U')2 R U' R'",
 				"(R U2' R' U' R U' R') U2 (R U R' U R U2' R')"
 			],
-			'L Diag': [
+			'L Diagonal': [
 				"111111111101101101101", "F (R U R' U') (R U' R' U2') (R U2 R' U') F'",
 				"F (R U R' U') (R U' R' U2') (R U2 R' U') F'",
 				"F (R U' R' U') (R U R D) (R' U' R D') (R' U2 R' U') F'",
@@ -403,7 +402,7 @@ let alg_sets = {
 				"r U2' (r2' F R F') r2 R' U2 r'",
 				"r U2 R (r2' F R' F') r2 U2' r'"
 			],
-			'L R': [
+			'L R-light': [
 				"111111111101101101101", "U2 F' (r U R' U') (r' F R)",
 				"F' (r U R' U') (r' F R)",
 				"(R' U' R U) R' F2 (R U2 R' U2) R' F2 R2",
@@ -418,7 +417,7 @@ let alg_sets = {
 				"(R' U' R' D') (R U2 R' D) (R U R U') R' U' R",
 				"F' (R U2' R' U2) R' F U2' (R U R U') R2' U2' R",
 			],
-			'L B': [
+			'L B-light': [
 				"111111111101101101101", "(R U R' U) (R U' R' U') (R U' R') L (U' R U R') L'",
 				"(R U R' U) (R U' R' U') (R U' R') L (U' R U R') L'",
 				"(F R' F' r) (U R U' r')",
@@ -466,19 +465,151 @@ let alg_sets = {
 		},
 		'H': {
 			0: "010111010101000101000", 1: "U (R' U2' R U R' U R) U (R U R' U R U2 R')",
-			'H FB': [],
-			'H LR': [],
-			'H F': [],
-			'H R': []
+			'H FB-light': [
+				"111111111101101101101", "U (R' U2' R U R' U R) U (R U R' U R U2 R')",
+				"(R' U2' R U R' U R) U (R U R' U R U2 R')",
+				"(R U2' R' U' R U' R') U' (R' U' R U' R' U2 R)",
+				"(R U2 R' U') (R U R' U') R U' R'",
+				"R' U2' (R U R' U') (R U R' U R)",
+				"(R U R' U) (R U' R' U) R U2' R'",
+				"(R' U' R U') (R' U R U') R' U2 R",
+				"(R U R' U) (R U' R' U)2 R' U' R2 U' R' U R' U R",
+				"(R' U' R U' R' U2 R) U (R U2' R' U' R U' R')"
+			],
+			'H LR-light': [
+				"111111111101101101101", "(R U' L' U R' U' L)2",
+				"(R U' L' U R' U' L)2",
+				"F U' R2 U (R U2' R' U) R2 U2' (R' U' R F')",
+				"F R' U (R U2' R2' U') (R U2 R' U') R2 U F'",
+				"F (R U R' U')3 F'",
+				"(R U R' U R U2' R') L' U2 (R U' R' U2) L R U' R'",
+				"(R' U' R U' R' U2 R) U (R' U' R) L U2 (R' U' R) U2 L'",
+				"(U2) (R U R' U R U2' R2') U2' (L U' R U L' U) R' U R",
+				"(U2) (R' U' R U' R' U2 R2) U2' (L' U R' U' L U') R U' R'"
+			],
+			'H F-light': [
+				"111111111101101101101", "U' (F' r U R' U' r' F R) (R U2' R' U' R U' R')",
+				"(F' r U R' U' r' F R) (R U2' R' U' R U' R')",
+				"(R U R' U R U2 R') U' (R2 D R' U R D' R' U' R')",
+				"F (R U R' U') R' F' U2' (R U R' U) R2 U2' R'",
+				"F U' (R U2' R' U2) (R U' R' U') (R U R' U) F'",
+				"R U2' (R2' U' R2 U') R' U' (L' U R' U' L U' R)",
+				"(R U2' R' U) L' U2 (R U2' R' U2) L (R U' R')",
+				"(R' U2 R U') L U2 (R' U2' R U2) L' (R' U R)",
+				"F (R U' R' U) (R U2 R' U') (R U R' U') F'",
+				"(R U2' R' U' R U' R') (R2 D' R U' R' D R U R)",
+				"(R' U2' R U R' U R) (R2 D R' U R D' R' U' R')",
+				"(R' U2 R) L U2 (R' U R U2') L' U R' U R",
+				"(R U2' R') L' U2 (R U' R' U2) L U' (R U' R')"
+			],
+			'H R-light': [
+				"111111111101101101101", "U (R U R' U R U2' R') F (R U' R' U') (R U2' R' U') F'",
+				"(R U R' U R U2' R') F (R U' R' U') (R U2' R' U') F'",
+				"(R U R' U R U2 R') (R2' D' R U' R' D R U R)",
+				"(R U2 R' U' R U' R') U (L' U R U' L U R')",
+				"(R U2 R' U') R2 D (R' U R D') R2' U' R U' R'",
+				"(R U2 R D) R2' D2 (R U' R' D2) (R U' R D') R2",
+				"(R' U2 R U) R2' D' (R U' R' D) R2 U R' U R",
+				"R' D' (R U R' D) (R2 U R' U2) (R U2' R' U) R U2' R'",
+				"(R' U' R U' R' U') (L U' R U L')",
+				"(R U R' U R U) (L' U R' U' L)",
+				"(R U R' U') (R' U2' R2 D) (R' U R D') R2' U R2 U2' R'",
+				"R2 D (R' U R D') (R2' U R2 D) (R' U2 R D') R2",
+				"R2' D' (R U' R' D) (R2 U' R2' D') (R U2 R') D R2"
+			]
 		},
 		'Pi': {
 			0: "010111010101001000001", 1: "U (R U R' U R U2' R') (R' U2' R U R' U R)",
-			'Pi R': [],
-			'Pi L': [],
-			'Pi /': [],
-			'Pi \\': [],
-			'Pi X': [],
-			'Pi LR': []
+			'Pi R-light': [
+				"111111111101101101101", "U (R U R' U R U2' R') (R' U2' R U R' U R)",
+				"(R U R' U R U2' R') (R' U2' R U R' U R)",
+				"(R U2' R' U' R U' R') (R' U' R U' R' U2' R)",
+				"(R U2' R' U' R U' R') U (R U2' R' U' R U' R')",
+				"(R' U' R U' R' U2 R) U (R' U' R U' R' U2 R)",
+				"(R U2' R' U2) (R U' R' U2)2 R U R'",
+				"(R' U2 R U2') (R' U R U2')2 R' U' R",
+				"(R U' R' U2) (R U R' U2')2 R U2' R'",
+				"(R' U R U2') (R' U' R U2')2 R' U2 R",
+				"R U2' R2' U' R2 U' R2' U2' R",
+				"R' U2' R2 U R2' U R2 U2' R'",
+				"(R U2' R' U' R U' R') U' (R U2' R' U' R U' R')",
+				"F (R U R' U')2 F' (R U R' U' M' U R U' r')"
+			],
+			'Pi L-light': [
+				"111111111101101101101", "U2 F (R2 U' R U2) (R U R' U) (R' U R2 F')",
+				"F (R2 U' R U2) (R U R' U) (R' U R2 F')",
+				"F (R2' U' R U') (R U' R' U2) (R' U R2 F')",
+				"R U2' R' x (R' U R U')3 x' R U2' R'",
+				"F U (R' U' R2 U') (R2' U2' R U2) (R U R' F')",
+				"(R U2 R' U') F' (R U2 R' U') (R U' R' F) R U' R'",
+				"(R U R' F') (R U R' U) (R U2 R' F) (U R U2 R')",
+				"(R' U2' R2 U) (R U R2' D') (R U' R' U'D) R'",
+				"(R U R' U') (R U R2' D') (R U' R' D) (R U' R U2 R')",
+				"R UD' (R U R' D) (R2 U' R' U') R2' U2' R",
+				"(R U2' R' U) R' D' (R U R' D) R2 U' (R' U R U' R')",
+				"(R U R' U) (R U R' U') (R U R D) (R' U R D') R2'",
+				"R2' D' (R U R' D) R U (R U' R' U) (R U R' U R)"
+			],
+			'Pi /': [
+				"111111111101101101101", "U2 (L' U R U' L U R') U (L' U R U' L U R')",
+				"(L' U R U' L U R') U (L' U R U' L U R')",
+				"(R U R' U') (R' U2' R U2) R' D' (R U' R' UD) R2 U2' R'",
+				"R' F (R U R' U') R' F' (R2 U' R' U) (R U' R' U2 R)",
+				"F' (R U R' U') (R' F R U') (R U' R' U') (R U R' U) R U R'",
+				"(R U' L' U R' U' L) U (R' U2' R U R' U R)",
+				"(L U' R' U L' U' R) (R U R' U R U2' R')",
+				"(R U R' U R U2' R') U' (R U' L' U R' U' L)",
+				"(R' U2' R U R' U R) (R U' L' U R' U' L)",
+				"(R U R' U') R' F (R2 U R' U') (R U R' U') F'",
+				"(R U2' R' U') (R U R' U') R' D' (R U' R' D) (R2 U' R' U) R U' R'",
+				"L (R' U' R U) L' U2 (R' U R U') R' U2' R",
+				"(R U R D) (R' U R D') R2' U' (R U R' U') (R U' R')"
+			],
+			'Pi \\': [
+				"111111111101101101101", "(R U' L' U R' U' L) U' (R U' L' U R' U' L)",
+				"(R U' L' U R' U' L) U' (R U' L' U R' U' L)",
+				"(R' U' R U) (R U2' R' U2) R D (R' U R U'D') R2' U2' R",
+				"(R' U2 R U R' U') (R U R2' F) (R U R U') R' F' R",
+				"(R U' R' U') (R U' R' U) (R U R' U) R' F' (R U R U') R' F",
+				"(L' U R U' L U R') U (R U2' R' U' R U' R')",
+				"(L' U R U' L U R') (R' U' R U' R' U2 R)",
+				"(R' U' R U' R' U2 R) U' (L' U R U' L U R')",
+				"(R U2' R' U' R U' R') (R' U L U' R U L')",
+				"(R U R' U') (R U R2' D') (R U R' D) (R U R U') (R' U R U2' R')",
+				"F U (R U' R' U) (R U' R2' F') (R U R U' R')",
+				"R' U2' (R U R' U') R U2 L (U' R' U R) L'",
+				"L' (R U R' U') L U2 (R U' R' U) R U2' R'"
+			],
+			'Pi X': [
+				"111111111101101101101", "U2 (R U2' R' U' R U' R') U (r U R' U') (r' F R F')",
+				"(R U2' R' U' R U' R') U (r U R' U') (r' F R F')",
+				"(R' U' R U' R' U2 R) U2 (r U R' U' r' F R F')",
+				"R2' F (R U R U') R' F' (R U' R' U') (R U R' U R)",
+				"(R U R' F') U' (R U2' R2' U') (R U' R' U2') (F R2 U' R')",
+				"(R U R') L' U2 (R U2' R' U2) L U' (R U2' R')",
+				"F U' (R U' R' U) (R U R' U2) (R U2' R' U) F'",
+				"(R' U L' U R U' L) U (R U R2' U R2 U2' R')",
+				"(R U R' U) L' U2 (R U R' U2) L R U2' R'",
+				"(R' U' R U') L U2 (R' U' R U2) L' R' U2' R",
+				"F U (R U' R' U) (R U2' R' U') (R U R' F')",
+				"(R U R' U R U2' R') U2' (R2 D R' U2 R D' R' U2 R')",
+				"(R U R D R' U' R D' R2') (R' U' R U' R' U2 R)"
+			],
+			'Pi LR-light': [
+				"111111111101101101101", "U' F U (R U2 R' U) (R U R' F') (R U2' R' U' R U' R')",
+				"F U (R U2 R' U) (R U R' F') (R U2' R' U' R U' R')",
+				"(R' U' R' D' R U R' D R2) (R U2 R' U' R U' R')",
+				"(R U' L' U R' U' L) U' (R U R' U R U2' R')",
+				"(R' U' R U') R2' D' (R U R' D) R2 U' (R' U2 R)",
+				"(R U R' U) R2 D (R' U' R D') R2' U (R U2 R')",
+				"(R U2' R' U') (R U2' R' U2) (R U' R2' D') (R U' R' D) R",
+				"R2 D (R' U R' D2) (R U R' D2) R2 D' (R' U2 R')",
+				"(L' U R U' L U') (R' U' R U' R')",
+				"(R U R' U) F' (R U2' R' U2) R' F R",
+				"(R U2 R' U') R U (L' U2 L U2) R' U' (L' U L)",
+				"R2' D' (R U2 R' D) (R2 U R2' D') (R U R' D) R2",
+				"R2 D (R' U2 R D') (R2' U' R2 D) (R' U' R D') R2"
+			]
 		}
 	}
 };
@@ -753,7 +884,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0408';
+const version = 'v 0409';
 
 function loop() {
 	requestAnimationFrame(loop);
