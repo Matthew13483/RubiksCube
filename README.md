@@ -9,20 +9,20 @@
 </p>
 
 <p align="center">
-	<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70">
-		<a href="https://matthew13483.github.io/RubiksCube/" target="_blank">
+	<a href="https://matthew13483.github.io/RubiksCube/" target="_blank">
+		<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70">
 			<rect width="280" height="70" rx="12" fill="url(#button-gradient)"/>
 			<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="bold" fill="white">
 				🎮 Play Rubik’s Cube!!
 			</text>
-		</a>
-		<defs>
-			<linearGradient id="button-gradient" x1="0" y1="0" x2="0" y2="1">
-				<stop offset="0" stop-color="#34d058"/>
-				<stop offset="1" stop-color="#28a745"/>
-			</linearGradient>
-		</defs>
-	</svg>
+			<defs>
+				<linearGradient id="button-gradient" x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0" stop-color="#34d058"/>
+					<stop offset="1" stop-color="#28a745"/>
+				</linearGradient>
+			</defs>
+		</svg>
+	</a>
 </p>
 
 <p align="center">
