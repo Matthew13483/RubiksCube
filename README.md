@@ -21,15 +21,15 @@ Solve, scramble, or just play around with cubes of different sizes right in your
 ## 📷 Screenshots
 
 <div align="center">
-	<img src="/screenshots/img1.png" width="120">
-	<img src="/screenshots/img2.png" width="120">
-	<img src="/screenshots/img3.png" width="120">
-	<img src="/screenshots/img4.png" width="120">
-	<img src="/screenshots/img5.png" width="120">
-	<img src="/screenshots/img6.png" width="120">
-	<img src="/screenshots/img7.png" width="120">
-	<img src="/screenshots/img8.png" width="120">
-	<img src="/screenshots/img9.png" width="120">
+	<img src="/screenshots/img1.png" width="130">
+	<img src="/screenshots/img2.png" width="130">
+	<img src="/screenshots/img3.png" width="130">
+	<img src="/screenshots/img4.png" width="130">
+	<img src="/screenshots/img5.png" width="130">
+	<img src="/screenshots/img6.png" width="130">
+	<img src="/screenshots/img7.png" width="130">
+	<img src="/screenshots/img8.png" width="130">
+	<img src="/screenshots/img9.png" width="130">
 </div>
 
 ---
