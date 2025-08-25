@@ -46,7 +46,7 @@ Solve, scramble, or just play around with cubes of different sizes — right in 
 <p align="center">
 	<img src="/screenshots/img7.png" width="120">
 	<img src="/screenshots/img8.png" width="120">
-	<img src="/screenshots/img9.jpg" width="120">
+	<img src="/screenshots/img9.png" width="120">
 </p>
 
 ---
