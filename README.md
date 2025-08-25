@@ -1,21 +1,3 @@
-# RubiksCube
-
-<a href="https://matthew13483.github.io/RubiksCube/">
-	<img src="/Rubik's Cube Stickerless.png" alt="RubiksCube Image" width="50" height="50">
-</a>
-
-Welcome to the **RubiksCube** project!
-
-A functional and interactive virtual 3D **Rubik's Cube** that runs on a web page.
-Scramble and solve the cube with intuitive gestures to turn the cube.
-The cube is rendered in 3D using WebGL.
-
-Click [here](https://matthew13483.github.io/RubiksCube/) to start playing with the **RubiksCube**
-
-
-
----
-
 # <img src="/logo.svg" alt="Rubik's Cube Logo" width="60" align="center"> RubiksCube
 
 An interactive and functional **3D Virtual Rubik's Cube** built with **JavaScript + WebGL**.
@@ -30,7 +12,7 @@ Solve, scramble, or just play around with cubes of different sizes — right in 
 <table>
 <tr>
 	<td width="45%">
-		<img src="/assets/img0.jpg" alt="Tutorial Screenshot" width="100%">
+		<img src="/assets/img0.png" alt="Tutorial Screenshot" width="100%">
 	</td>
 	<td width="55%" valign="top">
 		<ul>
@@ -50,21 +32,21 @@ Solve, scramble, or just play around with cubes of different sizes — right in 
 ## 📷 Screenshots
 
 <p align="center">
-	<img src="/assets/img1.jpg" width="220">
-	<img src="/assets/img2.jpg" width="220">
-	<img src="/assets/img3.jpg" width="220">
+	<img src="/assets/img1.jpg" width="120">
+	<img src="/assets/img2.jpg" width="120">
+	<img src="/assets/img3.jpg" width="120">
 </p>
 
 <p align="center">
-	<img src="/assets/img4.jpg" width="220">
-	<img src="/assets/img5.jpg" width="220">
-	<img src="/assets/img6.jpg" width="220">
+	<img src="/assets/img4.jpg" width="120">
+	<img src="/assets/img5.jpg" width="120">
+	<img src="/assets/img6.jpg" width="120">
 </p>
 
 <p align="center">
-	<img src="/assets/img7.jpg" width="220">
-	<img src="/assets/img8.jpg" width="220">
-	<img src="/assets/img9.jpg" width="220">
+	<img src="/assets/img7.jpg" width="120">
+	<img src="/assets/img8.jpg" width="120">
+	<img src="/assets/img9.jpg" width="120">
 </p>
 
 ---
