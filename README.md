@@ -12,16 +12,16 @@ Solve, scramble, or just play around with cubes of different sizes — right in 
 <table>
 <tr>
 	<td width="45%">
-		<img src="/assets/img0.png" alt="Tutorial Screenshot" width="100%">
+		<img src="/screenshots/img0.png" alt="Tutorial Screenshot" width="100%">
 	</td>
 	<td width="55%" valign="top">
 		<ul>
-			<li>🔲 <b>3D Speedcube Look</b> — Brilliant shading and realistic colors</li>
-			<li>📱 <b>Touch Friendly</b> — Rotate cube and faces easily with gestures</li>
-			<li>🔢 <b>Multi-size Cubes</b> — Play from <b>2×2</b> all the way up to <b>13×13</b></li>
-			<li>⏱ <b>Timer & Solve Statistics</b> — Track times and detailed solve history</li>
-			<li>🎥 <b>PLL & ZBLL Animations</b> — Learn algorithms with visual demos</li>
-			<li>🎛 <b>Controls</b> — Zoom, toggle sound, scramble, speed control, and undo</li>
+			<li>🔲 <b>3D Speedcube Look</b> Brilliant shading and realistic colors</li>
+			<li>📱 <b>Touch Friendly</b> Rotate cube and faces easily with gestures</li>
+			<li>🔢 <b>Multi-size Cubes</b> Play from <b>2×2</b> all the way up to <b>13×13</b></li>
+			<li>⏱ <b>Timer & Solve Statistics</b> Track times and detailed solve history</li>
+			<li>🎥 <b>PLL & ZBLL Animations</b> Learn algorithms with visual demos</li>
+			<li>🎛 <b>Controls</b> Zoom, toggle sound, scramble, speed control, and undo</li>
 		</ul>
 	</td>
 </tr>
@@ -32,21 +32,21 @@ Solve, scramble, or just play around with cubes of different sizes — right in 
 ## 📷 Screenshots
 
 <p align="center">
-	<img src="/assets/img1.jpg" width="120">
-	<img src="/assets/img2.jpg" width="120">
-	<img src="/assets/img3.jpg" width="120">
+	<img src="/screenshots/img1.png" width="120">
+	<img src="/screenshots/img2.png" width="120">
+	<img src="/screenshots/img3.png" width="120">
 </p>
 
 <p align="center">
-	<img src="/assets/img4.jpg" width="120">
-	<img src="/assets/img5.jpg" width="120">
-	<img src="/assets/img6.jpg" width="120">
+	<img src="/screenshots/img4.png" width="120">
+	<img src="/screenshots/img5.png" width="120">
+	<img src="/screenshots/img6.png" width="120">
 </p>
 
 <p align="center">
-	<img src="/assets/img7.jpg" width="120">
-	<img src="/assets/img8.jpg" width="120">
-	<img src="/assets/img9.jpg" width="120">
+	<img src="/screenshots/img7.png" width="120">
+	<img src="/screenshots/img8.png" width="120">
+	<img src="/screenshots/img9.jpg" width="120">
 </p>
 
 ---
