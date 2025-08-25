@@ -98,12 +98,13 @@ function toggleList() {
 function changeDim(n) {
 	n = n || (Rubik.dim - 2 + 1) % 12 + 2;
 	text_dim.innerHTML = n;
-	adjust_speedLevel(4);
 	Rubik.dim = n;
 	Rubik.create_pieces();
 	Rubik.reset();
 	Rubik.rotateCube(0, -0.35, 0);
 	Rubik.rotateCube(-3.5, 0, 0);
+	button_rotateFree.classList.toggle('disabled', !Rubik.rotateFree);
+	adjust_speedLevel(4);
 	animControl_container.classList.add('hidden');
 	animControl_details.classList.add('hidden');
 	if (show_list) toggleList();

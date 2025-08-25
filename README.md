@@ -9,8 +9,22 @@
 </p>
 
 <p align="center">
-	<a href="https://matthew13483.github.io/RubiksCube/">
-		<img src="https://img.shields.io/badge/Play%20Now-Click%20Here-brightgreen?style=for-the-badge&logo=javascript" alt="Play Now">
+	<a href="https://matthew13483.github.io/RubiksCube/" 
+		style="
+			display:inline-block;
+			background-color:#28a745;
+			color:white;
+			font-size:24px;
+			font-weight:bold;
+			text-decoration:none;
+			padding:15px 30px;
+			border-radius:12px;
+			box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+			transition: transform 0.1s ease-in-out;
+		"
+		onmouseover="this.style.transform='scale(1.05)';"
+		onmouseout="this.style.transform='scale(1)';">
+		🎮 Play Rubik's Cube!
 	</a>
 </p>
 
