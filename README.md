@@ -9,23 +9,21 @@
 </p>
 
 <p align="center">
-	<a href="https://matthew13483.github.io/RubiksCube/" 
-		style="
-			display:inline-block;
-			background-color:#28a745;
-			color:white;
-			font-size:24px;
-			font-weight:bold;
-			text-decoration:none;
-			padding:15px 30px;
-			border-radius:12px;
-			box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-			transition: transform 0.1s ease-in-out;
-		"
-		onmouseover="this.style.transform='scale(1.05)';"
-		onmouseout="this.style.transform='scale(1)';">
-		🎮 Play Rubik's Cube!
-	</a>
+	<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70">
+		<a href="https://matthew13483.github.io/RubiksCube/" target="_blank">
+			<rect width="280" height="70" rx="12" fill="url(#button-gradient)"/>
+			<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+						font-family="sans-serif" font-size="24" font-weight="bold" fill="white">
+				🎮 Play Rubik’s Cube!
+			</text>
+		</a>
+		<defs>
+			<linearGradient id="button-gradient" x1="0" y1="0" x2="0" y2="1">
+				<stop offset="0" stop-color="#34d058"/>
+				<stop offset="1" stop-color="#28a745"/>
+			</linearGradient>
+		</defs>
+	</svg>
 </p>
 
 <p align="center">
