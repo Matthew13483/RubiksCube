@@ -1,9 +1,18 @@
-# <img src="/logo.svg" alt="Rubik's Cube Logo" width="60" align="center"> RubiksCube
+<h1 align="center">
+	<img src="/logo.svg" alt="Rubik's Cube Logo" width="60"><br>
+	RubiksCube
+</h1>
 
-An interactive and functional **3D Virtual Rubik's Cube** built with **JavaScript + WebGL**.
-Solve, scramble, or just play around with cubes of different sizes right in your browser!
+<p align="center">
+	An interactive and functional <b>3D Virtual Rubik's Cube</b> built with <b>JavaScript + WebGL</b>.<br>
+	Solve, scramble, or just play around with cubes of different sizes right in your browser!
+</p>
 
-🎮 **[Play Now](https://matthew13483.github.io/RubiksCube/)**
+<p align="center">
+	<a href="https://matthew13483.github.io/RubiksCube/">
+		<img src="https://img.shields.io/badge/Play%20Now-Click%20Here-brightgreen?style=for-the-badge&logo=javascript" alt="Play Now">
+	</a>
+</p>
 
 <p align="center">
 	<img src="https://img.shields.io/github/stars/matthew13483/RubiksCube?style=flat-square" alt="Stars">
@@ -46,11 +55,6 @@ Solve, scramble, or just play around with cubes of different sizes right in your
 <p align="center">
 	<img src="/screenshots/img0.png" width="400">
 </p>
-
----
-
-## 🌐 Play Online
-👉 [https://matthew13483.github.io/RubiksCube/](https://matthew13483.github.io/RubiksCube/)
 
 ---
 
