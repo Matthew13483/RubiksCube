@@ -62,47 +62,9 @@ class RubiksCube {
 		this.canvas.addEventListener(isTouchDevice ? 'touchend' : 'mouseup', handleEnd);
 		this.canvas.addEventListener(isTouchDevice ? 'touchcancel' : 'mouseout', handleCancel);
 		
-		this.pieces = [
-			new Piece(-1, +1, +1, "UFL", "corner", [0, 2, 3, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
-			new Piece(+1, +1, +1, "UFR", "corner", [0, 3, 4, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(-1, -1, +1, "DFL", "corner", [0, 3, 2, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
-			new Piece(+1, -1, +1, "DFR", "corner", [0, 4, 3, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
-			new Piece(-1, +1, -1, "UBL", "corner", [0, 5, 2, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
-			new Piece(+1, +1, -1, "UBR", "corner", [0, 4, 5, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
-			new Piece(-1, -1, -1, "DBL", "corner", [0, 2, 5, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
-			new Piece(+1, -1, -1, "DBR", "corner", [0, 5, 4, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
-
-			new Piece(0, +1, +1, "UF", "edge", [0, 3, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(0, +1, -1, "UB", "edge", [0, 5, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
-			new Piece(0, -1, +1, "DF", "edge", [0, 3, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
-			new Piece(0, -1, -1, "DB", "edge", [0, 5, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
-			new Piece(-1, +1, 0, "UL", "edge", [0, 2, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
-			new Piece(+1, +1, 0, "UR", "edge", [0, 4, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
-			new Piece(-1, -1, 0, "DL", "edge", [0, 2, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
-			new Piece(+1, -1, 0, "DR", "edge", [0, 4, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
-			new Piece(-1, 0, +1, "FL", "edge", [0, 3, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
-			new Piece(+1, 0, +1, "FR", "edge", [0, 3, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
-			new Piece(-1, 0, -1, "BL", "edge", [0, 5, 2], [0, -1, 0, -1, 0, 0, 0, 0, -1]),
-			new Piece(+1, 0, -1, "BR", "edge", [0, 5, 4], [0, 1, 0, 1, 0, 0, 0, 0, -1]),
-
-			new Piece(0, 0, -1, "B", "center", [0, 5], [-1, 0, 0, 0, 0, -1, 0, -1, 0]),
-			new Piece(+1, 0, 0, "R", "center", [0, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
-			new Piece(-1, 0, 0, "L", "center", [0, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
-			new Piece(0, 0, +1, "F", "center", [0, 3], [-1, 0, 0, 0, 0, 1, 0, 1, 0]),
-			new Piece(0, +1, 0, "U", "center", [0, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-			new Piece(0, -1, 0, "D", "center", [0, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
-
-			new Piece(0, 0, 0, "0", "core", [0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
-		];
-		
-		this.center_pieces = {
-			U: this.pieces.find(e => e.id === "U"),
-			L: this.pieces.find(e => e.id === "L"),
-			F: this.pieces.find(e => e.id === "F"),
-			R: this.pieces.find(e => e.id === "R"),
-			B: this.pieces.find(e => e.id === "B"),
-			D: this.pieces.find(e => e.id === "D"),
-		};
+		this.boxed = false;
+		this.dim = 3;
+		this.create_pieces();
 		
 		this.cyclesMap = {
 			U: [[[0, 0], [0, 2], [0, 8], [0, 6]], [[0, 1], [0, 5], [0, 7], [0, 3]], [[1, 0], [4, 0], [3, 0], [2, 0]], [[1, 1], [4, 1], [3, 1], [2, 1]], [[1, 2], [4, 2], [3, 2], [2, 2]]],
@@ -153,7 +115,6 @@ class RubiksCube {
 			console.log(gl.getShaderInfoLog(shader));
 			gl.deleteShader(shader);
 		};
-		
 		let vertexShaderSource = `
 				attribute vec3 a_position;
 				attribute vec3 a_normal;
@@ -162,7 +123,9 @@ class RubiksCube {
 				attribute float a_type;
 				
 				uniform vec2 u_resolution;
-				uniform mat4 u_iMat[27];
+				uniform int u_len;
+				uniform sampler2D u_matrixTex;
+				
 				uniform mat4 u_pMat;
 				uniform mat4 u_mMat;
 				uniform mat4 u_vMat;
@@ -172,17 +135,36 @@ class RubiksCube {
 				varying vec3 v_normal;
 				varying float v_type;
 				
+				mat4 fetchMatrix(float id) {
+					float base = id * 4.0;
+					float texW = float(u_len) * 4.0;
+				
+					vec4 r0 = texture2D(u_matrixTex, vec2((base + 0.5) / texW, 0.5));
+					vec4 r1 = texture2D(u_matrixTex, vec2((base + 1.5) / texW, 0.5));
+					vec4 r2 = texture2D(u_matrixTex, vec2((base + 2.5) / texW, 0.5));
+					vec4 r3 = texture2D(u_matrixTex, vec2((base + 3.5) / texW, 0.5));
+				
+					return mat4(
+						r0.x, r0.y, r0.z, r0.w,
+						r1.x, r1.y, r1.z, r1.w,
+						r2.x, r2.y, r2.z, r2.w,
+						r3.x, r3.y, r3.z, r3.w
+					);
+				}
+				
 				void main() {
-					vec4 worldPos = u_mMat * u_iMat[int(a_id)] * vec4(a_position, 1.0);
+					mat4 u_iMat = fetchMatrix(a_id);
+					vec4 worldPos = u_mMat * u_iMat * vec4(a_position, 1.0);
 					gl_Position = u_pMat * u_vMat * worldPos;
 					v_position = vec3(worldPos);
-					v_normal = mat3(u_mMat) * mat3(u_iMat[int(a_id)]) * a_normal;
+					v_normal = mat3(u_mMat) * mat3(u_iMat) * a_normal;
 					v_color = a_color;
 					v_type = a_type;
 				}
 			`;
 		let fragmentShaderSource = `
 				precision mediump float;
+				uniform int u_dim;
 				uniform vec3 camPos;
 				
 				uniform vec3 lightSources[5];
@@ -213,7 +195,7 @@ class RubiksCube {
 					}
 					
 					float len = length(v_position);
-					diff_mul = min(diff_mul * 0.444 * len * len, diff_mul);
+					if (u_dim == 3) diff_mul = min(diff_mul * 0.444 * len * len, diff_mul);
 					
 					vec3 ambient = 0.1 * color + 0.3 * vec3(24.0, 24.0, 48.0) / 255.0;
 					vec3 diffuse = vec3(0.0);
@@ -238,9 +220,9 @@ class RubiksCube {
 					
 					vec3 result = ambient + diff_mul * diffuse + 0.3 * spec_mul * specular;
 					
-					vec3 shade0 = 0.8 * v_color;
-					vec3 shade1 = v_color * vec3(dot(v_normal, normalize(lightSources[0] - v_position))) * 0.3;
-					vec3 result2 = shade0 + shade1;
+					//vec3 shade0 = 0.8 * v_color;
+					//vec3 shade1 = v_color * vec3(dot(v_normal, normalize(lightSources[0] - v_position))) * 0.3;
+					//vec3 result2 = shade0 + shade1;
 					
 					gl_FragColor = vec4(result, alpha);
 				}
@@ -262,6 +244,78 @@ class RubiksCube {
 		gl.program = program;
 		
 		this.gl = gl;
+	}
+
+	create_pieces() {
+		this.pieces = null;
+		let see = this.dim % 2 != 0;
+		let c = (this.dim - 1) / 2;
+		let c0 = (this.dim % 2) ? c : c / 2;
+		this.pieces = [
+			new Piece(-c, +c, +c, "UFL", "corner", [0, 2, 3, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+			new Piece(+c, +c, +c, "UFR", "corner", [0, 3, 4, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+			new Piece(-c, -c, +c, "DFL", "corner", [0, 3, 2, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+			new Piece(+c, -c, +c, "DFR", "corner", [0, 4, 3, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+			new Piece(-c, +c, -c, "UBL", "corner", [0, 5, 2, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+			new Piece(+c, +c, -c, "UBR", "corner", [0, 4, 5, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+			new Piece(-c, -c, -c, "DBL", "corner", [0, 2, 5, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+			new Piece(+c, -c, -c, "DBR", "corner", [0, 5, 4, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+			
+			new Piece(0, 0, -c0, "B", "center", [0, 5], [-1, 0, 0, 0, 0, -1, 0, -1, 0], see),
+			new Piece(+c0, 0, 0, "R", "center", [0, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1], see),
+			new Piece(-c0, 0, 0, "L", "center", [0, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1], see),
+			new Piece(0, 0, +c0, "F", "center", [0, 3], [-1, 0, 0, 0, 0, 1, 0, 1, 0], see),
+			new Piece(0, +c0, 0, "U", "center", [0, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1], see),
+			new Piece(0, -c0, 0, "D", "center", [0, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1], see),
+			
+			new Piece(0, 0, 0, "0", "core", [0], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+		];
+		
+		for (let i = 0; i < this.dim - 2; i++) {
+			let l = this.dim - 2;
+			let s = -((l - 1) / 2) + i;
+			this.pieces.push(
+				new Piece(s, +c, +c, "UF", "edge", [0, 3, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+				new Piece(s, +c, -c, "UB", "edge", [0, 5, 1], [-1, 0, 0, 0, 1, 0, 0, 0, -1]),
+				new Piece(s, -c, +c, "DF", "edge", [0, 3, 6], [-1, 0, 0, 0, -1, 0, 0, 0, 1]),
+				new Piece(s, -c, -c, "DB", "edge", [0, 5, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+				new Piece(-c, +c, s, "UL", "edge", [0, 2, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0]),
+				new Piece(+c, +c, s, "UR", "edge", [0, 4, 1], [0, 0, -1, 0, 1, 0, 1, 0, 0]),
+				new Piece(-c, -c, s, "DL", "edge", [0, 2, 6], [0, 0, -1, 0, -1, 0, -1, 0, 0]),
+				new Piece(+c, -c, s, "DR", "edge", [0, 4, 6], [0, 0, 1, 0, -1, 0, 1, 0, 0]),
+				new Piece(-c, s, +c, "FL", "edge", [0, 3, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+				new Piece(+c, s, +c, "FR", "edge", [0, 3, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+				new Piece(-c, s, -c, "BL", "edge", [0, 5, 2], [0, -1, 0, -1, 0, 0, 0, 0, -1]),
+				new Piece(+c, s, -c, "BR", "edge", [0, 5, 4], [0, 1, 0, 1, 0, 0, 0, 0, -1]),
+			);
+		}
+		
+		for (let i = 0; i < this.dim - 2; i++) {
+			for (let j = 0; j < this.dim - 2; j++) {
+				let l = this.dim - 2;
+				let s = -((l - 1) / 2) + i;
+				let t = -((l - 1) / 2) + j;
+				if (s == 0 && t == 0) continue;
+				this.pieces.push(
+					new Piece(s, t, -c, "B", "center", [0, 5], [-1, 0, 0, 0, 0, -1, 0, -1, 0]),
+					new Piece(+c, s, t, "R", "center", [0, 4], [0, -1, 0, 1, 0, 0, 0, 0, 1]),
+					new Piece(-c, s, t, "L", "center", [0, 2], [0, 1, 0, -1, 0, 0, 0, 0, 1]),
+					new Piece(s, t, +c, "F", "center", [0, 3], [-1, 0, 0, 0, 0, 1, 0, 1, 0]),
+					new Piece(s, +c, t, "U", "center", [0, 1], [1, 0, 0, 0, 1, 0, 0, 0, 1]),
+					new Piece(s, -c, t, "D", "center", [0, 6], [1, 0, 0, 0, -1, 0, 0, 0, -1]),
+				);
+			}
+		}
+		
+		this.center_pieces = null;
+		this.center_pieces = {
+			U: this.pieces.find(e => e.id === "U"),
+			L: this.pieces.find(e => e.id === "L"),
+			F: this.pieces.find(e => e.id === "F"),
+			R: this.pieces.find(e => e.id === "R"),
+			B: this.pieces.find(e => e.id === "B"),
+			D: this.pieces.find(e => e.id === "D"),
+		};
 	}
 
 	reset() {
@@ -286,13 +340,15 @@ class RubiksCube {
 		this.gl_u = {};
 		this.gl_f = {};
 		
+		this.anim = null;
+		
 		this.resetCube();
 	}
 
 	resetCube() {
 		this.pieces.forEach(piece => piece.reset());
 		
-		this.pos = { x: 0, y: 0, z: 10.5 };
+		this.pos = { x: 0, y: 0, z: 2.5 * this.dim + 3 };
 		this.fov = 50 * Math.PI / 180;
 		
 		this.rotationMat = [
@@ -301,6 +357,7 @@ class RubiksCube {
 			{ x: 0, y: 0, z: 1 }
 		];
 		this.rotateVel = { x: 0, y: 0, z: 0 };
+		this.rotateFree = false;
 		
 		this.map = [
 			[1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -361,7 +418,17 @@ class RubiksCube {
 		
 		if (this.scrambling && !turning_pieces) {
 			if (this.scrambleIndex < this.scramble.length) {
-				this.turnCubeNotation(this.scramble[this.scrambleIndex], this.turn_ms.scramble);
+				if (this.dim == 3) this.turnCubeNotation(this.scramble[this.scrambleIndex], this.turn_ms.scramble);
+				else {
+					let turn = this.scramble[this.scrambleIndex];
+					let piece = turn.piece;
+					let pieces;
+					if (turn.axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.01);
+					if (turn.axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.01);
+					if (turn.axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.01);
+					
+					this.turnCube(pieces, turn.axis, turn.times, this.turn_ms.scramble);
+				}
 				this.scrambleIndex++;
 			}
 			else {
@@ -454,11 +521,6 @@ class RubiksCube {
 		
 		let MA = (this.turnsCubeMove.length > 0) ? this.turnsCubeMove[this.turnsCubeMove.length - 1].orientation : [{ x: 1, y: 0, z: 0 }, { x: 0, y: 1, z: 0 }, { x: 0, y: 0, z: 1 }];
 		let MB = orientation;
-		
-		/*
-		Rubik.turnAlgInstant(Rubik.solves[0].scramble);
-Rubik.turnAlgInstant(Rubik.solves[0].solution);
-		*/
 		
 		let cube_rotations = [];
 		if (Vlength(Vsub(MB[0], MA[1])) < 0.01 || Vlength(Vadd(MB[0], MA[1])) < 0.01) {
@@ -584,8 +646,14 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	set_iMat() {
-		let iMat = [];
-		this.pieces.forEach((piece, i) => {
+		let gl = this.gl;
+
+		gl.getExtension("OES_texture_float");
+		
+		let matrices = new Float32Array(this.pieces.length * 16);
+		
+		for (let i = 0; i < this.pieces.length; i++) {
+			let piece = this.pieces[i];
 			piece.displayed = true;
 			let mat = [
 				piece.rotationMat[0].x, piece.rotationMat[0].y, piece.rotationMat[0].z, 0,
@@ -593,17 +661,33 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				piece.rotationMat[2].x, piece.rotationMat[2].y, piece.rotationMat[2].z, 0,
 				0, 0, 0, 1
 			];
-			iMat.push(...mat);
-		});
-		this.gl_f.iMat = new Float32Array(iMat);
-		this.gl.uniformMatrix4fv(this.gl_u['u_iMat'], false, new Float32Array(iMat));
+			matrices.set(mat, i * 16);
+		}
+		
+		let texWidth = this.pieces.length * 4;
+		let texHeight = 1;
+		
+		let matrixTex = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, matrixTex);
+		
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texWidth, texHeight, 0, gl.RGBA, gl.FLOAT, matrices);
+		
+		this.matrixTex = matrixTex;
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, matrixTex);
+		gl.uniform1i(this.gl_u['u_matrixTex'], 0);
 	}
 
 	set_pMat() {
 		let fov = this.fov;
 		let aspect = this.display.width / this.display.height;
 		let near = 1;
-		let far = 50;
+		let far = 1500;
 		let f = 1.0 / Math.tan(fov / 2);
 		let nf = 1 / (near - far);
 		this.pMat = [
@@ -641,9 +725,12 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		if (!gl) return;
 		let program = gl.program;
 		
-		['u_iMat', 'u_pMat', 'u_vMat', 'u_mMat', 'camPos', 'lightSources', 'lightColors'].forEach(loc => {
+		['u_len', 'u_dim', 'u_matrixTex', 'u_image', 'u_iMat', 'u_pMat', 'u_vMat', 'u_mMat', 'camPos', 'lightSources', 'lightColors'].forEach(loc => {
 			this.gl_u[loc] = gl.getUniformLocation(program, loc);
 		});
+		
+		gl.uniform1i(this.gl_u['u_len'], this.pieces.length);
+		gl.uniform1i(this.gl_u['u_dim'], this.dim);
 		
 		this.set_iMat();
 		this.set_pMat();
@@ -652,6 +739,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		
 		let vertex_data = [];
 		this.pieces.forEach((piece, pi) => {
+			if (!piece.see) return;
 			let obj = objs[piece.type];
 			if (!obj) return;
 			let mat = piece.orient_mat;
@@ -735,7 +823,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				vertex_normals0[i] = n;
 			});
 			
-			for (let group in obj.groups) {
+			if (!this.boxed) for (let group in obj.groups) {
 				obj.groups[group].forEach((face, i) => {
 					let v0 = vertices[face[0]];
 					let v1 = vertices[face[1]];
@@ -766,17 +854,40 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				});
 			}
 		});
+		if (this.boxed) this.pieces.forEach((piece, I) => {
+			piece.box.forEach((box, i) => {
+				if (piece.boxFaces[i]) {
+					let [v0, v1, v2, v3] = box;
+					let n = Vcross(Vsub(v2, v0), Vsub(v1, v0));
+					let c = objs.colors[i + 1].map(e => e / 255);
+					vertex_data.push(
+						v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+						v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+						v1.x, v1.y, v1.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					);
+					vertex_data.push(
+						v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+						v3.x, v3.y, v3.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+						v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					);
+				}
+			});
+		});
 		
 		let size = 0.7;
 		let xz = 0.5 * size;
-		let y = 1.1000 / 2 + 1.011;
-		vertex_data.push(
-			-xz, y, -xz, 0, 1, 0, 0, 0, 0, 24, -1,
-			-xz, y, +xz, 0, 1, 0, 0, 1, 0, 24, -1,
-			+xz, y, +xz, 0, 1, 0, 1, 1, 0, 24, -1,
-			-xz, y, -xz, 0, 1, 0, 0, 0, 0, 24, -1,
-			+xz, y, +xz, 0, 1, 0, 1, 1, 0, 24, -1,
-			+xz, y, -xz, 0, 1, 0, 1, 0, 0, 24, -1
+		let y = this.dim * 0.5 * 1.01 + 0.05;
+		let iu = this.pieces.findIndex(e => e.id == 'U' && e.see);
+		if (iu == -1) iu = this.pieces.findIndex(e => e.type == 'corner');
+		let xo = this.pieces[iu].x;
+		let zo = this.pieces[iu].z;
+		if (!this.boxed) vertex_data.push(
+			-xz + xo, y, -xz + zo, 0, 1, 0, 0, 0, 0, iu, -1,
+			-xz + xo, y, +xz + zo, 0, 1, 0, 0, 1, 0, iu, -1,
+			+xz + xo, y, +xz + zo, 0, 1, 0, 1, 1, 0, iu, -1,
+			-xz + xo, y, -xz + zo, 0, 1, 0, 0, 0, 0, iu, -1,
+			+xz + xo, y, +xz + zo, 0, 1, 0, 1, 1, 0, iu, -1,
+			+xz + xo, y, -xz + zo, 0, 1, 0, 1, 0, 0, iu, -1
 		);
 		
 		this.vertex_data_length = vertex_data.length;
@@ -823,14 +934,19 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.logo);
+			
+			this.texture = texture;
+			gl.activeTexture(gl.TEXTURE1);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.uniform1i(this.gl_u['u_image'], 1);
 		};
 		
 		let lightSources = [
-			0, 10, 0,
-			5, 0, 10,
-			-20, 0, 10,
-			0, -20, -10,
-			+20, 0, 10
+			0, 100, 0,
+			50, 0, 100,
+			-200, 0, 100,
+			0, -200, -100,
+			+200, 0, 100
 		];
 		let lightColors = [
 			0.7, 0.7, 0.7,
@@ -852,6 +968,14 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, this.matrixTex);
+		gl.uniform1i(this.gl_u['u_matrixTex'], 0); 
+		
+		gl.activeTexture(gl.TEXTURE1);
+		gl.bindTexture(gl.TEXTURE_2D, this.texture);
+		gl.uniform1i(this.gl_u['u_image'], 1);
 
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertex_data_length / 11);
 	}
@@ -910,7 +1034,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	touchMove(x, y, id) {
 		let touch = this.touches.find(e => e.id === id);
 		if (!touch) return;
-		if (touch.touchingCube && !touch.gotLine) {
+		if (!this.rotateFree && touch.touchingCube && !touch.gotLine) {
 			let { cube, face, pieceI } = touch;
 			let piece = this.pieces[pieceI];
 			let Ply = { points: face.map(p => this.renderP(piece.transform(p))) };
@@ -927,9 +1051,9 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 						let axis = Vsub(piece.transformDone(face[i]), piece.transformDone(face[(i + 1) % face.length]));
 						for (let a in axis) axis[a] = Math.round(axis[a]);
 						let pieces;
-						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.1);
-						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.1);
-						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.1);
+						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.01);
+						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.01);
+						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.01);
 						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
 						if (this.mode[0] == 'replay') this.mode = ['casual'];
 						if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
@@ -941,7 +1065,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 				}
 			});
 		}
-		if (!touch.touchingCube) {
+		if (this.rotateFree || !touch.touchingCube) {
 			touch.ax = touch.x;
 			touch.ay = touch.y;
 			this.rotateVel.x = (touch.y - y) * (2 * Math.PI) / Math.sqrt(this.display.width * this.display.height);
@@ -949,7 +1073,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 			this.rotateCube(this.rotateVel.x, this.rotateVel.y, 0);
 		}
 		Object.assign(touch, { x, y });
-		let touchesR = this.touches.filter(e => !e.touchingCube);
+		let touchesR = this.touches.filter(e => this.rotateFree || !e.touchingCube);
 		if (touchesR.length >= 2) {
 			let x = 0;
 			let y = 0;
@@ -975,11 +1099,13 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 					touch.ay = undefined;
 				}
 			});
-
+			
 			this.rotateCube(0, 0, this.rotateVel.z = -angle);
-			/*this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, 7), 1300);
-			this.set_vMat();
-			this.gl.uniform3f(this.gl_u['camPos'], this.pos.x, this.pos.y, this.pos.z);*/
+			if (this.rotateFree) {
+				this.pos.z = Math.min(Math.max(this.pos.z + -dist * 0.01, -Infinity), Infinity);
+				this.set_vMat();
+				this.gl.uniform3f(this.gl_u['camPos'], this.pos.x, this.pos.y, this.pos.z);
+			}
 		}
 	}
 
@@ -992,25 +1118,37 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	generateScramble(length = 21) {
-		let getRandomI = arr => Math.floor(Math.random() * arr.length);
-		let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
-		let p_symbol = ["", "'", "2"];
-		let scr = [];
-		for (let i = 0; i < length; i++) {
-			let avail_axis = [0, 1, 2];
-			let avail_dir = [0, 1];
-			if (scr.length > 1 && scr[scr.length - 1].axis == scr[scr.length - 2].axis) {
-				avail_axis.splice(scr[scr.length - 1].axis, 1);
+		if (this.dim == 3) {
+			let getRandomI = arr => Math.floor(Math.random() * arr.length);
+			let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
+			let p_symbol = ["", "'", "2"];
+			let scr = [];
+			for (let i = 0; i < length; i++) {
+				let avail_axis = [0, 1, 2];
+				let avail_dir = [0, 1];
+				if (scr.length > 1 && scr[scr.length - 1].axis == scr[scr.length - 2].axis) {
+					avail_axis.splice(scr[scr.length - 1].axis, 1);
+				}
+				let axis = avail_axis[getRandomI(avail_axis)];
+				if (scr.length > 0 && scr[scr.length - 1].axis == axis) {
+					avail_dir.splice(scr[scr.length - 1].dir, 1);
+				}
+				let dir = avail_dir[getRandomI(avail_dir)];
+				let symbol = getRandomI(p_symbol);
+				scr.push({ axis, dir, symbol });
 			}
-			let axis = avail_axis[getRandomI(avail_axis)];
-			if (scr.length > 0 && scr[scr.length - 1].axis == axis) {
-				avail_dir.splice(scr[scr.length - 1].dir, 1);
-			}
-			let dir = avail_dir[getRandomI(avail_dir)];
-			let symbol = getRandomI(p_symbol);
-			scr.push({ axis, dir, symbol });
+			return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]);
 		}
-		return scr.map(e => p_axis[e.axis][e.dir] + p_symbol[e.symbol]);
+		else {
+			let pieces = this.pieces.filter(piece => piece.see && piece.type != 'core');
+			return new Array(Math.max(pieces.length, 20)).fill(null).map(e => {
+				let piece = pieces[Math.floor(Math.random() * pieces.length)];
+				let axis = { x: 0, y: 0, z: 0 };
+				axis[['x', 'y', 'z'][Math.floor(Math.random() * 3)]] = 1;
+				let times = (Math.random() > 1 / 3) ? 1 : 2;
+				return { piece, axis, times };
+			});
+		}
 	}
 
 	scrambleCube() {
@@ -1035,11 +1173,18 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	isSolved() {
-		for (let i = 0; i < this.map.length; i++) {
-			let face = this.map[i];
-			let color = face[0];
-			for (let j = 0; j < face.length; j++) {
-				if (face[j] != color) return false;
+		let c_piece = this.pieces.find(piece => piece.type != 'center');
+		if (!c_piece) return true;
+		let R2 = c_piece.rotationMat;
+		for (let i = 0; i < this.pieces.length; i++) {
+			let piece = this.pieces[i];
+			if (!piece.see || piece.type == 'core') continue;
+			let R1 = piece.rotationMat;
+			if (piece.type == 'center') {
+				if (Vdot(Vmatrix(R1, piece), Vmatrix(R2, piece)) < 1 - 1e-6) return false;
+			}
+			else {
+				if (Vdot(R1[0], R2[0]) < 1 - 1e-6 || Vdot(R1[1], R2[1]) < 1 - 1e-6 || Vdot(R1[2], R2[2]) < 1 - 1e-6) return false;
 			}
 		}
 		return true;
@@ -1049,6 +1194,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 		timer.stop();
 		this.mode = ['casual'];
 		this.undoCap = this.turns.length;
+		
+		if (this.dim != 3) return;
 		
 		let solution = [];
 		let solution_times = [];
@@ -1189,6 +1336,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	replay(solve) {
+		if (this.dim != 3) return;
 		this.mode = ['replay'];
 		let { scramble, time, solution, solution_times, ms } = solve;
 		let solution1 = solution.split(' ');
@@ -1459,6 +1607,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_prog(anim, prog) {
+		if (!this.anim) return;
 		prog = Math.min(Math.max(prog, 0), 1);
 		let i = Math.floor(anim.n * prog);
 		let t = anim.n * prog - i;
@@ -1482,6 +1631,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_input(slider) {
+		if (!this.anim) return;
 		this.anim_prog(this.anim, slider.value / this.anim.n);
 		this.anim.value = slider.value;
 		this.anim.play = false;
@@ -1513,6 +1663,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_start(slider) {
+		if (!this.anim) return;
 		this.anim_prog(this.anim, 0);
 		this.anim.value = 0;
 		this.anim.play = false;
@@ -1520,11 +1671,13 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_backward(slider) {
+		if (!this.anim) return;
 		if (!this.anim.move) this.anim.value = Math.max(Math.round(this.anim.value - 1), 0);
 		this.anim.play = false;
 	}
 
 	anim_play(slider) {
+		if (!this.anim) return;
 		if (this.anim.value == this.anim.n) anim_start();
 		this.anim.play = !this.anim.play;
 		this.anim.date = Date.now();
@@ -1533,11 +1686,13 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_forward(slider) {
+		if (!this.anim) return;
 		if (!this.anim.move) this.anim.value = Math.min(Math.round(this.anim.value + 1), this.anim.n);
 		this.anim.play = false;
 	}
 
 	anim_end(slider) {
+		if (!this.anim) return;
 		this.anim_prog(this.anim, 1);
 		this.anim.value = this.anim.n;
 		this.anim.play = false;
@@ -1545,6 +1700,7 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 	}
 
 	anim_loop() {
+		if (!this.anim) return;
 		if (this.anim.play) {
 			let dt = Date.now() - this.anim.date;
 			let duration = this.anim.n * (this.anim.m_ms + this.anim.p_ms);
@@ -1582,8 +1738,8 @@ Rubik.turnAlgInstant(Rubik.solves[0].solution);
 
 class Piece {
 
-	constructor(x, y, z, id, type, color, orient_mat = [1, 0, 0, 0, 1, 0, 0, 0, 1]) {
-		this.set = { x, y, z, id, type, color, orient_mat };
+	constructor(x, y, z, id, type, color, orient_mat = [1, 0, 0, 0, 1, 0, 0, 0, 1], see = true) {
+		this.set = { x, y, z, id, type, color, orient_mat, see };
 		this.reset();
 	}
 
@@ -1595,6 +1751,7 @@ class Piece {
 		this.type = this.set.type;
 		this.color = this.set.color;
 		this.orient_mat = this.set.orient_mat;
+		this.see = this.set.see;
 		
 		this.box = [
 			[[-1, +1, -1], [+1, +1, -1], [+1, +1, +1], [-1, +1, +1]],
@@ -1604,12 +1761,14 @@ class Piece {
 			[[+1, +1, -1], [-1, +1, -1], [-1, -1, -1], [+1, -1, -1]],
 			[[-1, -1, +1], [+1, -1, +1], [+1, -1, -1], [-1, -1, -1]]
 		].map((e, i) => e.map(f => ({
-			x: (f[0] / 2) + this.x * 1,
-			y: (f[1] / 2) + this.y * 1,
-			z: (f[2] / 2) + this.z * 1
+			x: (f[0] / 2) + this.x,
+			y: (f[1] / 2) + this.y,
+			z: (f[2] / 2) + this.z
 		})));
-		this.boxFaces = this.box.map(face => Vdot(getNormal(face), this) > 0);
-
+		this.boxFaces = new Array(this.box.length).fill(false);
+		let num = ['core', 'center', 'edge', 'corner'].indexOf(this.type);
+		if (this.see) this.box.map(face => Vdot(getNormal(face), Vnormalize(this))).map((e, i) => [e, i]).sort((a, b) => b[0] - a[0]).slice(0, num).forEach(e => this.boxFaces[e[1]] = true);
+		
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },
 			{ x: 0, y: 1, z: 0 },
@@ -1620,10 +1779,10 @@ class Piece {
 			{ x: 0, y: 1, z: 0 },
 			{ x: 0, y: 0, z: 1 }
 		];
-
+		
 		this.turning = false;
 		this.turn = {};
-
+		
 		this.displayed = false;
 	}
 

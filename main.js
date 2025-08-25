@@ -95,6 +95,39 @@ function toggleList() {
 	if (!show_list && show_solveInfo) toggleInfo();
 }
 
+function changeDim(n) {
+	n = n || (Rubik.dim - 2 + 1) % 12 + 2;
+	text_dim.innerHTML = n;
+	adjust_speedLevel(4);
+	Rubik.dim = n;
+	Rubik.create_pieces();
+	Rubik.reset();
+	Rubik.rotateCube(0, -0.35, 0);
+	Rubik.rotateCube(-3.5, 0, 0);
+	animControl_container.classList.add('hidden');
+	animControl_details.classList.add('hidden');
+	if (show_list) toggleList();
+	if (timer.enabled) toggleTimer();
+}
+
+function toggle_box() {
+	Rubik.boxed = !Rubik.boxed;
+	Rubik.draw_setup();
+	button_box.classList.toggle('disabled', !Rubik.boxed);
+}
+
+function toggle_rotateFree() {
+	Rubik.rotateFree = !Rubik.rotateFree;
+	button_rotateFree.classList.toggle('disabled', !Rubik.rotateFree);
+}
+
+function adjust_speedLevel(level) {
+	Array.from(button_speedLevel.children).forEach((element, i, a) => {
+		element.classList.toggle('disabled', i < a.length - level);
+	});
+	Rubik.turn_ms.touch = [Infinity, 240, 180, 120, 60][level];
+}
+
 let show_solveInfo = false;
 let element_solveInfo = null;
 function toggleInfo() {
@@ -755,6 +788,7 @@ function create_alg_svg(alg, rest) {
 		sticker.setAttribute('fill', fill ? colors[map_color] : "#404040");
 	});
 	return { svg: clone, click: () => {
+		if (Rubik.dim != 3) return;
 		animate_start(alg1.join(' '), alg, alg0);
 		toggleAlgs();
 	} };
@@ -884,7 +918,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0409';
+const version = 'v 0500';
 
 function loop() {
 	requestAnimationFrame(loop);

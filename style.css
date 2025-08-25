@@ -63,6 +63,44 @@ div.column {
 	display: block;
 }
 
+#button_changeDim {
+	position: fixed;
+	top: 70px;
+	right: 10px;
+}
+
+#button_box {
+	position: fixed;
+	top: 110px;
+	right: 10px;
+}
+
+#button_rotateFree {
+	position: fixed;
+	top: 150px;
+	right: 10px;
+}
+
+#button_rotateFree.disabled, #button_box.disabled, .disabled {
+	fill: #606090;
+}
+
+#button_speedLevel {
+	position: fixed;
+	top: 190px;
+	right: 10px;
+	width: 35px;
+	height: 70px;
+}
+
+#button_speedLevel:active {
+	fill: #ffffff;
+}
+
+#button_speedLevel rect {
+	transition: all 0.2s;
+}
+
 #button_algs {
 	position: fixed;
 	top: 10px;
