@@ -5,14 +5,21 @@ Solve, scramble, or just play around with cubes of different sizes right in your
 
 🎮 **[Play Now](https://matthew13483.github.io/RubiksCube/)**
 
+<p align="center">
+	<img src="https://img.shields.io/github/stars/matthew13483/RubiksCube?style=flat-square" alt="Stars">
+	<img src="https://img.shields.io/github/forks/matthew13483/RubiksCube?style=flat-square" alt="Forks">
+	<img src="https://img.shields.io/github/issues/matthew13483/RubiksCube?style=flat-square" alt="Issues">
+	<img src="https://img.shields.io/github/license/matthew13483/RubiksCube?style=flat-square" alt="License">
+</p>
+
 ---
 
 ## ✨ Features
 
-- 🔲 **3D Speedcube Look** – Brilliant shading and realistic colors
+- ✅ **3D Speedcube Look** – Brilliant shading and realistic colors
 - 📱 **Touch Friendly** – Rotate cube and faces easily with gestures
 - 🔢 **Multi-size Cubes** – Play from **2×2** all the way up to **13×13**
-- ⏱ **Timer & Solve Statistics** – Track times and detailed solve history
+- ⏱️ **Timer & Solve Statistics** – Track times and detailed solve history
 - 🎥 **PLL & ZBLL Animations** – Learn algorithms with visual demos
 - 🎛 **Controls** – Zoom, toggle sound, scramble, speed control, and undo
 
@@ -56,3 +63,11 @@ Solve, scramble, or just play around with cubes of different sizes right in your
 
 ## 📜 License
 MIT License. Free to use and modify.
+
+---
+
+<p align="center">
+	<a href="mailto:manzanaresmatthew0@gmail.com">
+		<img src="https://img.shields.io/badge/Email-Contact%20Me-blue?style=flat-square&logo=gmail" alt="Email">
+	</a>
+</p>
