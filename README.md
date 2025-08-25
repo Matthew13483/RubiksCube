@@ -12,9 +12,8 @@
 	<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70">
 		<a href="https://matthew13483.github.io/RubiksCube/" target="_blank">
 			<rect width="280" height="70" rx="12" fill="url(#button-gradient)"/>
-			<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-						font-family="sans-serif" font-size="24" font-weight="bold" fill="white">
-				🎮 Play Rubik’s Cube!
+			<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" font-weight="bold" fill="white">
+				🎮 Play Rubik’s Cube!!
 			</text>
 		</a>
 		<defs>
