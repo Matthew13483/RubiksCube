@@ -42,9 +42,9 @@ const timer = new Timer();
 
 timer.enabled = false;
 
-function toggleTimer() {
-	if (show_list) toggleList();
-	timer.enabled = !timer.enabled;
+function toggleTimer(value) {
+	toggleList(false);
+	timer.enabled = (typeof value == 'boolean') ? value : !timer.enabled;
 	timerON.classList.toggle('hidden', !timer.enabled);
 	timerOFF.classList.toggle('hidden', timer.enabled);
 	timer_display.style.color = '#565670';
@@ -89,15 +89,15 @@ function toggleSound() {
 }
 
 let show_list = false;
-function toggleList() {
-	show_list = !show_list;
+function toggleList(value) {
+	show_list = (typeof value == 'boolean') ? value : !show_list;
 	times_container.classList.toggle('show', show_list);
 	if (!show_list && show_solveInfo) toggleInfo();
 }
 
 let show_dims = false;
-function toggleDims() {
-	show_dims = !show_dims;
+function toggleDims(value) {
+	show_dims = (typeof value == 'boolean') ? value : !show_dims;
 	dims_container.classList.toggle('show', show_dims);
 }
 
@@ -107,7 +107,7 @@ for (let i = 2; i <= 21; i++) {
 	option.classList.add('dim');
 	option.onclick = () => {
 		changeDim(i);
-		if (show_dims) toggleDims();
+		toggleDims(false);
 	};
 	dims_container.appendChild(option);
 }
@@ -119,22 +119,21 @@ function changeDim(n) {
 	Rubik.reset();
 	Rubik.rotateCube(0, -0.35, 0);
 	Rubik.rotateCube(-3.5, 0, 0);
-	button_rotateFree.classList.toggle('disabled', !Rubik.rotateFree);
+	toggle_rotateFree(false);
 	adjust_speedLevel(4);
-	animControl_container.classList.add('hidden');
-	animControl_details.classList.add('hidden');
-	if (show_list) toggleList();
-	if (timer.enabled) toggleTimer();
+	animate_end(false);
+	toggleList(false);
+	toggleTimer(false);
 }
 
-function toggle_box() {
-	Rubik.boxed = !Rubik.boxed;
+function toggle_box(value) {
+	Rubik.boxed = (typeof value == 'boolean') ? value : !Rubik.boxed;
 	Rubik.draw_setup();
 	button_box.classList.toggle('disabled', !Rubik.boxed);
 }
 
-function toggle_rotateFree() {
-	Rubik.rotateFree = !Rubik.rotateFree;
+function toggle_rotateFree(value) {
+	Rubik.rotateFree = (typeof value == 'boolean') ? value : !Rubik.rotateFree;
 	button_rotateFree.classList.toggle('disabled', !Rubik.rotateFree);
 }
 
@@ -147,8 +146,8 @@ function adjust_speedLevel(level) {
 
 let show_solveInfo = false;
 let element_solveInfo = null;
-function toggleInfo() {
-	show_solveInfo = !show_solveInfo;
+function toggleInfo(value) {
+	show_solveInfo = (typeof value == 'boolean') ? value : !show_solveInfo;
 	solveInfo_container.classList.toggle('show', show_solveInfo);
 	if (!show_solveInfo && element_solveInfo) element_solveInfo.classList.remove('highlight');
 }
@@ -158,8 +157,8 @@ slider.oninput = () => {
 	anim_updateSVG();
 }
 function animate_start(setup, alg, alg0) {
-	if (show_list) toggleList();
-	if (timer.enabled) toggleTimer();
+	toggleList(false);
+	toggleTimer(false);
 	animControl_container.classList.remove('hidden');
 	animControl_details.classList.remove('hidden');
 	animControl_svg.innerHTML = '';
@@ -168,10 +167,10 @@ function animate_start(setup, alg, alg0) {
 	Rubik.animate_start(slider, setup, alg);
 	anim_updateSVG();
 }
-function animate_end() {
+function animate_end(reset = true) {
 	animControl_container.classList.add('hidden');
 	animControl_details.classList.add('hidden');
-	Rubik.animate_end(slider);
+	if (reset) Rubik.animate_end(slider);
 	anim_updateSVG();
 }
 function anim_start() {
@@ -201,8 +200,8 @@ function anim_updateSVG() {
 }
 
 let show_algs = false;
-function toggleAlgs() {
-	show_algs = !show_algs;
+function toggleAlgs(value) {
+	show_algs = (typeof value == 'boolean') ? value : !show_algs;
 	algs_container.classList.toggle('show', show_algs);
 	button_algs.classList.toggle('show', show_algs);
 }
@@ -807,7 +806,7 @@ function create_alg_svg(alg, rest) {
 	return { svg: clone, click: () => {
 		if (Rubik.dim != 3) return;
 		animate_start(alg1.join(' '), alg, alg0);
-		toggleAlgs();
+		toggleAlgs(false);
 	} };
 }
 
@@ -935,7 +934,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0502';
+const version = 'v 0503';
 
 function loop() {
 	requestAnimationFrame(loop);

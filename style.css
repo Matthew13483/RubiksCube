@@ -63,10 +63,14 @@ div.column {
 	display: block;
 }
 
-#button_changeDim {
+#right {
 	position: fixed;
-	top: 70px;
-	right: 10px;
+	top: 10px;
+	right: 0px;
+}
+
+#button_algs {
+	transition: all 0.2s;
 }
 
 #dims_container {
@@ -105,26 +109,11 @@ div.column {
 	background: linear-gradient(180deg, #202040c0, #101020c0);
 }
 
-#button_box {
-	position: fixed;
-	top: 110px;
-	right: 10px;
-}
-
-#button_rotateFree {
-	position: fixed;
-	top: 150px;
-	right: 10px;
-}
-
 #button_rotateFree.disabled, #button_box.disabled, .disabled {
 	fill: #606090;
 }
 
 #button_speedLevel {
-	position: fixed;
-	top: 190px;
-	right: 10px;
 	width: 35px;
 	height: 70px;
 }
@@ -134,13 +123,6 @@ div.column {
 }
 
 #button_speedLevel rect {
-	transition: all 0.2s;
-}
-
-#button_algs {
-	position: fixed;
-	top: 10px;
-	right: 10px;
 	transition: all 0.2s;
 }
 

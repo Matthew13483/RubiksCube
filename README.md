@@ -27,7 +27,7 @@
 
 - ✅ **3D Speedcube Look** – Brilliant shading and realistic colors
 - 📱 **Touch Friendly** – Rotate cube and faces easily with gestures
-- 🔢 **Multi-size Cubes** – Play from **2×2** all the way up to **13×13**
+- 🔢 **Multi-size Cubes** – Play from **2x2** all the way up to **21x21**
 - ⏱️ **Timer & Solve Statistics** – Track times and detailed solve history
 - 🎥 **PLL & ZBLL Animations** – Learn algorithms with visual demos
 - 🎛 **Controls** – Zoom, toggle sound, scramble, speed control, and undo
