@@ -69,6 +69,42 @@ div.column {
 	right: 10px;
 }
 
+#dims_container {
+	z-index: 2;
+	overflow: auto;
+	position: fixed;
+	top: 55px;
+	left: 50vw;
+	opacity: 0;
+	transform-origin: top right;
+	transform: translateX(-50%) scale(0);
+	max-height: 80vh;
+	padding: 6px;
+	background: #303066;
+	box-shadow: 0 3px 5px #00000050;
+	display: grid;
+	grid-template-columns: repeat(4, 60px);
+	gap: 6px;
+	transition: all 0.2s;
+}
+
+#dims_container.show {
+	opacity: 1;
+	transform: translateX(-50%) scale(1);
+}
+
+.dim {
+	margin: 0;
+	width: 60px;
+	height: 60px;
+	color: white;
+	font-size: 30px;
+	font-family: monospace;
+	text-align: center;
+	line-height: 60px;
+	background: linear-gradient(180deg, #202040c0, #101020c0);
+}
+
 #button_box {
 	position: fixed;
 	top: 110px;

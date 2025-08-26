@@ -123,8 +123,6 @@ class RubiksCube {
 				attribute float a_type;
 				
 				uniform vec2 u_resolution;
-				uniform int u_len;
-				uniform sampler2D u_matrixTex;
 				
 				uniform mat4 u_pMat;
 				uniform mat4 u_mMat;
@@ -135,15 +133,25 @@ class RubiksCube {
 				varying vec3 v_normal;
 				varying float v_type;
 				
+				uniform sampler2D u_matrixTex;
+				uniform int u_texWidth;
+				uniform int u_texHeight;
+				uniform int u_matricesPerRow;
+				
 				mat4 fetchMatrix(float id) {
-					float base = id * 4.0;
-					float texW = float(u_len) * 4.0;
-				
-					vec4 r0 = texture2D(u_matrixTex, vec2((base + 0.5) / texW, 0.5));
-					vec4 r1 = texture2D(u_matrixTex, vec2((base + 1.5) / texW, 0.5));
-					vec4 r2 = texture2D(u_matrixTex, vec2((base + 2.5) / texW, 0.5));
-					vec4 r3 = texture2D(u_matrixTex, vec2((base + 3.5) / texW, 0.5));
-				
+					int i = int(id);
+					
+					int row = i / u_matricesPerRow;
+					int col = i - row * u_matricesPerRow; // col = i % u_matricesPerRow
+					
+					float baseX = float(col * 4);
+					float y = (float(row) + 0.5) / float(u_texHeight);
+					
+					vec4 r0 = texture2D(u_matrixTex, vec2((baseX + 0.5) / float(u_texWidth), y));
+					vec4 r1 = texture2D(u_matrixTex, vec2((baseX + 1.5) / float(u_texWidth), y));
+					vec4 r2 = texture2D(u_matrixTex, vec2((baseX + 2.5) / float(u_texWidth), y));
+					vec4 r3 = texture2D(u_matrixTex, vec2((baseX + 3.5) / float(u_texWidth), y));
+					
 					return mat4(
 						r0.x, r0.y, r0.z, r0.w,
 						r1.x, r1.y, r1.z, r1.w,
@@ -440,12 +448,12 @@ class RubiksCube {
 			}
 		}
 		
-		if (Math.abs(this.rotateVel.x) > 1e-3 || Math.abs(this.rotateVel.y) > 1e-3 || Math.abs(this.rotateVel.x) > 1e-3) {
+		if (this.touches.length == 0 && (Math.abs(this.rotateVel.x) > 1e-3 || Math.abs(this.rotateVel.y) > 1e-3 || Math.abs(this.rotateVel.x) > 1e-3)) {
 			let f = this.friction ** (deltaTime / 10);
 			this.rotateVel.x *= f;
 			this.rotateVel.y *= f;
 			this.rotateVel.z *= f;
-			if (this.touches.length == 0) this.rotateCube(this.rotateVel.x * deltaTime / 10, this.rotateVel.y * deltaTime / 10, this.rotateVel.z * deltaTime / 10);
+			this.rotateCube(this.rotateVel.x * deltaTime / 10, this.rotateVel.y * deltaTime / 10, this.rotateVel.z * deltaTime / 10);
 		}
 		
 		if (timer.running && !turning_pieces && this.isSolved()) this.justSolved();
@@ -494,7 +502,7 @@ class RubiksCube {
 		
 		let map_turns = [];
 		let center_pieces = Object.values(this.center_pieces);
-		let axis_piece = center_pieces.find(piece => Vdot(Vnormalize(piece.transform(piece)), axis) == 1);
+		let axis_piece = center_pieces.find(piece => Vdot(Vnormalize(piece.transform(piece)), axis) > 0.99);
 		let axis_piece_name = axis_piece.id[0];
 		
 		let centers = ['R', 'U', 'F', 'L', 'D', 'B'];
@@ -647,10 +655,16 @@ class RubiksCube {
 
 	set_iMat() {
 		let gl = this.gl;
-
 		gl.getExtension("OES_texture_float");
 		
-		let matrices = new Float32Array(this.pieces.length * 16);
+		let len = this.pieces.length;
+		let m = Math.ceil(0.5 * Math.log2(len));
+		let dim = Math.pow(2, m);
+		let matricesPerRow = dim;
+		let texWidth = matricesPerRow * 4;
+		let texHeight = Math.ceil(len / matricesPerRow);
+		
+		let matrices = new Float32Array(texWidth * texHeight * 4);
 		
 		for (let i = 0; i < this.pieces.length; i++) {
 			let piece = this.pieces[i];
@@ -663,9 +677,6 @@ class RubiksCube {
 			];
 			matrices.set(mat, i * 16);
 		}
-		
-		let texWidth = this.pieces.length * 4;
-		let texHeight = 1;
 		
 		let matrixTex = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, matrixTex);
@@ -681,6 +692,10 @@ class RubiksCube {
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, matrixTex);
 		gl.uniform1i(this.gl_u['u_matrixTex'], 0);
+		
+		gl.uniform1i(this.gl_u['u_texWidth'], texWidth);
+		gl.uniform1i(this.gl_u['u_texHeight'], texHeight);
+		gl.uniform1i(this.gl_u['u_matricesPerRow'], matricesPerRow);
 	}
 
 	set_pMat() {
@@ -725,11 +740,10 @@ class RubiksCube {
 		if (!gl) return;
 		let program = gl.program;
 		
-		['u_len', 'u_dim', 'u_matrixTex', 'u_image', 'u_iMat', 'u_pMat', 'u_vMat', 'u_mMat', 'camPos', 'lightSources', 'lightColors'].forEach(loc => {
+		['u_texWidth', 'u_texHeight', 'u_matricesPerRow', 'u_dim', 'u_matrixTex', 'u_image', 'u_iMat', 'u_pMat', 'u_vMat', 'u_mMat', 'camPos', 'lightSources', 'lightColors'].forEach(loc => {
 			this.gl_u[loc] = gl.getUniformLocation(program, loc);
 		});
 		
-		gl.uniform1i(this.gl_u['u_len'], this.pieces.length);
 		gl.uniform1i(this.gl_u['u_dim'], this.dim);
 		
 		this.set_iMat();
@@ -856,21 +870,19 @@ class RubiksCube {
 		});
 		if (this.boxed) this.pieces.forEach((piece, I) => {
 			piece.box.forEach((box, i) => {
-				if (piece.boxFaces[i]) {
-					let [v0, v1, v2, v3] = box;
-					let n = Vcross(Vsub(v2, v0), Vsub(v1, v0));
-					let c = objs.colors[i + 1].map(e => e / 255);
-					vertex_data.push(
-						v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-						v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-						v1.x, v1.y, v1.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-					);
-					vertex_data.push(
-						v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-						v3.x, v3.y, v3.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-						v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
-					);
-				}
+				let [v0, v1, v2, v3] = box;
+				let n = Vcross(Vsub(v2, v0), Vsub(v1, v0));
+				let c = objs.colors[piece.boxColorI[i] + 1].map(e => e / 255);
+				vertex_data.push(
+					v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					v1.x, v1.y, v1.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+				);
+				vertex_data.push(
+					v0.x, v0.y, v0.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					v3.x, v3.y, v3.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+					v2.x, v2.y, v2.z, n.x, n.y, n.z, c[0], c[1], c[2], I, 1,
+				);
 			});
 		});
 		
@@ -1009,51 +1021,68 @@ class RubiksCube {
 	touchStart(x, y, id) {
 		let touch = { id };
 		this.touches.push(touch);
-		let touchingCube = false,
-			cube, face, faceI, pieceI, gotLine = false;
+		let touchingCube = false, face, pieceI, gotLine = false;
 		this.rotateVel.x = this.rotateVel.y = 0;
 		this.pieces.some((piece, I) => {
 			return piece.box.some((e, i) => {
-				let poly = e.map(point => this.transformP(piece.transform(point)));
-				let isPolyVis = Vdot(getNormal(poly), poly[1]) < 0;
-				if (!isPolyVis) return false;
-				let Ply = { points: e.map(p => this.renderP(piece.transform(p))) };
-				if (piece.boxFaces[i] && cllnPolyPnt(Ply, { x, y })) {
+				let A = this.renderP(piece.transform(e[0]));
+				let B = this.renderP(piece.transform(e[1]));
+				let C = this.renderP(piece.transform(e[2]));
+				let area_sign = (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+				if (area_sign <= 0) return false;
+				let D = this.renderP(piece.transform(e[3]));
+				
+				let minX = Math.min(A.x, B.x, C.x, D.x);
+				let maxX = Math.max(A.x, B.x, C.x, D.x);
+				let minY = Math.min(A.y, B.y, C.y, D.y);
+				let maxY = Math.max(A.y, B.y, C.y, D.y);
+				if (x < minX || x > maxX || y < minY || y > maxY) return false;
+				if (pointInQuadFast({ x, y }, A, B, C, D, area_sign > 0)) {
 					touchingCube = true;
-					cube = piece.box;
-					face = cube[i];
-					faceI = i;
+					face = piece.box[i];
 					pieceI = I;
+					return true;
 				}
-				return touchingCube;
+				return false;
 			});
 		});
-		Object.assign(touch, { x, y, touchingCube, cube, face, faceI, pieceI, gotLine });
+		Object.assign(touch, { x, y, touchingCube, face, pieceI, gotLine });
 	}
 
 	touchMove(x, y, id) {
 		let touch = this.touches.find(e => e.id === id);
 		if (!touch) return;
 		if (!this.rotateFree && touch.touchingCube && !touch.gotLine) {
-			let { cube, face, pieceI } = touch;
+			let { face, pieceI } = touch;
 			let piece = this.pieces[pieceI];
 			let Ply = { points: face.map(p => this.renderP(piece.transform(p))) };
 			let lines = Ply.points.map((e, i, a) => ({ p1: e, p2: a[(i + 1) % a.length] }));
-			lines.forEach((e, i) => {
-				let a = Math.atan2(y - touch.y, x - touch.x);
-				let d = Math.hypot(touch.y - y, touch.x - x) * 10;
-				let p = {
-					x: touch.x + Math.cos(a) * d,
-					y: touch.y + Math.sin(a) * d
-				};
+			let a = Math.atan2(y - touch.y, x - touch.x);
+			let d = Math.hypot(touch.y - y, touch.x - x) * 10;
+			let p = {
+				x: touch.x + Math.cos(a) * d,
+				y: touch.y + Math.sin(a) * d
+			};
+			lines.some((e, i) => {
 				if (cllnLineLine(e, { p1: touch, p2: p })) {
 					if (!this.scrambling && this.mode[0] != 'animation') {
 						let axis = Vsub(piece.transformDone(face[i]), piece.transformDone(face[(i + 1) % face.length]));
-						for (let a in axis) axis[a] = Math.round(axis[a]);
-						let pieces;
-						if (axis.x !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).x - piece.transformDone(piece).x) < 0.01);
-						if (axis.y !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).y - piece.transformDone(piece).y) < 0.01);
-						if (axis.z !== 0) pieces = this.pieces.filter(p => Math.abs(p.transformDone(p).z - piece.transformDone(piece).z) < 0.01);
+						let max = Math.max(Math.abs(axis.x), Math.abs(axis.y), Math.abs(axis.z));
+						axis = {
+							x: Math.abs(axis.x) === max ? Math.sign(axis.x) : 0,
+							y: Math.abs(axis.y) === max ? Math.sign(axis.y) : 0,
+							z: Math.abs(axis.z) === max ? Math.sign(axis.z) : 0
+						};
+						let key;
+						if (axis.x) key = 'x';
+						if (axis.y) key = 'y';
+						if (axis.z) key = 'z';
+						
+						let sliceValue = piece.transformDone(piece)[key];
+						let pieces = this.pieces.filter(p =>
+							Math.abs(p.transformDone(p)[key] - sliceValue) < 0.01
+						);
+						
 						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
 						if (this.mode[0] == 'replay') this.mode = ['casual'];
 						if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
@@ -1062,6 +1091,7 @@ class RubiksCube {
 						}
 					}
 					touch.gotLine = true;
+					return true;
 				}
 			});
 		}
@@ -1753,7 +1783,7 @@ class Piece {
 		this.orient_mat = this.set.orient_mat;
 		this.see = this.set.see;
 		
-		this.box = [
+		let box_template = [
 			[[-1, +1, -1], [+1, +1, -1], [+1, +1, +1], [-1, +1, +1]],
 			[[-1, +1, -1], [-1, +1, +1], [-1, -1, +1], [-1, -1, -1]],
 			[[-1, +1, +1], [+1, +1, +1], [+1, -1, +1], [-1, -1, +1]],
@@ -1765,9 +1795,14 @@ class Piece {
 			y: (f[1] / 2) + this.y,
 			z: (f[2] / 2) + this.z
 		})));
-		this.boxFaces = new Array(this.box.length).fill(false);
+		let boxFaces = new Array(box_template.length).fill(false);
 		let num = ['core', 'center', 'edge', 'corner'].indexOf(this.type);
-		if (this.see) this.box.map(face => Vdot(getNormal(face), Vnormalize(this))).map((e, i) => [e, i]).sort((a, b) => b[0] - a[0]).slice(0, num).forEach(e => this.boxFaces[e[1]] = true);
+		this.box = [];
+		this.boxColorI = [];
+		if (this.see) box_template.map(face => Vdot(getNormal(face), Vnormalize(this))).map((e, i) => [e, i]).sort((a, b) => b[0] - a[0]).slice(0, num).forEach(e => {
+			this.box.push(box_template[e[1]]);
+			this.boxColorI.push(e[1]);
+		});
 		
 		this.rotationMat = [
 			{ x: 1, y: 0, z: 0 },

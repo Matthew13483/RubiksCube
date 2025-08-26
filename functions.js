@@ -166,3 +166,20 @@ function cllnPolyPnt(poly, point) {
 	}
 	return intersections % 2 === 1;
 }
+
+function pointInQuadFast(P, A, B, C, D, isCCW) {
+	function edgeTest(P, U, V) {
+		return (V.x - U.x) * (P.y - U.y) - (V.y - U.y) * (P.x - U.x);
+	}
+	
+	let c1 = edgeTest(P, A, B);
+	let c2 = edgeTest(P, B, C);
+	let c3 = edgeTest(P, C, D);
+	let c4 = edgeTest(P, D, A);
+	
+	if (isCCW) {
+		return (c1 >= 0 && c2 >= 0 && c3 >= 0 && c4 >= 0);
+	} else {
+		return (c1 <= 0 && c2 <= 0 && c3 <= 0 && c4 <= 0);
+	}
+}

@@ -95,9 +95,25 @@ function toggleList() {
 	if (!show_list && show_solveInfo) toggleInfo();
 }
 
+let show_dims = false;
+function toggleDims() {
+	show_dims = !show_dims;
+	dims_container.classList.toggle('show', show_dims);
+}
+
+for (let i = 2; i <= 21; i++) {
+	let option = document.createElement('div');
+	option.textContent = i;
+	option.classList.add('dim');
+	option.onclick = () => {
+		changeDim(i);
+		if (show_dims) toggleDims();
+	};
+	dims_container.appendChild(option);
+}
+
 function changeDim(n) {
-	n = n || (Rubik.dim - 2 + 1) % 12 + 2;
-	text_dim.innerHTML = n;
+	text_dim.textContent = n;
 	Rubik.dim = n;
 	Rubik.create_pieces();
 	Rubik.reset();
@@ -919,7 +935,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0501';
+const version = 'v 0502';
 
 function loop() {
 	requestAnimationFrame(loop);
