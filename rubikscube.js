@@ -1182,6 +1182,10 @@ class RubiksCube {
 	}
 
 	scrambleCube() {
+		if (this.scrambling && !timer.enabled) {
+			this.scrambling = false;
+			return;
+		}
 		if (this.scrambling || this.mode[0] == 'animation') return;
 		if (timer.enabled) {
 			timer.reset();

@@ -92,11 +92,12 @@ let show_list = false;
 function toggleList(value) {
 	show_list = (typeof value == 'boolean') ? value : !show_list;
 	times_container.classList.toggle('show', show_list);
-	if (!show_list && show_solveInfo) toggleInfo();
+	if (!show_list) toggleInfo(false);
 }
 
 let show_dims = false;
 function toggleDims(value) {
+	if (show_algs) toggleAlgs(false);
 	show_dims = (typeof value == 'boolean') ? value : !show_dims;
 	dims_container.classList.toggle('show', show_dims);
 }
@@ -201,6 +202,7 @@ function anim_updateSVG() {
 
 let show_algs = false;
 function toggleAlgs(value) {
+	if (show_dims) toggleDims(false);
 	show_algs = (typeof value == 'boolean') ? value : !show_algs;
 	algs_container.classList.toggle('show', show_algs);
 	button_algs.classList.toggle('show', show_algs);
@@ -934,7 +936,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0503';
+const version = 'v 0504';
 
 function loop() {
 	requestAnimationFrame(loop);
