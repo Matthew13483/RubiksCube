@@ -936,7 +936,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0504';
+const version = 'v 0505';
 
 function loop() {
 	requestAnimationFrame(loop);

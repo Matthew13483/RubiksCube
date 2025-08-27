@@ -1147,7 +1147,8 @@ class RubiksCube {
 		this.touches.length = 0;
 	}
 
-	generateScramble(length = 21) {
+	generateScramble() {
+		let length = this.dim === 2 ? 9 : this.dim === 3 ? 25 : 20 * (this.dim - 2);
 		if (this.dim == 3) {
 			let getRandomI = arr => Math.floor(Math.random() * arr.length);
 			let p_axis = [["R", "L"], ["U", "D"], ["F", "B"]];
@@ -1171,7 +1172,7 @@ class RubiksCube {
 		}
 		else {
 			let pieces = this.pieces.filter(piece => piece.see && piece.type != 'core');
-			return new Array(Math.max(pieces.length, 20)).fill(null).map(e => {
+			return new Array(length).fill(null).map(e => {
 				let piece = pieces[Math.floor(Math.random() * pieces.length)];
 				let axis = { x: 0, y: 0, z: 0 };
 				axis[['x', 'y', 'z'][Math.floor(Math.random() * 3)]] = 1;
