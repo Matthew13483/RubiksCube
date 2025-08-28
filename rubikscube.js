@@ -1208,18 +1208,17 @@ class RubiksCube {
 	}
 
 	isSolved() {
-		let c_piece = this.pieces.find(piece => piece.type != 'center');
-		if (!c_piece) return true;
-		let R2 = c_piece.rotationMat;
-		for (let i = 0; i < this.pieces.length; i++) {
-			let piece = this.pieces[i];
+		let R2 = this.pieces[0].rotationMat;
+		let axisMap = { R: 0, U: 1, F: 2, L: 0, D: 1, B: 2 };
+		for (let piece of this.pieces) {
 			if (!piece.see || piece.type == 'core') continue;
 			let R1 = piece.rotationMat;
 			if (piece.type == 'center') {
-				if (Vdot(Vmatrix(R1, piece), Vmatrix(R2, piece)) < 1 - 1e-6) return false;
+				let axis = axisMap[piece.id];
+				if (Vdot(R1[axis], R2[axis]) < 0.9999) return false;
 			}
 			else {
-				if (Vdot(R1[0], R2[0]) < 1 - 1e-6 || Vdot(R1[1], R2[1]) < 1 - 1e-6 || Vdot(R1[2], R2[2]) < 1 - 1e-6) return false;
+				for (let n = 0; n < 3; n++) if (Vdot(R1[n], R2[n]) < 0.9999) return false;
 			}
 		}
 		return true;
