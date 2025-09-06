@@ -329,7 +329,7 @@ class RubiksCube {
 	reset() {
 		this.mode = ['casual'];
 		
-		this.friction = 0.95;
+		this.friction = 0.9;
 		this.lastTime = Date.now();
 		
 		this.touches = [];
@@ -1053,47 +1053,61 @@ class RubiksCube {
 		let touch = this.touches.find(e => e.id === id);
 		if (!touch) return;
 		if (!this.rotateFree && touch.touchingCube && !touch.gotLine) {
-			let { face, pieceI } = touch;
-			let piece = this.pieces[pieceI];
-			let Ply = { points: face.map(p => this.renderP(piece.transform(p))) };
-			let lines = Ply.points.map((e, i, a) => ({ p1: e, p2: a[(i + 1) % a.length] }));
-			let a = Math.atan2(y - touch.y, x - touch.x);
-			let d = Math.hypot(touch.y - y, touch.x - x) * 10;
-			let p = {
-				x: touch.x + Math.cos(a) * d,
-				y: touch.y + Math.sin(a) * d
-			};
-			lines.some((e, i) => {
-				if (cllnLineLine(e, { p1: touch, p2: p })) {
-					if (!this.scrambling && this.mode[0] != 'animation') {
-						let axis = Vsub(piece.transformDone(face[i]), piece.transformDone(face[(i + 1) % face.length]));
-						let max = Math.max(Math.abs(axis.x), Math.abs(axis.y), Math.abs(axis.z));
-						axis = {
-							x: Math.abs(axis.x) === max ? Math.sign(axis.x) : 0,
-							y: Math.abs(axis.y) === max ? Math.sign(axis.y) : 0,
-							z: Math.abs(axis.z) === max ? Math.sign(axis.z) : 0
-						};
-						let key;
-						if (axis.x) key = 'x';
-						if (axis.y) key = 'y';
-						if (axis.z) key = 'z';
-						
-						let sliceValue = piece.transformDone(piece)[key];
-						let pieces = this.pieces.filter(p =>
-							Math.abs(p.transformDone(p)[key] - sliceValue) < 0.01
-						);
-						
-						this.turnCube(pieces, axis, 1, this.turn_ms.touch);
-						if (this.mode[0] == 'replay') this.mode = ['casual'];
-						if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
-							this.mode[1] = 'go';
-							timer.start();
-						}
+			if (!this.scrambling && this.mode[0] != 'animation') {
+				let { face, pieceI } = touch;
+				let piece = this.pieces[pieceI];
+				let faceT = face.map(p => piece.transformDone(p));
+				let [p0, p1, p2, p3] = faceT.map(p => this.renderP(p));
+				let axis1 = Vnormalize({
+					x: p0.x + p1.x - p2.x - p3.x,
+					y: p0.y + p1.y - p2.y - p3.y,
+					z: 0
+				});
+				let axis2 = Vnormalize({
+					x: p0.x + p3.x - p2.x - p1.x,
+					y: p0.y + p3.y - p2.y - p1.y,
+					z: 0
+				});
+				let axis3 = Vneg(axis1);
+				let axis4 = Vneg(axis2);
+				
+				let len = Math.hypot(x - touch.x, y - touch.y);
+				if (len < 5) return;
+				
+				let ii = 0;
+				let max_crossz = -Infinity;
+				[axis1, axis2, axis3, axis4].forEach((a, i) => {
+					let crossz = -((x - touch.x) * a.y - (y - touch.y) * a.x) / len;
+					if (crossz > max_crossz) {
+						ii = i;
+						max_crossz = crossz;
 					}
-					touch.gotLine = true;
-					return true;
+				});
+				
+				let is = [[1, 2], [0, 1], [2, 1], [1, 0]][ii];
+				let axis = Vsub(faceT[is[0]], faceT[is[1]]);
+				let [ax, ay, az] = [Math.abs(axis.x), Math.abs(axis.y), Math.abs(axis.z)];
+				let key = ax > ay && ax > az ? 'x' : ay > az ? 'y' : 'z';
+				axis = {
+					x: key === 'x' ? Math.sign(axis.x) : 0,
+					y: key === 'y' ? Math.sign(axis.y) : 0,
+					z: key === 'z' ? Math.sign(axis.z) : 0
+				};
+				
+				let sliceValue = piece.transformDone(piece)[key];
+				let pieces = this.pieces.filter(p =>
+					Math.abs(p.transformDone(p)[key] - sliceValue) < 0.01
+				);
+				
+				this.turnCube(pieces, axis, 1, this.turn_ms.touch);
+				if (this.mode[0] == 'replay') this.mode = ['casual'];
+				if (this.mode[0] == 'speed_solve' && this.mode[1] == 'ready' && !timer.running) {
+					this.mode[1] = 'go';
+					timer.start();
 				}
-			});
+			}
+			touch.gotLine = true;
+			return;
 		}
 		if (this.rotateFree || !touch.touchingCube) {
 			touch.ax = touch.x;
