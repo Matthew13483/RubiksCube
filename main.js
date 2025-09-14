@@ -115,11 +115,7 @@ for (let i = 2; i <= 21; i++) {
 
 function changeDim(n) {
 	text_dim.textContent = n;
-	Rubik.dim = n;
-	Rubik.create_pieces();
-	Rubik.reset();
-	Rubik.rotateCube(0, -0.35, 0);
-	Rubik.rotateCube(-3.5, 0, 0);
+	Rubik.changeDim(n);
 	toggle_rotateFree(false);
 	adjust_speedLevel(4);
 	animate_end(false);
@@ -936,7 +932,7 @@ function refresh() {
 //let stats;
 //let loaded = false;
 
-const version = 'v 0507';
+const version = 'v 0600';
 
 function loop() {
 	requestAnimationFrame(loop);

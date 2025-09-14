@@ -402,6 +402,14 @@ class RubiksCube {
 		}
 	}
 
+	changeDim(dim) {
+		this.dim = dim;
+		this.create_pieces();
+		this.reset();
+		this.rotateCube(0, -0.35, 0);
+		this.rotateCube(-3.5, 0, 0);
+	}
+
 	loop() {
 		let time = Date.now();
 		let deltaTime = time - this.lastTime;
@@ -1385,6 +1393,7 @@ class RubiksCube {
 
 	replay(solve) {
 		if (this.dim != 3) return;
+		toggleTimer(false);
 		this.mode = ['replay'];
 		let { scramble, time, solution, solution_times, ms } = solve;
 		let solution1 = solution.split(' ');
@@ -1440,10 +1449,8 @@ class RubiksCube {
 		
 		let time_a;
 		let i = 0;
-		let count = 0;
 		let loop = () => {
 			if (this.mode[0] !== 'replay') return;
-			count++;
 			let { move, time, ms } = moves[i];
 			let success = false;
 			let time_b = Date.now() - time_a;
@@ -1780,6 +1787,30 @@ class RubiksCube {
 			this.anim.date = Date.now();
 			this.anim.preval = Number(slider.value);
 		}
+	}
+
+	solve() {
+		if (this.dim != 3) return;
+		toggleTimer(false);
+		this.mode = ['replay'];
+		let s = performance.now();
+		let solution = cubeSolve(this.map);
+		let ms = Number((performance.now() - s).toFixed(4));
+		console.log(`${ms}ms ${solution.length} moves\nSolution: ${solution.join(' ')}`);
+		let i = 0;
+		let loop = () => {
+			if (this.pieces.some(piece => piece.turning)) return;
+			if (this.mode[0] !== 'replay') clearInterval(this.solve_loop);
+			let move = solution[i];
+			let success = (move && move.length > 0) ? this.turnCubeNotation(move, 120) : false;
+			if (success) i++;
+			if (!(i < solution.length && success)) {
+				this.mode = ['casual'];
+				clearInterval(this.solve_loop);
+			}
+		};
+		if (this.solve_loop) clearInterval(this.solve_loop);
+		this.solve_loop = setInterval(loop, 10);
 	}
 
 }

@@ -44,6 +44,7 @@
 		<svg class="button" id="button_algs" onclick="toggleAlgs()" fill="white" viewBox="0 0 24 24">
 			<path d="M2 2h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33M2 9.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33M2 16.66h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33m7.33-5.33h5.33v5.33h-5.33"/>
 		</svg>
+		<svg class="button" onclick="Rubik.solve()" viewBox="0 0 512 512"><path d="M272 191.997l48 48-48 47.999-48-48zM208.007 256l48.001 48L80.01 480l-48-48.001zM256 32h32v64h-32zm129.131 117.497l-22.627-22.627 45.254-45.254 22.627 22.628zm-271.525-45.263l22.627-22.627 45.255 45.254-22.628 22.627zm248.899 248.892l22.627-22.627 45.255 45.254-22.628 22.627zM416 224h64v32h-64z"/></svg>
 		<svg class="button" id="button_changeDim" onclick="toggleDims()" viewBox="0 0 24 24">
 			<path fill-rule="evenodd" d="M3 3h18v18H3V3zm2 2v14h14V5H5z" />
 			<text id="text_dim" x="12" y="16" font-size="12" font-family="monospace" text-anchor="middle">3</text>
@@ -155,6 +156,7 @@
 	</div>
 
 	<script src="functions.js"></script>
+	<script src="solver.js"></script>
 	<script src="objs.js" defer></script>
 	<script src="rubikscube.js"></script>
 	<script src="voronoi.js" defer></script>
